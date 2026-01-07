@@ -2,41 +2,52 @@
 
 BeginPackage["RelativityToolkit`"];
 
-(* --- Exported Symbols (Public Interface) --- *)
-valence::usage = "valence[expr] returns a list {{up_indices}, {down_indices}}.";
-CanonicalizeIndices::usage = "CanonicalizeIndices[expr] renames dummy indices.";
-TensorForm::usage = "TensorForm[expr] displays the expression with Greek indices.";
-Partials::usage = "Partials[num, den] represents a partial derivative.";
+(* --- Exported Symbols --- *)
+valence::usage = "valence[expr] returns the index structure.";
+CanonicalizeIndices::usage = "Renames dummy indices.";
+TensorForm::usage = "Displays with Greek indices.";
+Partials::usage = "Represents a partial derivative.";
 
-(* EXPORT THE INDEX WRAPPERS SO THEY MATCH NOTEBOOK INPUT *)
-\[ScriptCapitalU]::usage = "Wrapper for Contravariant (Up) indices.";
-\[ScriptCapitalD]::usage = "Wrapper for Covariant (Down) indices.";
-\[Delta]::usage = "Kronecker Delta symbol.";
+(* Export Formatting Symbols to encourage correct context usage *)
+\[ScriptCapitalU]::usage = "Up index wrapper.";
+\[ScriptCapitalD]::usage = "Down index wrapper.";
+\[Delta]::usage = "Kronecker Delta.";
 
-(* Common Tensor Symbols *)
-x::usage = "Coordinate vector symbol.";
-p::usage = "Covector symbol.";
-g::usage = "Metric tensor symbol.";
-u::usage = "Velocity vector symbol.";
-A::usage = "Generic vector/tensor symbol.";
-B::usage = "Generic vector/tensor symbol.";
-T::usage = "Generic tensor symbol.";
+(* Tensor Symbols *)
+x::usage = "Coordinate vector.";
+p::usage = "Covector.";
+g::usage = "Metric tensor.";
+u::usage = "Velocity.";
+A::usage = "Generic tensor.";
+B::usage = "Generic tensor.";
+T::usage = "Generic tensor.";
 
 (* Rules *)
-metricRules::usage = "Rules for index raising/lowering.";
-simpleCommaRules::usage = "Rules to convert derivatives to comma notation.";
-robustTransformRules::usage = "Rules for coordinate transformations.";
+metricRules::usage = "Raising/Lowering rules.";
+simpleCommaRules::usage = "Comma notation rules.";
+robustTransformRules::usage = "Transformation rules.";
 
 (* Predicates *)
-upQ::usage = "Returns True if indices are Up.";
-downQ::usage = "Returns True if indices are Down.";
+upQ::usage = "Check for Up indices.";
+downQ::usage = "Check for Down indices.";
 
 Begin["`Private`"];
 
 (* ========================================================== *)
-(* 1. VALENCE LOGIC                                           *)
+(* 1. HELPER: CONTEXT-AGNOSTIC CHECK                          *)
+(* ========================================================== *)
+(* Checks if a head is the fancy U or D, ignoring context *)
+IsUpHead[h_Symbol] := StringEndsQ[SymbolName[h], "ScriptCapitalU"];
+IsUpHead[_] := False;
+
+IsDownHead[h_Symbol] := StringEndsQ[SymbolName[h], "ScriptCapitalD"];
+IsDownHead[_] := False;
+
+(* ========================================================== *)
+(* 2. VALENCE LOGIC                                           *)
 (* ========================================================== *)
 
+(* Logic helpers *)
 upQ[x_] := upQ[valence[x]];
 downQ[x_] := downQ[valence[x]];
 upQ[{{__}, {}}] := True;
@@ -53,14 +64,17 @@ valence[x_Symbol] := {{}, {}};
 valence[_?NumericQ] := {{}, {}};
 valence[] := Null;
 
-(* Use the Exported Symbols in Patterns *)
-valence[_[\[ScriptCapitalU][\[Alpha]_]]] := {{\[Alpha]}, {}};
-valence[_[\[ScriptCapitalD][\[Alpha]_]]] := {{}, {\[Alpha]}};
+(* Context-Agnostic Atoms *)
+valence[_[h_[\[Alpha]_]]] /; IsUpHead[h] := {{\[Alpha]}, {}};
+valence[_[h_[\[Alpha]_]]] /; IsDownHead[h] := {{}, {\[Alpha]}};
 
-valence[g[\[ScriptCapitalD][\[Mu]_], \[ScriptCapitalD][\[Nu]_]]] := {{}, {\[Mu], \[Nu]}};
-valence[g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Nu]_]]] := {{\[Mu], \[Nu]}, {}};
-valence[\[Delta][\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalD][\[Nu]_]]] := {{\[Mu]}, {\[Nu]}};
+(* Metric & Delta *)
+(* For known symbols, we can stick to specific valence definitions *)
+valence[g[d1_[\[Mu]_], d2_[\[Nu]_]]] /; IsDownHead[d1] && IsDownHead[d2] := {{}, {\[Mu], \[Nu]}};
+valence[g[u1_[\[Mu]_], u2_[\[Nu]_]]] /; IsUpHead[u1] && IsUpHead[u2] := {{\[Mu], \[Nu]}, {}};
+valence[\[Delta][u_[\[Mu]_], d_[\[Nu]_]]] /; IsUpHead[u] && IsDownHead[d] := {{\[Mu]}, {\[Nu]}};
 
+(* Partials *)
 valence[Partials[num_, den_]] := Module[{vn, vd, vdFlipped},
   vn = valence[num];
   vd = valence[den];
@@ -68,58 +82,51 @@ valence[Partials[num_, den_]] := Module[{vn, vd, vdFlipped},
   {Join[vn[[1]], vdFlipped[[1]]], Join[vn[[2]], vdFlipped[[2]]]}
 ];
 
-valence[(h : _[\[ScriptCapitalU][_]] | _[\[ScriptCapitalD][_]])[___]] := valence[h];
+(* Recursive Rules *)
+valence[(h : _[head_] /; (IsUpHead[head] || IsDownHead[head]))[___]] := valence[h];
 valence[Derivative[_][_][f_] /; (valence[f] =!= {{}, {}})] := valence[f];
-valence[Derivative[1][f_][arg_]] := With[{v = valence[arg]},
-  If[v === {{}, {}}, {{}, {}}, Reverse[v]]
-];
+valence[Derivative[1][f_][arg_]] := With[{v = valence[arg]}, If[v === {{}, {}}, {{}, {}}, Reverse[v]]];
 
-valence[prod_Times] := contractValence[
-  Fold[Join[#1, valence[#2], 2] &, {{}, {}}, List @@ prod]
-];
-
-valence[sum_Plus] := Module[{vs},
-  vs = valence /@ (List @@ sum);
-  If[Apply[SameQ, vs], First[vs], 
-   Print["Valence Mismatch in Sum: ", vs]; {{}, {}}]
-];
-
+valence[prod_Times] := contractValence[Fold[Join[#1, valence[#2], 2] &, {{}, {}}, List @@ prod]];
+valence[sum_Plus] := Module[{vs}, vs = valence /@ (List @@ sum); If[Apply[SameQ, vs], First[vs], Print["Valence Mismatch"]; {{}, {}}]];
 valence[Power[b_, _]] := valence[b];
 valence[h_[a_, b_, rest___]] := Join[valence[h[a]], valence[h[b, rest]], 2];
 valence[___] := {{}, {}};
 
 
 (* ========================================================== *)
-(* 2. DISPLAY RULES (MakeBoxes)                               *)
+(* 3. DISPLAY RULES (ROBUST)                                  *)
 (* ========================================================== *)
 
 Unprotect[MakeBoxes];
-
-Quiet[MakeBoxes[h_[indices__], StandardForm] =.]; 
-Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 Quiet[MakeBoxes[Partials[_,_], StandardForm] =.];
+Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 
+(* Partials *)
 MakeBoxes[Partials[num_, den_], StandardForm] := 
   FractionBox[
    RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}],
    RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]
   ];
 
-MakeBoxes[\[Delta][\[ScriptCapitalU][up_], \[ScriptCapitalD][down_]], StandardForm] := 
+(* Delta (Vertical Stack) *)
+(* Matches any head that looks like U or D *)
+MakeBoxes[\[Delta][u_[up_], d_[down_]], StandardForm] /; IsUpHead[u] && IsDownHead[d] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
 
-MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]], StandardForm] := 
+MakeBoxes[\[Delta][d_[down_], u_[up_]], StandardForm] /; IsUpHead[u] && IsDownHead[d] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
 
-(* Generic Tensor Rule *)
-(* The pattern now matches the EXPORTED \[ScriptCapitalU] / \[ScriptCapitalD] *)
+(* Generic Tensor Formatting *)
+(* Condition: The expression is NOT Delta, and ALL arguments match the U/D pattern *)
 MakeBoxes[h_[indices__], StandardForm] /; 
   (h =!= \[Delta]) && 
-  MatchQ[{indices}, { (\[ScriptCapitalU][_] | \[ScriptCapitalD][_]) .. }] := 
+  (h =!= Partials) &&
+  AllTrue[{indices}, Function[idx, MatchQ[idx, _[__]] && (IsUpHead[Head[idx]] || IsDownHead[Head[idx]])]] := 
  Module[{formattedScripts},
   formattedScripts = {indices} /. {
-     \[ScriptCapitalU][i_] :> SuperscriptBox["", MakeBoxes[i, StandardForm]],
-     \[ScriptCapitalD][i_] :> SubscriptBox["", MakeBoxes[i, StandardForm]]
+     idx_ /; IsUpHead[Head[idx]] :> SuperscriptBox["", MakeBoxes[First[idx], StandardForm]],
+     idx_ /; IsDownHead[Head[idx]] :> SubscriptBox["", MakeBoxes[First[idx], StandardForm]]
   };
   RowBox[Prepend[formattedScripts, MakeBoxes[h, StandardForm]]]
  ]
@@ -128,12 +135,15 @@ Protect[MakeBoxes];
 
 
 (* ========================================================== *)
-(* 3. ALGEBRAIC SIMPLIFICATION                                *)
+(* 4. ALGEBRAIC SIMPLIFICATION                                *)
 (* ========================================================== *)
 
 CanonicalizeTerm[term_] := 
-  Module[{indices, counts, dummies, replacementRules},
-   indices = Cases[term, (\[ScriptCapitalU] | \[ScriptCapitalD])[i_] :> i, Infinity];
+  Module[{indices, counts, dummies, replacementRules, rawIndices},
+   (* Find anything matching _[i] where Head is U/D *)
+   rawIndices = Cases[term, x_ /; MatchQ[x, _[_]] && (IsUpHead[Head[x]] || IsDownHead[Head[x]]), Infinity];
+   indices = First /@ rawIndices;
+   
    counts = Tally[indices];
    dummies = Select[counts, Last[#] == 2 &][[All, 1]];
    
@@ -150,51 +160,47 @@ CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
 
 (* ========================================================== *)
-(* 4. PRETTY PRINTING                                         *)
+(* 5. PRETTY PRINTING                                         *)
 (* ========================================================== *)
 
 TensorForm[expr_] := Module[{canonExpr, indexMap, prettyIndices},
    canonExpr = CanonicalizeIndices[expr];
    prettyIndices = {\[Lambda], \[Kappa], \[Rho], \[Sigma], \[Mu], \[Nu], \[Tau], \[Eta], \[Chi], \[Psi]};
-   
-   indexMap = Table[
-     Symbol["\[FormalI]" <> ToString[n]] -> prettyIndices[[n]], 
-     {n, Length[prettyIndices]}
-   ];
-   
+   indexMap = Table[Symbol["\[FormalI]" <> ToString[n]] -> prettyIndices[[n]], {n, Length[prettyIndices]}];
    HoldForm[Evaluate[canonExpr /. indexMap]]
 ];
 
 
 (* ========================================================== *)
-(* 5. PHYSICS RULES                                           *)
+(* 6. PHYSICS RULES                                           *)
 (* ========================================================== *)
+(* Note: We keep specific patterns here for safety, assuming package symbols are used for calculation *)
 
 metricRules = {
-   g[\[ScriptCapitalD][\[Mu]_], \[ScriptCapitalD][\[Nu]_]] * vec_[\[ScriptCapitalU][\[Nu]_]] :> vec[\[ScriptCapitalD][\[Mu]]],
-   vec_[\[ScriptCapitalU][\[Nu]_]] * g[\[ScriptCapitalD][\[Mu]_], \[ScriptCapitalD][\[Nu]_]] :> vec[\[ScriptCapitalD][\[Mu]]],
+   g[d1_[\[Mu]_], d2_[\[Nu]_]] * vec_[u1_[\[Nu]_]] /; IsDownHead[d1] && IsDownHead[d2] && IsUpHead[u1] :> vec[d1[\[Mu]]],
+   vec_[u1_[\[Nu]_]] * g[d1_[\[Mu]_], d2_[\[Nu]_]] /; IsDownHead[d1] && IsDownHead[d2] && IsUpHead[u1] :> vec[d1[\[Mu]]],
    
-   g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Nu]_]] * covec_[\[ScriptCapitalD][\[Nu]_]] :> covec[\[ScriptCapitalU][\[Mu]]],
-   covec_[\[ScriptCapitalD][\[Nu]_]] * g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Nu]_]] :> covec[\[ScriptCapitalU][\[Mu]]],
+   g[u1_[\[Mu]_], u2_[\[Nu]_]] * covec_[d1_[\[Nu]_]] /; IsUpHead[u1] && IsUpHead[u2] && IsDownHead[d1] :> covec[u1[\[Mu]]],
+   covec_[d1_[\[Nu]_]] * g[u1_[\[Mu]_], u2_[\[Nu]_]] /; IsUpHead[u1] && IsUpHead[u2] && IsDownHead[d1] :> covec[u1[\[Mu]]],
 
-   g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Alpha]_]] * g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][\[Nu]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
-   g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][\[Nu]_]] * g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]
+   g[u1_[\[Mu]_], u2_[\[Alpha]_]] * g[d1_[\[Alpha]_], d2_[\[Nu]_]] /; IsUpHead[u1] && IsUpHead[u2] && IsDownHead[d1] && IsDownHead[d2] :> \[Delta][u1[\[Mu]], d2[\[Nu]]],
+   g[d1_[\[Alpha]_], d2_[\[Nu]_]] * g[u1_[\[Mu]_], u2_[\[Alpha]_]] /; IsUpHead[u1] && IsUpHead[u2] && IsDownHead[d1] && IsDownHead[d2] :> \[Delta][u1[\[Mu]], d2[\[Nu]]]
 };
 
 simpleCommaRules = {
-   Derivative[1][f_][x_[\[ScriptCapitalU][\[Alpha]_]][t_]] :> Subscript[f, ","][\[ScriptCapitalD][\[Alpha]]]
+   Derivative[1][f_][x_[u_[\[Alpha]_]][t_]] /; IsUpHead[u] :> Subscript[f, ","][\[ScriptCapitalD][\[Alpha]]]
 };
 
 robustTransformRules = {
-   A_[\[ScriptCapitalU][primedIndex_]] :> 
+   A_[u_[primedIndex_]] /; IsUpHead[u] :> 
     Module[{freshIndex},
      freshIndex = Unique["\[Mu]"]; 
-     Partials[x[\[ScriptCapitalU][primedIndex]], x[\[ScriptCapitalU][freshIndex]]] * A[\[ScriptCapitalU][freshIndex]]
+     Partials[x[u[primedIndex]], x[u[freshIndex]]] * A[u[freshIndex]]
      ],
-   p_[\[ScriptCapitalD][primedIndex_]] :> 
+   p_[d_[primedIndex_]] /; IsDownHead[d] :> 
     Module[{freshIndex},
      freshIndex = Unique["\[Nu]"]; 
-     Partials[x[\[ScriptCapitalU][freshIndex]], x[\[ScriptCapitalU][primedIndex]]] * p[\[ScriptCapitalD][freshIndex]]
+     Partials[x[\[ScriptCapitalU][freshIndex]], x[\[ScriptCapitalU][primedIndex]]] * p[d[freshIndex]]
      ]
 };
 
