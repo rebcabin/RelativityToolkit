@@ -104,9 +104,11 @@ valence[___] := {{}, {}};
 (* ========================================================== *)
 
 (* Clear old definitions to prevent shadowing if reloaded *)
+Off[Unset::norep]
 Quiet[MakeBoxes[h_[indices__], StandardForm] =.]; 
 Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 Quiet[MakeBoxes[Partials[_,_], StandardForm] =.];
+On[Unset::norep]
 
 (* Partials Display *)
 MakeBoxes[Partials[num_, den_], StandardForm] := 
