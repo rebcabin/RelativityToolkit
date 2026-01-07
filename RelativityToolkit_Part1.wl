@@ -104,9 +104,9 @@ valence[___] := {{}, {}};
 (* ========================================================== *)
 
 (* Clear old definitions to prevent shadowing if reloaded *)
-MakeBoxes[h_[indices__], StandardForm] =.; 
-MakeBoxes[\[Delta][__], StandardForm] =.;
-MakeBoxes[Partials[_,_], StandardForm] =.;
+Quiet[MakeBoxes[h_[indices__], StandardForm] =.]; 
+Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
+Quiet[MakeBoxes[Partials[_,_], StandardForm] =.];
 
 (* Partials Display *)
 MakeBoxes[Partials[num_, den_], StandardForm] := 
