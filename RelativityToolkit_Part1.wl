@@ -3,10 +3,15 @@
 BeginPackage["RelativityToolkit`"];
 
 (* --- Exported Symbols (Public Interface) --- *)
-valence::usage = "valence[expr] returns a list {{up_indices}, {down_indices}} representing the index structure of the expression.";
-CanonicalizeIndices::usage = "CanonicalizeIndices[expr] renames dummy indices to standard forms.";
-TensorForm::usage = "TensorForm[expr] displays the expression with canonicalized indices mapped to Greek letters.";
-Partials::usage = "Partials[num, den] represents a partial derivative (Jacobian).";
+valence::usage = "valence[expr] returns a list {{up_indices}, {down_indices}}.";
+CanonicalizeIndices::usage = "CanonicalizeIndices[expr] renames dummy indices.";
+TensorForm::usage = "TensorForm[expr] displays the expression with Greek indices.";
+Partials::usage = "Partials[num, den] represents a partial derivative.";
+
+(* EXPORT THE INDEX WRAPPERS SO THEY MATCH NOTEBOOK INPUT *)
+\[ScriptCapitalU]::usage = "Wrapper for Contravariant (Up) indices.";
+\[ScriptCapitalD]::usage = "Wrapper for Covariant (Down) indices.";
+\[Delta]::usage = "Kronecker Delta symbol.";
 
 (* Common Tensor Symbols *)
 x::usage = "Coordinate vector symbol.";
@@ -15,23 +20,23 @@ g::usage = "Metric tensor symbol.";
 u::usage = "Velocity vector symbol.";
 A::usage = "Generic vector/tensor symbol.";
 B::usage = "Generic vector/tensor symbol.";
+T::usage = "Generic tensor symbol.";
 
-(* Transformation & Logic Rules *)
-metricRules::usage = "Rules for index raising/lowering and the inverse metric identity.";
-simpleCommaRules::usage = "Rules to convert derivatives into comma notation.";
-robustTransformRules::usage = "Rules for coordinate transformations using alpha-conversion.";
+(* Rules *)
+metricRules::usage = "Rules for index raising/lowering.";
+simpleCommaRules::usage = "Rules to convert derivatives to comma notation.";
+robustTransformRules::usage = "Rules for coordinate transformations.";
 
-(* Helper Predicates *)
-upQ::usage = "upQ[expr] returns True if the expression has only contiguous Up indices.";
-downQ::usage = "downQ[expr] returns True if the expression has only contiguous Down indices.";
+(* Predicates *)
+upQ::usage = "Returns True if indices are Up.";
+downQ::usage = "Returns True if indices are Down.";
 
 Begin["`Private`"];
 
 (* ========================================================== *)
-(* 1. VALENCE LOGIC (The Type Checker)                        *)
+(* 1. VALENCE LOGIC                                           *)
 (* ========================================================== *)
 
-(* Helpers *)
 upQ[x_] := upQ[valence[x]];
 downQ[x_] := downQ[valence[x]];
 upQ[{{__}, {}}] := True;
@@ -44,21 +49,18 @@ contractValence[{u_List, d_List}] := Module[{common},
   {DeleteElements[u, common], DeleteElements[d, common]}
 ];
 
-(* Base Cases *)
 valence[x_Symbol] := {{}, {}};
 valence[_?NumericQ] := {{}, {}};
 valence[] := Null;
 
-(* Tensor Atoms *)
+(* Use the Exported Symbols in Patterns *)
 valence[_[\[ScriptCapitalU][\[Alpha]_]]] := {{\[Alpha]}, {}};
 valence[_[\[ScriptCapitalD][\[Alpha]_]]] := {{}, {\[Alpha]}};
 
-(* Metric & Delta Specifics *)
 valence[g[\[ScriptCapitalD][\[Mu]_], \[ScriptCapitalD][\[Nu]_]]] := {{}, {\[Mu], \[Nu]}};
 valence[g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Nu]_]]] := {{\[Mu], \[Nu]}, {}};
 valence[\[Delta][\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalD][\[Nu]_]]] := {{\[Mu]}, {\[Nu]}};
 
-(* Partials (Jacobians) *)
 valence[Partials[num_, den_]] := Module[{vn, vd, vdFlipped},
   vn = valence[num];
   vd = valence[den];
@@ -66,14 +68,12 @@ valence[Partials[num_, den_]] := Module[{vn, vd, vdFlipped},
   {Join[vn[[1]], vdFlipped[[1]]], Join[vn[[2]], vdFlipped[[2]]]}
 ];
 
-(* Structural Rules *)
 valence[(h : _[\[ScriptCapitalU][_]] | _[\[ScriptCapitalD][_]])[___]] := valence[h];
 valence[Derivative[_][_][f_] /; (valence[f] =!= {{}, {}})] := valence[f];
 valence[Derivative[1][f_][arg_]] := With[{v = valence[arg]},
   If[v === {{}, {}}, {{}, {}}, Reverse[v]]
 ];
 
-(* Arithmetic Rules *)
 valence[prod_Times] := contractValence[
   Fold[Join[#1, valence[#2], 2] &, {{}, {}}, List @@ prod]
 ];
@@ -93,29 +93,26 @@ valence[___] := {{}, {}};
 (* 2. DISPLAY RULES (MakeBoxes)                               *)
 (* ========================================================== *)
 
-(* UNPROTECT MakeBoxes so we can add definitions *)
 Unprotect[MakeBoxes];
 
-(* Clear old definitions carefully *)
 Quiet[MakeBoxes[h_[indices__], StandardForm] =.]; 
 Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 Quiet[MakeBoxes[Partials[_,_], StandardForm] =.];
 
-(* Partials Display *)
 MakeBoxes[Partials[num_, den_], StandardForm] := 
   FractionBox[
    RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}],
    RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]
   ];
 
-(* Specific Delta Rule (Vertical Stacking) *)
 MakeBoxes[\[Delta][\[ScriptCapitalU][up_], \[ScriptCapitalD][down_]], StandardForm] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
 
 MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]], StandardForm] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
 
-(* Generic Tensor Rule (Excluding Delta) *)
+(* Generic Tensor Rule *)
+(* The pattern now matches the EXPORTED \[ScriptCapitalU] / \[ScriptCapitalD] *)
 MakeBoxes[h_[indices__], StandardForm] /; 
   (h =!= \[Delta]) && 
   MatchQ[{indices}, { (\[ScriptCapitalU][_] | \[ScriptCapitalD][_]) .. }] := 
@@ -127,12 +124,11 @@ MakeBoxes[h_[indices__], StandardForm] /;
   RowBox[Prepend[formattedScripts, MakeBoxes[h, StandardForm]]]
  ]
 
-(* PROTECT MakeBoxes again *)
 Protect[MakeBoxes];
 
 
 (* ========================================================== *)
-(* 3. ALGEBRAIC SIMPLIFICATION (Canonicalization)             *)
+(* 3. ALGEBRAIC SIMPLIFICATION                                *)
 (* ========================================================== *)
 
 CanonicalizeTerm[term_] := 
@@ -154,7 +150,7 @@ CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
 
 (* ========================================================== *)
-(* 4. PRETTY PRINTING (TensorForm)                            *)
+(* 4. PRETTY PRINTING                                         *)
 (* ========================================================== *)
 
 TensorForm[expr_] := Module[{canonExpr, indexMap, prettyIndices},
@@ -171,7 +167,7 @@ TensorForm[expr_] := Module[{canonExpr, indexMap, prettyIndices},
 
 
 (* ========================================================== *)
-(* 5. PHYSICS RULES (Metric & Transformations)                *)
+(* 5. PHYSICS RULES                                           *)
 (* ========================================================== *)
 
 metricRules = {
@@ -202,5 +198,5 @@ robustTransformRules = {
      ]
 };
 
-End[]; (* End Private Context *)
+End[];
 EndPackage[];
