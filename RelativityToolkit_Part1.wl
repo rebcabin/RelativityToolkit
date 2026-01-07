@@ -3,10 +3,10 @@
 BeginPackage["RelativityToolkit`"];
 
 (* --- Exported Symbols (Public Interface) --- *)
-valence::usage = "valence[expr] returns a list {{up_indices}, {down_indices}} representing the index structure of the expression. It acts as a type-checker for tensor operations.";
-CanonicalizeIndices::usage = "CanonicalizeIndices[expr] renames dummy (summation) indices to a standard form (FormalI1, FormalI2...) to allow algebraic simplification and index coalescing.";
-TensorForm::usage = "TensorForm[expr] displays the expression with canonicalized indices mapped to pretty Greek letters. Use this for final output, not for further computation.";
-Partials::usage = "Partials[num, den] represents a partial derivative (Jacobian) for display and valence calculations.";
+valence::usage = "valence[expr] returns a list {{up_indices}, {down_indices}} representing the index structure of the expression.";
+CanonicalizeIndices::usage = "CanonicalizeIndices[expr] renames dummy indices to standard forms.";
+TensorForm::usage = "TensorForm[expr] displays the expression with canonicalized indices mapped to Greek letters.";
+Partials::usage = "Partials[num, den] represents a partial derivative (Jacobian).";
 
 (* Common Tensor Symbols *)
 x::usage = "Coordinate vector symbol.";
@@ -17,9 +17,9 @@ A::usage = "Generic vector/tensor symbol.";
 B::usage = "Generic vector/tensor symbol.";
 
 (* Transformation & Logic Rules *)
-metricRules::usage = "List of rules for index raising/lowering (e.g., g_uv A^v -> A_u) and the inverse metric identity.";
-simpleCommaRules::usage = "List of rules to convert derivatives (f'[x]) into comma notation (f_,a).";
-robustTransformRules::usage = "List of rules for coordinate transformations that use alpha-conversion (Unique indices) to prevent collisions.";
+metricRules::usage = "Rules for index raising/lowering and the inverse metric identity.";
+simpleCommaRules::usage = "Rules to convert derivatives into comma notation.";
+robustTransformRules::usage = "Rules for coordinate transformations using alpha-conversion.";
 
 (* Helper Predicates *)
 upQ::usage = "upQ[expr] returns True if the expression has only contiguous Up indices.";
@@ -62,19 +62,13 @@ valence[\[Delta][\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalD][\[Nu]_]]] := {{\[M
 valence[Partials[num_, den_]] := Module[{vn, vd, vdFlipped},
   vn = valence[num];
   vd = valence[den];
-  (* Denominator flips variance: Up->Down, Down->Up *)
   vdFlipped = {vd[[2]], vd[[1]]}; 
   {Join[vn[[1]], vdFlipped[[1]]], Join[vn[[2]], vdFlipped[[2]]]}
 ];
 
 (* Structural Rules *)
-(* 1. Passthrough for Tensor Functions x[U][t] *)
 valence[(h : _[\[ScriptCapitalU][_]] | _[\[ScriptCapitalD][_]])[___]] := valence[h];
-
-(* 2. Parameter Derivatives (Scalars) *)
 valence[Derivative[_][_][f_] /; (valence[f] =!= {{}, {}})] := valence[f];
-
-(* 3. Gradient/Chain Rule (f'[x[U]]) *)
 valence[Derivative[1][f_][arg_]] := With[{v = valence[arg]},
   If[v === {{}, {}}, {{}, {}}, Reverse[v]]
 ];
@@ -91,11 +85,7 @@ valence[sum_Plus] := Module[{vs},
 ];
 
 valence[Power[b_, _]] := valence[b];
-
-(* Recursion for Multi-Index Tensors h[a, b] *)
 valence[h_[a_, b_, rest___]] := Join[valence[h[a]], valence[h[b, rest]], 2];
-
-(* Fallback *)
 valence[___] := {{}, {}};
 
 
@@ -103,12 +93,13 @@ valence[___] := {{}, {}};
 (* 2. DISPLAY RULES (MakeBoxes)                               *)
 (* ========================================================== *)
 
-(* Clear old definitions to prevent shadowing if reloaded *)
-Off[Unset::norep]
+(* UNPROTECT MakeBoxes so we can add definitions *)
+Unprotect[MakeBoxes];
+
+(* Clear old definitions carefully *)
 Quiet[MakeBoxes[h_[indices__], StandardForm] =.]; 
 Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 Quiet[MakeBoxes[Partials[_,_], StandardForm] =.];
-On[Unset::norep]
 
 (* Partials Display *)
 MakeBoxes[Partials[num_, den_], StandardForm] := 
@@ -136,6 +127,9 @@ MakeBoxes[h_[indices__], StandardForm] /;
   RowBox[Prepend[formattedScripts, MakeBoxes[h, StandardForm]]]
  ]
 
+(* PROTECT MakeBoxes again *)
+Protect[MakeBoxes];
+
 
 (* ========================================================== *)
 (* 3. ALGEBRAIC SIMPLIFICATION (Canonicalization)             *)
@@ -147,7 +141,6 @@ CanonicalizeTerm[term_] :=
    counts = Tally[indices];
    dummies = Select[counts, Last[#] == 2 &][[All, 1]];
    
-   (* Map dummies to FormalI1, FormalI2... *)
    replacementRules = MapIndexed[
      #1 -> Symbol["\[FormalI]" <> ToString[First[#2]]] &, 
      dummies
@@ -182,15 +175,12 @@ TensorForm[expr_] := Module[{canonExpr, indexMap, prettyIndices},
 (* ========================================================== *)
 
 metricRules = {
-   (* Lowering *)
    g[\[ScriptCapitalD][\[Mu]_], \[ScriptCapitalD][\[Nu]_]] * vec_[\[ScriptCapitalU][\[Nu]_]] :> vec[\[ScriptCapitalD][\[Mu]]],
    vec_[\[ScriptCapitalU][\[Nu]_]] * g[\[ScriptCapitalD][\[Mu]_], \[ScriptCapitalD][\[Nu]_]] :> vec[\[ScriptCapitalD][\[Mu]]],
    
-   (* Raising *)
    g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Nu]_]] * covec_[\[ScriptCapitalD][\[Nu]_]] :> covec[\[ScriptCapitalU][\[Mu]]],
    covec_[\[ScriptCapitalD][\[Nu]_]] * g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Nu]_]] :> covec[\[ScriptCapitalU][\[Mu]]],
 
-   (* Inverse Identity *)
    g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Alpha]_]] * g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][\[Nu]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
    g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][\[Nu]_]] * g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]
 };
@@ -200,14 +190,11 @@ simpleCommaRules = {
 };
 
 robustTransformRules = {
-   (* Vector Transformation with Alpha-Conversion *)
    A_[\[ScriptCapitalU][primedIndex_]] :> 
     Module[{freshIndex},
      freshIndex = Unique["\[Mu]"]; 
      Partials[x[\[ScriptCapitalU][primedIndex]], x[\[ScriptCapitalU][freshIndex]]] * A[\[ScriptCapitalU][freshIndex]]
      ],
-
-   (* Covector Transformation with Alpha-Conversion *)
    p_[\[ScriptCapitalD][primedIndex_]] :> 
     Module[{freshIndex},
      freshIndex = Unique["\[Nu]"]; 
