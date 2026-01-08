@@ -2,10 +2,10 @@
 
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode)                                   *)
-(* Version: 1.3.0 (Reset to Script + CD Logic)                               *)
+(* Version: 1.3.1 (Reset to Script + CD Logic)                               *)
 (* ========================================================================= *)
 
-RelativityToolkitVersion = "1.3.0";
+RelativityToolkitVersion = "1.3.1";
 
 (* 1. CLEAN SLATE ---------------------------------------------------------- *)
 (* Unprotect and clear to ensure reloading works cleanly *)
