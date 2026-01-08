@@ -2,35 +2,41 @@
 
 BeginPackage["RelativityToolkit`"];
 
-(* --- VERSIONING --- *)
-RelativityToolkitVersion::usage = "Returns the version string of the loaded toolkit.";
-RelativityToolkitVersion = "1.0.1 (Fix: Commutative Metric Rules)";
-
 (* --- EXPORTED SYMBOLS --- *)
 
+(* 1. CONFIGURATION *)
+RelativityToolkitVersion::usage = "Returns the version string.";
+RelativityToolkitVersion = "1.2.0 (Covariant Derivative Added)";
+
+(* 2. FUNCTIONS *)
 valence::usage = "valence[expr] returns the {up, down} indices.";
 CanonicalizeIndices::usage = "CanonicalizeIndices[expr] simplifies dummy indices.";
 TensorForm::usage = "TensorForm[expr] displays the tensor in standard notation.";
 
-(* The Core Vocabulary *)
+(* 3. NOTATION (Script Letters) *)
 \[ScriptCapitalU]::usage = "\[ScriptCapitalU][idx] represents an Up (contravariant) index.";
 \[ScriptCapitalD]::usage = "\[ScriptCapitalD][idx] represents a Down (covariant) index.";
 
+(* 4. OPERATORS *)
 Partials::usage = "Partials[num, den] represents a partial derivative.";
+CD::usage = "CD[\[ScriptCapitalD][idx]][expr] represents the Covariant Derivative.";
 
-(* Standard Tensors *)
+(* 5. TENSORS *)
 g::usage = "g[\[ScriptCapitalD][mu], \[ScriptCapitalD][nu]] represents the metric tensor.";
-delta::usage = "delta[\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]] represents the Kronecker delta.";
+(* Note: We use the System Symbol \[Delta] for the Kronecker Delta *)
 x::usage = "x[\[ScriptCapitalU][mu]] represents a coordinate vector.";
 p::usage = "p[\[ScriptCapitalD][mu]] represents a momentum covector.";
+Gamma::usage = "Gamma[\[ScriptCapitalU][a], \[ScriptCapitalD][b], \[ScriptCapitalD][c]] represents the Connection.";
 
-(* Convenience *)
+(* 6. GENERICS *)
 A::usage = "A is a generic tensor symbol.";
 B::usage = "B is a generic tensor symbol.";
 T::usage = "T is a generic tensor symbol.";
 
+(* 7. RULE SETS *)
 metricRules::usage = "metricRules contains replacement rules for raising/lowering.";
 robustTransformRules::usage = "robustTransformRules contains rules for coordinate transformations.";
+covariantDerivativeRules::usage = "Rules for expanding Covariant Derivatives.";
 
 Begin["`Private`"];
 
@@ -45,14 +51,14 @@ valence[sym_Symbol] := {{}, {}};
 valence[_?NumericQ] := {{}, {}};
 valence[] := Null;
 
-(* Atoms - Matching Script Letters *)
+(* Atoms *)
 valence[_[\[ScriptCapitalU][alpha_]]] := {{alpha}, {}};
 valence[_[\[ScriptCapitalD][alpha_]]] := {{}, {alpha}};
 
-(* Metric & Delta *)
+(* Metric & Delta (Using System \[Delta]) *)
 valence[g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]]] := {{}, {mu, nu}};
 valence[g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]]] := {{mu, nu}, {}};
-valence[delta[\[ScriptCapitalU][mu_], \[ScriptCapitalD][nu_]]] := {{mu}, {nu}};
+valence[\[Delta][\[ScriptCapitalU][mu_], \[ScriptCapitalD][nu_]]] := {{mu}, {nu}};
 
 (* Partials *)
 valence[Partials[num_, den_]] := Module[{vn, vd, vdFlipped},
@@ -61,6 +67,16 @@ valence[Partials[num_, den_]] := Module[{vn, vd, vdFlipped},
   vdFlipped = {vd[[2]], vd[[1]]}; 
   {Join[vn[[1]], vdFlipped[[1]]], Join[vn[[2]], vdFlipped[[2]]]}
 ];
+
+(* Covariant Derivative (CD) *)
+valence[CD[\[ScriptCapitalD][mu_]][tensor_]] := Module[{u, d},
+  {u, d} = valence[tensor];
+  {u, Append[d, mu]} (* Adds a covariant index *)
+];
+
+(* Connection (Gamma) *)
+valence[Gamma[\[ScriptCapitalU][a_], \[ScriptCapitalD][b_], \[ScriptCapitalD][c_]]] := 
+  {{a}, {b, c}}; (* Not strictly a tensor, but useful for valence checking *)
 
 (* Derivatives *)
 valence[Derivative[1][f_][arg_]] := Module[{u, d}, {u, d} = valence[arg]; {d, u}];
@@ -86,12 +102,23 @@ MakeBoxes[Partials[num_, den_], StandardForm] :=
   FractionBox[RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}], 
               RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]];
 
-MakeBoxes[delta[\[ScriptCapitalU][up_], \[ScriptCapitalD][down_]], StandardForm] := 
+(* CD Display: Del_mu T *)
+MakeBoxes[CD[\[ScriptCapitalD][idx_]][expr_], StandardForm] := 
+  RowBox[{SubscriptBox["\[Nabld]", MakeBoxes[idx, StandardForm]], MakeBoxes[expr, StandardForm]}];
+
+(* Gamma Display *)
+MakeBoxes[Gamma[\[ScriptCapitalU][u_], \[ScriptCapitalD][d1_], \[ScriptCapitalD][d2_]], StandardForm] :=
+  SubsuperscriptBox["\[CapitalGamma]", 
+    RowBox[{MakeBoxes[d1, StandardForm], MakeBoxes[d2, StandardForm]}], 
+    MakeBoxes[u, StandardForm]];
+
+(* Kronecker Delta (System Symbol) *)
+MakeBoxes[\[Delta][\[ScriptCapitalU][up_], \[ScriptCapitalD][down_]], StandardForm] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
 
-(* Generic Tensors - Explicitly matching the Exported Script Symbols *)
+(* Generic Tensors *)
 MakeBoxes[h_[indices__], StandardForm] /; 
-  (h =!= delta) && (h =!= Partials) && 
+  (h =!= \[Delta]) && (h =!= Partials) && (h =!= CD) && (h =!= Gamma) &&
   MatchQ[{indices}, { (_[\[ScriptCapitalU]] | _[\[ScriptCapitalD]] | \[ScriptCapitalU][_] | \[ScriptCapitalD][_]) .. }] := 
  Module[{formattedScripts},
   formattedScripts = {indices} /. {
@@ -125,34 +152,22 @@ CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
 (* 4. PHYSICS RULES -------------------------------------------------------- *)
 
-(* 4. PHYSICS RULES -------------------------------------------------------- *)
-
 metricRules = {
-   (* --- LOWERING RULES (g_uv A^v -> A_u) --- *)
-   
-   (* Standard: Contract the second index *)
+   (* Lowering *)
    g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]] * vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]],
    vec_[\[ScriptCapitalU][nu_]] * g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]] :> vec[\[ScriptCapitalD][mu]],
-   
-   (* Symmetry: Contract the first index *)
    g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]] * vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]],
-   vec_[\[ScriptCapitalU][nu_]] * g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]] :> vec[\[ScriptCapitalD][mu]], (* NEW *)
+   vec_[\[ScriptCapitalU][nu_]] * g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]] :> vec[\[ScriptCapitalD][mu]],
 
-   (* --- RAISING RULES (g^uv A_v -> A^u) --- *)
-
-   (* Standard: Contract the second index *)
+   (* Raising *)
    g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]] * covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
    covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]] :> covec[\[ScriptCapitalU][mu]],
-
-   (* Symmetry: Contract the first index *)
    g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] * covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
-   covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> covec[\[ScriptCapitalU][mu]], (* NEW *)
+   covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> covec[\[ScriptCapitalU][mu]],
 
-   (* --- INVERSE IDENTITY --- *)
-   g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] * g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] :> 
-       delta[\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
-   g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] :> 
-       delta[\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]
+   (* Inverse Identity - Returns System \[Delta] *)
+   g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] * g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
+   g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]
 };
 
 robustTransformRules = {
@@ -160,6 +175,28 @@ robustTransformRules = {
      Partials[x[\[ScriptCapitalU][primed]], x[\[ScriptCapitalU][fresh]]] * A[\[ScriptCapitalU][fresh]]],
    p_[\[ScriptCapitalD][primed_]] :> Module[{fresh = Unique["\[Nu]"]}, 
      Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][primed]]] * p[\[ScriptCapitalD][fresh]]]
+};
+
+covariantDerivativeRules = {
+   (* 1. Linearity *)
+   CD[idx_][a_ + b_] :> CD[idx][a] + CD[idx][b],
+   
+   (* 2. Product Rule (Leibniz) *)
+   CD[idx_][a_ * b_] :> CD[idx][a] * b + a * CD[idx][b],
+   
+   (* 3. Scalar Rule *)
+   CD[\[ScriptCapitalD][b_]][f_Symbol] /; (valence[f] === {{}, {}}) :> 
+     Partials[f, x[\[ScriptCapitalU][b]]],
+     
+   (* 4. Vector Rule (A^a) *)
+   CD[\[ScriptCapitalD][b_]][A_[\[ScriptCapitalU][a_]]] :> 
+     Partials[A[\[ScriptCapitalU][a]], x[\[ScriptCapitalU][b]]] + 
+     Gamma[\[ScriptCapitalU][a], \[ScriptCapitalD][b], \[ScriptCapitalD][Unique["\[Gamma]"]]] * A[\[ScriptCapitalU][Unique["\[Gamma]"]]],
+
+   (* 5. Covector Rule (A_a) *)
+   CD[\[ScriptCapitalD][b_]][A_[\[ScriptCapitalD][a_]]] :> 
+     Partials[A[\[ScriptCapitalD][a]], x[\[ScriptCapitalU][b]]] - 
+     Gamma[\[ScriptCapitalU][Unique["\[Gamma]"]], \[ScriptCapitalD][b], \[ScriptCapitalD][a]] * A[\[ScriptCapitalD][Unique["\[Gamma]"]]]
 };
 
 
