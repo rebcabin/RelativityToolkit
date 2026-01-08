@@ -2,6 +2,10 @@
 
 BeginPackage["RelativityToolkit`"];
 
+(* --- VERSIONING --- *)
+RelativityToolkitVersion::usage = "Returns the version string of the loaded toolkit.";
+RelativityToolkitVersion = "1.0.1 (Fix: Commutative Metric Rules)";
+
 (* --- EXPORTED SYMBOLS --- *)
 
 valence::usage = "valence[expr] returns the {up, down} indices.";
