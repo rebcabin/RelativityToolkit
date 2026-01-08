@@ -1,132 +1,116 @@
 (* ::Package:: *)
 
+(* ========================================================================= *)
+(* RELATIVITY TOOLKIT ENGINE (v1.0)                                          *)
+(* Author: Brian Beckman                                                     *)
+(* Based on: "A Relativist's Toolkit" by Eric Poisson                        *)
+(* ========================================================================= *)
+
 BeginPackage["RelativityToolkit`"];
 
-(* --- Exported Symbols --- *)
-valence::usage = "valence[expr] returns the index structure.";
-CanonicalizeIndices::usage = "Renames dummy indices.";
-TensorForm::usage = "Displays with Greek indices.";
-Partials::usage = "Represents a partial derivative.";
+(* --- EXPORTED SYMBOLS (The Public Interface) --- *)
+(* Defining usage messages prevents Context collisions. *)
+(* When a user loads this package, these symbols become available globally. *)
 
-(* Export Formatting Symbols to encourage correct context usage *)
-\[ScriptCapitalU]::usage = "Up index wrapper.";
-\[ScriptCapitalD]::usage = "Down index wrapper.";
-\[Delta]::usage = "Kronecker Delta.";
+valence::usage = "valence[expr] returns the {up, down} indices of a tensor expression.";
+CanonicalizeIndices::usage = "CanonicalizeIndices[expr] simplifies dummy indices to standard forms.";
+TensorForm::usage = "TensorForm[expr] displays the tensor with canonicalized indices.";
 
-(* Tensor Symbols *)
-x::usage = "Coordinate vector.";
-p::usage = "Covector.";
-g::usage = "Metric tensor.";
-u::usage = "Velocity.";
-A::usage = "Generic tensor.";
-B::usage = "Generic tensor.";
-T::usage = "Generic tensor.";
+(* The Core Vocabulary *)
+U::usage = "U[idx] represents an Up (contravariant) index.";
+D::usage = "D[idx] represents a Down (covariant) index.";
+Partials::usage = "Partials[num, den] represents a partial derivative operator.";
 
-(* Rules *)
-metricRules::usage = "Raising/Lowering rules.";
-simpleCommaRules::usage = "Comma notation rules.";
-robustTransformRules::usage = "Transformation rules.";
+(* Standard Tensors *)
+g::usage = "g[D[mu], D[nu]] represents the metric tensor.";
+delta::usage = "delta[U[mu], D[nu]] represents the Kronecker delta.";
+x::usage = "x[U[mu]] represents a coordinate vector.";
+p::usage = "p[D[mu]] represents a momentum covector.";
 
-(* Predicates *)
-upQ::usage = "Check for Up indices.";
-downQ::usage = "Check for Down indices.";
+(* User Convenience Symbols (Optional, but helpful) *)
+A::usage = "A is a generic tensor symbol.";
+B::usage = "B is a generic tensor symbol.";
+T::usage = "T is a generic tensor symbol.";
 
+(* Configuration & Rules *)
+metricRules::usage = "metricRules contains replacement rules for raising/lowering indices.";
+robustTransformRules::usage = "robustTransformRules contains rules for coordinate transformations.";
+
+
+(* ========================================================================= *)
+(* PRIVATE IMPLEMENTATION                                                    *)
+(* ========================================================================= *)
 Begin["`Private`"];
 
-(* ========================================================== *)
-(* 1. HELPER: CONTEXT-AGNOSTIC CHECK                          *)
-(* ========================================================== *)
-(* Checks if a head is the fancy U or D, ignoring context *)
-IsUpHead[h_Symbol] := StringEndsQ[SymbolName[h], "ScriptCapitalU"];
-IsUpHead[_] := False;
+(* 1. VALENCE LOGIC -------------------------------------------------------- *)
 
-IsDownHead[h_Symbol] := StringEndsQ[SymbolName[h], "ScriptCapitalD"];
-IsDownHead[_] := False;
-
-(* ========================================================== *)
-(* 2. VALENCE LOGIC                                           *)
-(* ========================================================== *)
-
-(* Logic helpers *)
-upQ[x_] := upQ[valence[x]];
-downQ[x_] := downQ[valence[x]];
-upQ[{{__}, {}}] := True;
-upQ[___] := False;
-downQ[{{}, {__}}] := True;
-downQ[___] := False;
-
+(* Helpers *)
 contractValence[{u_List, d_List}] := Module[{common},
   common = Intersection[u, d];
   {DeleteElements[u, common], DeleteElements[d, common]}
 ];
 
-valence[x_Symbol] := {{}, {}};
+(* Base Cases *)
+valence[sym_Symbol] := {{}, {}};
 valence[_?NumericQ] := {{}, {}};
 valence[] := Null;
 
-(* Context-Agnostic Atoms *)
-valence[_[h_[\[Alpha]_]]] /; IsUpHead[h] := {{\[Alpha]}, {}};
-valence[_[h_[\[Alpha]_]]] /; IsDownHead[h] := {{}, {\[Alpha]}};
+(* Atoms *)
+valence[_[U[alpha_]]] := {{alpha}, {}};
+valence[_[D[alpha_]]] := {{}, {alpha}};
 
 (* Metric & Delta *)
-(* For known symbols, we can stick to specific valence definitions *)
-valence[g[d1_[\[Mu]_], d2_[\[Nu]_]]] /; IsDownHead[d1] && IsDownHead[d2] := {{}, {\[Mu], \[Nu]}};
-valence[g[u1_[\[Mu]_], u2_[\[Nu]_]]] /; IsUpHead[u1] && IsUpHead[u2] := {{\[Mu], \[Nu]}, {}};
-valence[\[Delta][u_[\[Mu]_], d_[\[Nu]_]]] /; IsUpHead[u] && IsDownHead[d] := {{\[Mu]}, {\[Nu]}};
+valence[g[D[mu_], D[nu_]]] := {{}, {mu, nu}};
+valence[g[U[mu_], U[nu_]]] := {{mu, nu}, {}};
+valence[delta[U[mu_], D[nu_]]] := {{mu}, {nu}};
 
 (* Partials *)
 valence[Partials[num_, den_]] := Module[{vn, vd, vdFlipped},
   vn = valence[num];
   vd = valence[den];
-  vdFlipped = {vd[[2]], vd[[1]]}; 
+  vdFlipped = {vd[[2]], vd[[1]]}; (* Denom flips variance *)
   {Join[vn[[1]], vdFlipped[[1]]], Join[vn[[2]], vdFlipped[[2]]]}
 ];
 
-(* Recursive Rules *)
-valence[(h : _[head_] /; (IsUpHead[head] || IsDownHead[head]))[___]] := valence[h];
+(* Derivatives *)
+valence[Derivative[1][f_][arg_]] := Module[{u, d}, 
+  {u, d} = valence[arg]; 
+  {d, u} (* Gradient flips variance *)
+];
 valence[Derivative[_][_][f_] /; (valence[f] =!= {{}, {}})] := valence[f];
-valence[Derivative[1][f_][arg_]] := With[{v = valence[arg]}, If[v === {{}, {}}, {{}, {}}, Reverse[v]]];
 
+(* Arithmetic *)
+valence[(h : _[U[_]] | _[D[_]])[___]] := valence[h];
 valence[prod_Times] := contractValence[Fold[Join[#1, valence[#2], 2] &, {{}, {}}, List @@ prod]];
-valence[sum_Plus] := Module[{vs}, vs = valence /@ (List @@ sum); If[Apply[SameQ, vs], First[vs], Print["Valence Mismatch"]; {{}, {}}]];
+valence[sum_Plus] := Module[{vs},
+  vs = valence /@ (List @@ sum);
+  If[Apply[SameQ, vs], First[vs], Print["Valence Mismatch"]; {{}, {}}]
+];
 valence[Power[b_, _]] := valence[b];
 valence[h_[a_, b_, rest___]] := Join[valence[h[a]], valence[h[b, rest]], 2];
 valence[___] := {{}, {}};
 
 
-(* ========================================================== *)
-(* 3. DISPLAY RULES (ROBUST)                                  *)
-(* ========================================================== *)
+(* 2. DISPLAY RULES -------------------------------------------------------- *)
 
+(* Unprotect to allow modification of System symbols inside our context *)
 Unprotect[MakeBoxes];
-Quiet[MakeBoxes[Partials[_,_], StandardForm] =.];
-Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 
-(* Partials *)
 MakeBoxes[Partials[num_, den_], StandardForm] := 
-  FractionBox[
-   RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}],
-   RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]
-  ];
+  FractionBox[RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}], 
+              RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]];
 
-(* Delta (Vertical Stack) *)
-(* Matches any head that looks like U or D *)
-MakeBoxes[\[Delta][u_[up_], d_[down_]], StandardForm] /; IsUpHead[u] && IsDownHead[d] := 
+MakeBoxes[delta[U[up_], D[down_]], StandardForm] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
 
-MakeBoxes[\[Delta][d_[down_], u_[up_]], StandardForm] /; IsUpHead[u] && IsDownHead[d] := 
-  SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
-
-(* Generic Tensor Formatting *)
-(* Condition: The expression is NOT Delta, and ALL arguments match the U/D pattern *)
+(* Generic formatting for U/D wrappers *)
 MakeBoxes[h_[indices__], StandardForm] /; 
-  (h =!= \[Delta]) && 
-  (h =!= Partials) &&
-  AllTrue[{indices}, Function[idx, MatchQ[idx, _[__]] && (IsUpHead[Head[idx]] || IsDownHead[Head[idx]])]] := 
+  (h =!= delta) && (h =!= Partials) && 
+  MatchQ[{indices}, { (U[_] | D[_]) .. }] := 
  Module[{formattedScripts},
   formattedScripts = {indices} /. {
-     idx_ /; IsUpHead[Head[idx]] :> SuperscriptBox["", MakeBoxes[First[idx], StandardForm]],
-     idx_ /; IsDownHead[Head[idx]] :> SubscriptBox["", MakeBoxes[First[idx], StandardForm]]
+     U[i_] :> SuperscriptBox["", MakeBoxes[i, StandardForm]],
+     D[i_] :> SubscriptBox["", MakeBoxes[i, StandardForm]]
   };
   RowBox[Prepend[formattedScripts, MakeBoxes[h, StandardForm]]]
  ]
@@ -134,19 +118,15 @@ MakeBoxes[h_[indices__], StandardForm] /;
 Protect[MakeBoxes];
 
 
-(* ========================================================== *)
-(* 4. ALGEBRAIC SIMPLIFICATION                                *)
-(* ========================================================== *)
+(* 3. ALGEBRAIC SIMPLIFICATION --------------------------------------------- *)
 
 CanonicalizeTerm[term_] := 
-  Module[{indices, counts, dummies, replacementRules, rawIndices},
-   (* Find anything matching _[i] where Head is U/D *)
-   rawIndices = Cases[term, x_ /; MatchQ[x, _[_]] && (IsUpHead[Head[x]] || IsDownHead[Head[x]]), Infinity];
-   indices = First /@ rawIndices;
-   
+  Module[{indices, counts, dummies, replacementRules},
+   indices = Cases[term, (U | D)[i_] :> i, Infinity];
    counts = Tally[indices];
    dummies = Select[counts, Last[#] == 2 &][[All, 1]];
    
+   (* Renaming scheme: i1, i2, i3... *)
    replacementRules = MapIndexed[
      #1 -> Symbol["\[FormalI]" <> ToString[First[#2]]] &, 
      dummies
@@ -159,9 +139,32 @@ CanonicalizeIndices[expr_Equal] := Equal @@ (CanonicalizeIndices /@ List @@ expr
 CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
 
-(* ========================================================== *)
-(* 5. PRETTY PRINTING                                         *)
-(* ========================================================== *)
+(* 4. PHYSICS RULES -------------------------------------------------------- *)
+
+metricRules = {
+   (* Lowering *)
+   g[D[mu_], D[nu_]] * vec_[U[nu_]] :> vec[D[mu]],
+   vec_[U[nu_]] * g[D[mu_], D[nu_]] :> vec[D[mu]],
+   g[D[nu_], D[mu_]] * vec_[U[nu_]] :> vec[D[mu]], (* Symmetry *)
+   
+   (* Raising *)
+   g[U[mu_], U[nu_]] * covec_[D[nu_]] :> covec[U[mu]],
+   covec_[D[nu_]] * g[U[mu_], U[nu_]] :> covec[U[mu]],
+   g[U[nu_], U[mu_]] * covec_[D[nu_]] :> covec[U[mu]], (* Symmetry *)
+
+   (* Inverse *)
+   g[U[mu_], U[alpha_]] * g[D[alpha_], D[nu_]] :> delta[U[mu], D[nu]],
+   g[D[alpha_], D[nu_]] * g[U[mu_], U[alpha_]] :> delta[U[mu], D[nu]]
+};
+
+robustTransformRules = {
+   A_[U[primed_]] :> Module[{fresh = Unique["\[Mu]"]}, 
+     Partials[x[U[primed]], x[U[fresh]]] * A[U[fresh]]],
+   p_[D[primed_]] :> Module[{fresh = Unique["\[Nu]"]}, 
+     Partials[x[U[fresh]], x[U[primed]]] * p[D[fresh]]]
+};
+
+(* 5. PRETTY PRINTING ------------------------------------------------------ *)
 
 TensorForm[expr_] := Module[{canonExpr, indexMap, prettyIndices},
    canonExpr = CanonicalizeIndices[expr];
@@ -170,39 +173,5 @@ TensorForm[expr_] := Module[{canonExpr, indexMap, prettyIndices},
    HoldForm[Evaluate[canonExpr /. indexMap]]
 ];
 
-
-(* ========================================================== *)
-(* 6. PHYSICS RULES                                           *)
-(* ========================================================== *)
-(* Note: We keep specific patterns here for safety, assuming package symbols are used for calculation *)
-
-metricRules = {
-   g[d1_[\[Mu]_], d2_[\[Nu]_]] * vec_[u1_[\[Nu]_]] /; IsDownHead[d1] && IsDownHead[d2] && IsUpHead[u1] :> vec[d1[\[Mu]]],
-   vec_[u1_[\[Nu]_]] * g[d1_[\[Mu]_], d2_[\[Nu]_]] /; IsDownHead[d1] && IsDownHead[d2] && IsUpHead[u1] :> vec[d1[\[Mu]]],
-   
-   g[u1_[\[Mu]_], u2_[\[Nu]_]] * covec_[d1_[\[Nu]_]] /; IsUpHead[u1] && IsUpHead[u2] && IsDownHead[d1] :> covec[u1[\[Mu]]],
-   covec_[d1_[\[Nu]_]] * g[u1_[\[Mu]_], u2_[\[Nu]_]] /; IsUpHead[u1] && IsUpHead[u2] && IsDownHead[d1] :> covec[u1[\[Mu]]],
-
-   g[u1_[\[Mu]_], u2_[\[Alpha]_]] * g[d1_[\[Alpha]_], d2_[\[Nu]_]] /; IsUpHead[u1] && IsUpHead[u2] && IsDownHead[d1] && IsDownHead[d2] :> \[Delta][u1[\[Mu]], d2[\[Nu]]],
-   g[d1_[\[Alpha]_], d2_[\[Nu]_]] * g[u1_[\[Mu]_], u2_[\[Alpha]_]] /; IsUpHead[u1] && IsUpHead[u2] && IsDownHead[d1] && IsDownHead[d2] :> \[Delta][u1[\[Mu]], d2[\[Nu]]]
-};
-
-simpleCommaRules = {
-   Derivative[1][f_][x_[u_[\[Alpha]_]][t_]] /; IsUpHead[u] :> Subscript[f, ","][\[ScriptCapitalD][\[Alpha]]]
-};
-
-robustTransformRules = {
-   A_[u_[primedIndex_]] /; IsUpHead[u] :> 
-    Module[{freshIndex},
-     freshIndex = Unique["\[Mu]"]; 
-     Partials[x[u[primedIndex]], x[u[freshIndex]]] * A[u[freshIndex]]
-     ],
-   p_[d_[primedIndex_]] /; IsDownHead[d] :> 
-    Module[{freshIndex},
-     freshIndex = Unique["\[Nu]"]; 
-     Partials[x[\[ScriptCapitalU][freshIndex]], x[\[ScriptCapitalU][primedIndex]]] * p[d[freshIndex]]
-     ]
-};
-
-End[];
-EndPackage[];
+End[]; (* End Private *)
+EndPackage[]; (* End Package *)
