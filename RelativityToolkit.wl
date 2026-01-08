@@ -3,13 +3,12 @@
 BeginPackage["RelativityToolkit`"];
 
 (* --- EXPORTED SYMBOLS --- *)
-(* We use Script Letters to avoid colliding with System`D (Derivative) *)
 
 valence::usage = "valence[expr] returns the {up, down} indices.";
 CanonicalizeIndices::usage = "CanonicalizeIndices[expr] simplifies dummy indices.";
 TensorForm::usage = "TensorForm[expr] displays the tensor in standard notation.";
 
-(* The Core Vocabulary - Using Script Letters *)
+(* The Core Vocabulary *)
 \[ScriptCapitalU]::usage = "\[ScriptCapitalU][idx] represents an Up (contravariant) index.";
 \[ScriptCapitalD]::usage = "\[ScriptCapitalD][idx] represents a Down (covariant) index.";
 
@@ -122,15 +121,30 @@ CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
 (* 4. PHYSICS RULES -------------------------------------------------------- *)
 
+(* 4. PHYSICS RULES -------------------------------------------------------- *)
+
 metricRules = {
+   (* --- LOWERING RULES (g_uv A^v -> A_u) --- *)
+   
+   (* Standard: Contract the second index *)
    g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]] * vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]],
    vec_[\[ScriptCapitalU][nu_]] * g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]] :> vec[\[ScriptCapitalD][mu]],
-   g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]] * vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]],
    
+   (* Symmetry: Contract the first index *)
+   g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]] * vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]],
+   vec_[\[ScriptCapitalU][nu_]] * g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]] :> vec[\[ScriptCapitalD][mu]], (* NEW *)
+
+   (* --- RAISING RULES (g^uv A_v -> A^u) --- *)
+
+   (* Standard: Contract the second index *)
    g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]] * covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
    covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]] :> covec[\[ScriptCapitalU][mu]],
-   g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] * covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
 
+   (* Symmetry: Contract the first index *)
+   g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] * covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
+   covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> covec[\[ScriptCapitalU][mu]], (* NEW *)
+
+   (* --- INVERSE IDENTITY --- *)
    g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] * g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] :> delta[\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
    g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] :> delta[\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]
 };
