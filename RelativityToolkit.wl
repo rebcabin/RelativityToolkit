@@ -14,7 +14,9 @@ Quiet[MakeBoxes[Partials[_, _], StandardForm] =.];
 Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 Quiet[MakeBoxes[CD[__], StandardForm] =.];
 Quiet[MakeBoxes[Gamma[__], StandardForm] =.];
-Quiet[DownValues[MakeBoxes] = Select[DownValues[MakeBoxes], FreeQ[#, \[ScriptCapitalU]] && FreeQ[#, \[ScriptCapitalD]] &]];
+Quiet[DownValues[MakeBoxes] = Select[
+    DownValues[MakeBoxes], 
+    FreeQ[#, \[ScriptCapitalU]] && FreeQ[#, \[ScriptCapitalD]] &]];
 Protect[MakeBoxes];
 
 ClearAll[valence, CanonicalizeIndices, TensorForm, Partials, CD, Gamma, 
@@ -160,8 +162,10 @@ metricRules = {
    covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> covec[\[ScriptCapitalU][mu]],
 
    (* Inverse Identity *)
-   g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] * g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
-   g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]
+   g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] * g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] :> 
+       \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
+   g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] :> 
+       \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]
 };
 
 robustTransformRules = {
@@ -173,17 +177,27 @@ robustTransformRules = {
 
 (* NEW: Covariant Derivative Rules *)
 covariantDerivativeRules = {
+   (* Linearity and Leibniz *)
    CD[idx_][a_ + b_] :> CD[idx][a] + CD[idx][b],
    CD[idx_][a_ * b_] :> CD[idx][a] * b + a * CD[idx][b],
-   CD[\[ScriptCapitalD][b_]][f_Symbol] /; (valence[f] === {{}, {}}) :> Partials[f, x[\[ScriptCapitalU][b]]],
    
+   (* Scalar Rule *)
+   CD[\[ScriptCapitalD][b_]][f_Symbol] /; (valence[f] === {{}, {}}) :> 
+     Partials[f, x[\[ScriptCapitalU][b]]],
+   
+   (* Vector Rule (A^a) - Uses Module to ensure indices match! *)
    CD[\[ScriptCapitalD][b_]][A_[\[ScriptCapitalU][a_]]] :> 
-     Partials[A[\[ScriptCapitalU][a]], x[\[ScriptCapitalU][b]]] + 
-     Gamma[\[ScriptCapitalU][a], \[ScriptCapitalD][b], \[ScriptCapitalD][Unique["\[Gamma]"]]] * A[\[ScriptCapitalU][Unique["\[Gamma]"]]],
+     Module[{gam = Unique["\[Gamma]"]},
+       Partials[A[\[ScriptCapitalU][a]], x[\[ScriptCapitalU][b]]] + 
+       Gamma[\[ScriptCapitalU][a], \[ScriptCapitalD][b], \[ScriptCapitalD][gam]] * A[\[ScriptCapitalU][gam]]
+     ],
 
+   (* Covector Rule (A_a) - Uses Module to ensure indices match! *)
    CD[\[ScriptCapitalD][b_]][A_[\[ScriptCapitalD][a_]]] :> 
-     Partials[A[\[ScriptCapitalD][a]], x[\[ScriptCapitalU][b]]] - 
-     Gamma[\[ScriptCapitalU][Unique["\[Gamma]"]], \[ScriptCapitalD][b], \[ScriptCapitalD][a]] * A[\[ScriptCapitalD][Unique["\[Gamma]"]]]
+     Module[{gam = Unique["\[Gamma]"]},
+       Partials[A[\[ScriptCapitalD][a]], x[\[ScriptCapitalU][b]]] - 
+       Gamma[\[ScriptCapitalU][gam], \[ScriptCapitalD][b], \[ScriptCapitalD][a]] * A[\[ScriptCapitalD][gam]]
+     ]
 };
 
 
