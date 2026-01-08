@@ -6,7 +6,7 @@ BeginPackage["RelativityToolkit`"];
 
 (* 1. CONFIGURATION *)
 RelativityToolkitVersion::usage = "Returns the version string.";
-RelativityToolkitVersion = "1.2.0 (Covariant Derivative Added)";
+RelativityToolkitVersion = "1.2.1 (Fix: System Delta Symbol)";
 
 (* 2. FUNCTIONS *)
 valence::usage = "valence[expr] returns the {up, down} indices.";
@@ -23,7 +23,7 @@ CD::usage = "CD[\[ScriptCapitalD][idx]][expr] represents the Covariant Derivativ
 
 (* 5. TENSORS *)
 g::usage = "g[\[ScriptCapitalD][mu], \[ScriptCapitalD][nu]] represents the metric tensor.";
-(* Note: We use the System Symbol \[Delta] for the Kronecker Delta *)
+(* Note: We use the System Symbol \[Delta] for the Kronecker Delta - NO custom delta export *)
 x::usage = "x[\[ScriptCapitalU][mu]] represents a coordinate vector.";
 p::usage = "p[\[ScriptCapitalD][mu]] represents a momentum covector.";
 Gamma::usage = "Gamma[\[ScriptCapitalU][a], \[ScriptCapitalD][b], \[ScriptCapitalD][c]] represents the Connection.";
@@ -76,7 +76,7 @@ valence[CD[\[ScriptCapitalD][mu_]][tensor_]] := Module[{u, d},
 
 (* Connection (Gamma) *)
 valence[Gamma[\[ScriptCapitalU][a_], \[ScriptCapitalD][b_], \[ScriptCapitalD][c_]]] := 
-  {{a}, {b, c}}; (* Not strictly a tensor, but useful for valence checking *)
+  {{a}, {b, c}}; 
 
 (* Derivatives *)
 valence[Derivative[1][f_][arg_]] := Module[{u, d}, {u, d} = valence[arg]; {d, u}];
@@ -112,8 +112,11 @@ MakeBoxes[Gamma[\[ScriptCapitalU][u_], \[ScriptCapitalD][d1_], \[ScriptCapitalD]
     RowBox[{MakeBoxes[d1, StandardForm], MakeBoxes[d2, StandardForm]}], 
     MakeBoxes[u, StandardForm]];
 
-(* Kronecker Delta (System Symbol) *)
+(* Kronecker Delta (System Symbol) - Handling BOTH orders for safety *)
 MakeBoxes[\[Delta][\[ScriptCapitalU][up_], \[ScriptCapitalD][down_]], StandardForm] := 
+  SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
+
+MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]], StandardForm] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
 
 (* Generic Tensors *)
@@ -178,27 +181,17 @@ robustTransformRules = {
 };
 
 covariantDerivativeRules = {
-   (* 1. Linearity *)
    CD[idx_][a_ + b_] :> CD[idx][a] + CD[idx][b],
-   
-   (* 2. Product Rule (Leibniz) *)
    CD[idx_][a_ * b_] :> CD[idx][a] * b + a * CD[idx][b],
-   
-   (* 3. Scalar Rule *)
    CD[\[ScriptCapitalD][b_]][f_Symbol] /; (valence[f] === {{}, {}}) :> 
      Partials[f, x[\[ScriptCapitalU][b]]],
-     
-   (* 4. Vector Rule (A^a) *)
    CD[\[ScriptCapitalD][b_]][A_[\[ScriptCapitalU][a_]]] :> 
      Partials[A[\[ScriptCapitalU][a]], x[\[ScriptCapitalU][b]]] + 
      Gamma[\[ScriptCapitalU][a], \[ScriptCapitalD][b], \[ScriptCapitalD][Unique["\[Gamma]"]]] * A[\[ScriptCapitalU][Unique["\[Gamma]"]]],
-
-   (* 5. Covector Rule (A_a) *)
    CD[\[ScriptCapitalD][b_]][A_[\[ScriptCapitalD][a_]]] :> 
      Partials[A[\[ScriptCapitalD][a]], x[\[ScriptCapitalU][b]]] - 
      Gamma[\[ScriptCapitalU][Unique["\[Gamma]"]], \[ScriptCapitalD][b], \[ScriptCapitalD][a]] * A[\[ScriptCapitalD][Unique["\[Gamma]"]]]
 };
-
 
 (* 5. PRETTY PRINTING ------------------------------------------------------ *)
 
