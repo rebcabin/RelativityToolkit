@@ -1,88 +1,77 @@
 (* ::Package:: *)
 
-BeginPackage["RelativityToolkit`"];
+(* ========================================================================= *)
+(* RELATIVITY TOOLKIT ENGINE (Script Mode)                                   *)
+(* Version: 1.3.0 (Reset to Script + CD Logic)                               *)
+(* ========================================================================= *)
 
-(* --- EXPORTED SYMBOLS --- *)
+RelativityToolkitVersion = "1.3.0";
 
-(* 1. CONFIGURATION *)
-RelativityToolkitVersion::usage = "Returns the version string.";
-RelativityToolkitVersion = "1.2.1 (Fix: System Delta Symbol)";
+(* 1. CLEAN SLATE ---------------------------------------------------------- *)
+(* Unprotect and clear to ensure reloading works cleanly *)
+Unprotect[MakeBoxes];
+Quiet[MakeBoxes[Partials[_, _], StandardForm] =.];
+Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
+Quiet[MakeBoxes[CD[__], StandardForm] =.];
+Quiet[MakeBoxes[Gamma[__], StandardForm] =.];
+Quiet[DownValues[MakeBoxes] = Select[DownValues[MakeBoxes], FreeQ[#, \[ScriptCapitalU]] && FreeQ[#, \[ScriptCapitalD]] &]];
+Protect[MakeBoxes];
 
-(* 2. FUNCTIONS *)
-valence::usage = "valence[expr] returns the {up, down} indices.";
-CanonicalizeIndices::usage = "CanonicalizeIndices[expr] simplifies dummy indices.";
-TensorForm::usage = "TensorForm[expr] displays the tensor in standard notation.";
+ClearAll[valence, CanonicalizeIndices, TensorForm, Partials, CD, Gamma, 
+         upQ, downQ, x, p, g, u, A, B, T, P, Q, S, 
+         metricRules, robustTransformRules, covariantDerivativeRules];
 
-(* 3. NOTATION (Script Letters) *)
-\[ScriptCapitalU]::usage = "\[ScriptCapitalU][idx] represents an Up (contravariant) index.";
-\[ScriptCapitalD]::usage = "\[ScriptCapitalD][idx] represents a Down (covariant) index.";
+(* ========================================================================= *)
+(* 2. VALENCE LOGIC (The Type Checker)                                       *)
+(* ========================================================================= *)
 
-(* 4. OPERATORS *)
-Partials::usage = "Partials[num, den] represents a partial derivative.";
-CD::usage = "CD[\[ScriptCapitalD][idx]][expr] represents the Covariant Derivative.";
+(* --- Predicates --- *)
+upQ[x_] := upQ[valence[x]];
+downQ[x_] := downQ[valence[x]];
+upQ[{{__}, {}}] := True; upQ[___] := False;
+downQ[{{}, {__}}] := True; downQ[___] := False;
 
-(* 5. TENSORS *)
-g::usage = "g[\[ScriptCapitalD][mu], \[ScriptCapitalD][nu]] represents the metric tensor.";
-(* Note: We use the System Symbol \[Delta] for the Kronecker Delta - NO custom delta export *)
-x::usage = "x[\[ScriptCapitalU][mu]] represents a coordinate vector.";
-p::usage = "p[\[ScriptCapitalD][mu]] represents a momentum covector.";
-Gamma::usage = "Gamma[\[ScriptCapitalU][a], \[ScriptCapitalD][b], \[ScriptCapitalD][c]] represents the Connection.";
-
-(* 6. GENERICS *)
-A::usage = "A is a generic tensor symbol.";
-B::usage = "B is a generic tensor symbol.";
-T::usage = "T is a generic tensor symbol.";
-
-(* 7. RULE SETS *)
-metricRules::usage = "metricRules contains replacement rules for raising/lowering.";
-robustTransformRules::usage = "robustTransformRules contains rules for coordinate transformations.";
-covariantDerivativeRules::usage = "Rules for expanding Covariant Derivatives.";
-
-Begin["`Private`"];
-
-(* 1. VALENCE LOGIC -------------------------------------------------------- *)
-
+(* --- Helpers --- *)
 contractValence[{u_List, d_List}] := Module[{common},
   common = Intersection[u, d];
   {DeleteElements[u, common], DeleteElements[d, common]}
 ];
 
-valence[sym_Symbol] := {{}, {}};
+(* --- Base Cases --- *)
+valence[x_Symbol] := {{}, {}};
 valence[_?NumericQ] := {{}, {}};
 valence[] := Null;
 
-(* Atoms *)
+(* --- Atoms --- *)
 valence[_[\[ScriptCapitalU][alpha_]]] := {{alpha}, {}};
 valence[_[\[ScriptCapitalD][alpha_]]] := {{}, {alpha}};
 
-(* Metric & Delta (Using System \[Delta]) *)
+(* --- Metric & Delta --- *)
 valence[g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]]] := {{}, {mu, nu}};
 valence[g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]]] := {{mu, nu}, {}};
 valence[\[Delta][\[ScriptCapitalU][mu_], \[ScriptCapitalD][nu_]]] := {{mu}, {nu}};
 
-(* Partials *)
+(* --- Partials --- *)
 valence[Partials[num_, den_]] := Module[{vn, vd, vdFlipped},
-  vn = valence[num];
-  vd = valence[den];
-  vdFlipped = {vd[[2]], vd[[1]]}; 
+  vn = valence[num]; vd = valence[den];
+  vdFlipped = {vd[[2]], vd[[1]]};
   {Join[vn[[1]], vdFlipped[[1]]], Join[vn[[2]], vdFlipped[[2]]]}
 ];
 
-(* Covariant Derivative (CD) *)
+(* --- Covariant Derivative (NEW) --- *)
 valence[CD[\[ScriptCapitalD][mu_]][tensor_]] := Module[{u, d},
   {u, d} = valence[tensor];
   {u, Append[d, mu]} (* Adds a covariant index *)
 ];
 
-(* Connection (Gamma) *)
-valence[Gamma[\[ScriptCapitalU][a_], \[ScriptCapitalD][b_], \[ScriptCapitalD][c_]]] := 
-  {{a}, {b, c}}; 
+(* --- Connection (NEW) --- *)
+valence[Gamma[\[ScriptCapitalU][a_], \[ScriptCapitalD][b_], \[ScriptCapitalD][c_]]] := {{a}, {b, c}};
 
-(* Derivatives *)
+(* --- Differentiation --- *)
 valence[Derivative[1][f_][arg_]] := Module[{u, d}, {u, d} = valence[arg]; {d, u}];
 valence[Derivative[_][_][f_] /; (valence[f] =!= {{}, {}})] := valence[f];
 
-(* Recursion *)
+(* --- Recursion --- *)
 valence[(h : _[\[ScriptCapitalU][_]] | _[\[ScriptCapitalD][_]])[___]] := valence[h];
 valence[prod_Times] := contractValence[Fold[Join[#1, valence[#2], 2] &, {{}, {}}, List @@ prod]];
 valence[sum_Plus] := Module[{vs},
@@ -94,28 +83,30 @@ valence[h_[a_, b_, rest___]] := Join[valence[h[a]], valence[h[b, rest]], 2];
 valence[___] := {{}, {}};
 
 
-(* 2. DISPLAY RULES -------------------------------------------------------- *)
+(* ========================================================================= *)
+(* 3. DISPLAY RULES                                                          *)
+(* ========================================================================= *)
 
 Unprotect[MakeBoxes];
 
+(* Partials *)
 MakeBoxes[Partials[num_, den_], StandardForm] := 
   FractionBox[RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}], 
               RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]];
 
-(* CD Display: Del_mu T *)
+(* CD Display: Del_mu T (NEW) *)
 MakeBoxes[CD[\[ScriptCapitalD][idx_]][expr_], StandardForm] := 
   RowBox[{SubscriptBox["\[Nabld]", MakeBoxes[idx, StandardForm]], MakeBoxes[expr, StandardForm]}];
 
-(* Gamma Display *)
+(* Gamma Display (NEW) *)
 MakeBoxes[Gamma[\[ScriptCapitalU][u_], \[ScriptCapitalD][d1_], \[ScriptCapitalD][d2_]], StandardForm] :=
   SubsuperscriptBox["\[CapitalGamma]", 
     RowBox[{MakeBoxes[d1, StandardForm], MakeBoxes[d2, StandardForm]}], 
     MakeBoxes[u, StandardForm]];
 
-(* Kronecker Delta (System Symbol) - Handling BOTH orders for safety *)
+(* Kronecker Delta *)
 MakeBoxes[\[Delta][\[ScriptCapitalU][up_], \[ScriptCapitalD][down_]], StandardForm] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
-
 MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]], StandardForm] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], MakeBoxes[up, StandardForm]];
 
@@ -134,17 +125,15 @@ MakeBoxes[h_[indices__], StandardForm] /;
 Protect[MakeBoxes];
 
 
-(* 3. ALGEBRAIC SIMPLIFICATION --------------------------------------------- *)
+(* ========================================================================= *)
+(* 4. ALGEBRAIC SIMPLIFICATION                                               *)
+(* ========================================================================= *)
 
-CanonicalizeTerm[term_] := 
-  Module[{indices, counts, dummies, replacementRules},
+CanonicalizeTerm[term_] := Module[{indices, counts, dummies, replacementRules},
    indices = Cases[term, (\[ScriptCapitalU] | \[ScriptCapitalD])[i_] :> i, Infinity];
    counts = Tally[indices];
    dummies = Select[counts, Last[#] == 2 &][[All, 1]];
-   replacementRules = MapIndexed[
-     #1 -> Symbol["\[FormalI]" <> ToString[First[#2]]] &, 
-     dummies
-   ];
+   replacementRules = MapIndexed[#1 -> Symbol["\[FormalI]" <> ToString[First[#2]]] &, dummies];
    term /. replacementRules
   ];
 
@@ -153,7 +142,9 @@ CanonicalizeIndices[expr_Equal] := Equal @@ (CanonicalizeIndices /@ List @@ expr
 CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
 
-(* 4. PHYSICS RULES -------------------------------------------------------- *)
+(* ========================================================================= *)
+(* 5. PHYSICS RULES                                                          *)
+(* ========================================================================= *)
 
 metricRules = {
    (* Lowering *)
@@ -168,7 +159,7 @@ metricRules = {
    g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] * covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
    covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> covec[\[ScriptCapitalU][mu]],
 
-   (* Inverse Identity - Returns System \[Delta] *)
+   (* Inverse Identity *)
    g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] * g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
    g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]
 };
@@ -180,20 +171,25 @@ robustTransformRules = {
      Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][primed]]] * p[\[ScriptCapitalD][fresh]]]
 };
 
+(* NEW: Covariant Derivative Rules *)
 covariantDerivativeRules = {
    CD[idx_][a_ + b_] :> CD[idx][a] + CD[idx][b],
    CD[idx_][a_ * b_] :> CD[idx][a] * b + a * CD[idx][b],
-   CD[\[ScriptCapitalD][b_]][f_Symbol] /; (valence[f] === {{}, {}}) :> 
-     Partials[f, x[\[ScriptCapitalU][b]]],
+   CD[\[ScriptCapitalD][b_]][f_Symbol] /; (valence[f] === {{}, {}}) :> Partials[f, x[\[ScriptCapitalU][b]]],
+   
    CD[\[ScriptCapitalD][b_]][A_[\[ScriptCapitalU][a_]]] :> 
      Partials[A[\[ScriptCapitalU][a]], x[\[ScriptCapitalU][b]]] + 
      Gamma[\[ScriptCapitalU][a], \[ScriptCapitalD][b], \[ScriptCapitalD][Unique["\[Gamma]"]]] * A[\[ScriptCapitalU][Unique["\[Gamma]"]]],
+
    CD[\[ScriptCapitalD][b_]][A_[\[ScriptCapitalD][a_]]] :> 
      Partials[A[\[ScriptCapitalD][a]], x[\[ScriptCapitalU][b]]] - 
      Gamma[\[ScriptCapitalU][Unique["\[Gamma]"]], \[ScriptCapitalD][b], \[ScriptCapitalD][a]] * A[\[ScriptCapitalD][Unique["\[Gamma]"]]]
 };
 
-(* 5. PRETTY PRINTING ------------------------------------------------------ *)
+
+(* ========================================================================= *)
+(* 6. PRETTY PRINTING                                                        *)
+(* ========================================================================= *)
 
 TensorForm[expr_] := Module[{canonExpr, indexMap, prettyIndices},
    canonExpr = CanonicalizeIndices[expr];
@@ -201,6 +197,3 @@ TensorForm[expr_] := Module[{canonExpr, indexMap, prettyIndices},
    indexMap = Table[Symbol["\[FormalI]" <> ToString[n]] -> prettyIndices[[n]], {n, Length[prettyIndices]}];
    HoldForm[Evaluate[canonExpr /. indexMap]]
 ];
-
-End[];
-EndPackage[];
