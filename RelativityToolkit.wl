@@ -145,8 +145,10 @@ metricRules = {
    covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> covec[\[ScriptCapitalU][mu]], (* NEW *)
 
    (* --- INVERSE IDENTITY --- *)
-   g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] * g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] :> delta[\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
-   g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] :> delta[\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]
+   g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] * g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] :> 
+       delta[\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
+   g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] :> 
+       delta[\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]
 };
 
 robustTransformRules = {
