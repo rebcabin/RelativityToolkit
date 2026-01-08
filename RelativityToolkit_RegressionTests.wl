@@ -1,13 +1,12 @@
 (* ::Package:: *)
 
 (* ========================================================================= *)
-(* RELATIVITY TOOLKIT: VERSIONED REGRESSION SUITE                            *)
-(* Version: 1.2.1                                                            *)
+(* RELATIVITY TOOLKIT: REGRESSION SUITE                                      *)
+(* Version: 1.3.0 (Reset to Script Mode)                                     *)
 (* ========================================================================= *)
 
-RelativityToolkitRegressionVersion = "1.2.1";
 Print["\n================================================================"];
-Print["RUNNING REGRESSION SUITE v" <> RelativityToolkitRegressionVersion];
+Print["RUNNING REGRESSION SUITE v1.3.0"];
 Print["THE VECTOR SPACE & METRIC"];
 Print["================================================================\n"];
 
@@ -73,7 +72,6 @@ AssertValence[5*x[\[ScriptCapitalU][\[Mu]]], {{\[Mu]}, {}},
   "Scalar Multiplication"];
 
 (* 4. Differentiation (The Gradient Test) *)
-(* d(Scalar)/dx^u -> Down Index u *)
 AssertValence[
   Derivative[1][f][x[\[ScriptCapitalU][\[Alpha]]]], {{}, {\[Alpha]}}, 
   "Gradient d(f)/dx^a -> Down[a]"];
@@ -145,7 +143,7 @@ AssertEqual[
   p[\[ScriptCapitalU][\[Mu]]],
   "Raising Index (g^uv p_v -> p^u)"];
 
-(* 2. Inverse Identity (FIX APPLIED: Using System \[Delta]) *)
+(* 2. Inverse Identity *)
 AssertEqual[
   (g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Alpha]]]*
      g[\[ScriptCapitalD][\[Alpha]], \[ScriptCapitalD][\[Nu]]]) /. metricRules,
@@ -157,13 +155,10 @@ Module[{t1, t2, res, dummies, unique},
   t1 = A[\[ScriptCapitalU][Superscript["a", "\[Prime]"]]];
   t2 = B[\[ScriptCapitalU][Superscript["b", "\[Prime]"]]];
   res = (t1*t2) /. robustTransformRules;
-  (* Find ANY Symbol inside U or D. Since input was Superscript, 
-     these MUST be generated indices. *)
   dummies = 
    Cases[res, (\[ScriptCapitalU] | \[ScriptCapitalD])[i_Symbol] :> i, 
     Infinity];
   unique = DeleteDuplicates[dummies];
-  (* We expect exactly 2 distinct indices (one for A, one for B) *)
   If[Length[unique] == 2,
    PassCount++;
    Print["[PASS] Alpha-Conversion (Generated distinct indices: ", 
@@ -176,40 +171,26 @@ Module[{t1, t2, res, dummies, unique},
 (* ========================================================================= *)
 Print["\n--- METRIC EQUIVALENCE (A^u B_u == A_v B^v) ---"];
 
-(* 1. Define the two forms *)
 termUp = 
-  A[\[ScriptCapitalU][\[Mu]]]*B[\[ScriptCapitalD][\[Mu]]]; (* A^u B_u *)
+  A[\[ScriptCapitalU][\[Mu]]]*B[\[ScriptCapitalD][\[Mu]]]; 
 termDown = 
-  A[\[ScriptCapitalD][\[Nu]]]*B[\[ScriptCapitalU][\[Nu]]]; (* A_v B^v *)
+  A[\[ScriptCapitalD][\[Nu]]]*B[\[ScriptCapitalU][\[Nu]]];
 
-(* 2. Verify they are STRUCTURALLY distinct *)
 If[CanonicalizeIndices[termUp] =!= CanonicalizeIndices[termDown],
   PassCount++;
   Print["[PASS] Structural Distinction (A^u B_u != A_v B^v initially)"],
   FailCount++;
   Print["[FAIL] Structural Distinction failed"]];
 
-(* 3. Verify they are PHYSICALLY equivalent *)
-(* PROOF STRATEGY:
-   1. Expand A_v -> g_va A^a. 
-   2. Use Hold[] to 'freeze' A^a so the metric doesn't immediately re-lower it. 
-   3. This forces the metric to lower B instead. *)
-
 expandRule = A[\[ScriptCapitalD][idx_]] :>
    Module[{fresh = Unique["\[Alpha]"]},
     g[\[ScriptCapitalD][idx], \[ScriptCapitalD][fresh]]*
-     Hold[A[\[ScriptCapitalU][fresh]]]]; (* solve contraction "race" *)
+     Hold[A[\[ScriptCapitalU][fresh]]]];
 
-(* Step A: Expand and Freeze A *)
 termExpanded = termDown /. expandRule;
-
-(* Step B: Apply Metric Rules (Metric can only see B, not A) *)
 termReduced = termExpanded /. metricRules;
-
-(* Step C: Unfreeze A *)
 termFinal = ReleaseHold[termReduced];
 
-(* Step D: Compare *)
 AssertEqual[termFinal, termUp, 
   "Metric Equivalence (A_v B^v reduces to A^u B_u)"];
 
