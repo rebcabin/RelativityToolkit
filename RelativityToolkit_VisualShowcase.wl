@@ -57,8 +57,6 @@ VisualizeOp["Index Raising",
 VisualizeOp["The Inverse Identity", 
   g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Alpha]]]*g[\[ScriptCapitalD][\[Alpha]], \[ScriptCapitalD][\[Nu]]], 
   metricRules];
-
-
 (*---3. COORDINATE TRANSFORMATIONS---------------------------------------*)
 Print["\n", 
   Style["3. Coordinate Transformations (Alpha-Conversion)", Bold, 14]];
@@ -68,8 +66,6 @@ Print["Note the automatically generated unique dummy index (e.g., \
 VisualizeOp["Transforming a Vector",
   A[\[ScriptCapitalU][Superscript["a", "\[Prime]"]]],
   robustTransformRules];
-
-
 (*---4. PRETTY PRINTING--------------------------------------------------*)
 Print["\n", Style["4. Canonicalization & Pretty Printing", Bold, 14]];
 Print["Simplifying dummy indices into standard Greek letters."];
@@ -80,48 +76,45 @@ Print[Grid[{
     {"Raw Sum (Different Indices):", rawSum},
     {"Canonicalized (TensorForm):", TensorForm[rawSum]}},
    Alignment -> Left, Spacings -> {2, 1.5}]];
-
-
 (*---5. METRIC EQUIVALENCE DEMO -------------------------------*)
-Print["\n", Style["5. Physical Equivalence Proof", Bold, 14]];
+Print["\n",Style["5. Physical Equivalence Proof",Bold,14]];
 Print["Demonstrating that ",
-  Style["\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \
-\!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\)", Italic],
-  " is equivalent to ",
-  Style["\!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \
-\!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\)", Italic],
-  "."];
+Style["\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\)",Italic],
+" is equivalent to ",
+Style["\!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\)",Italic],
+"."];
+Print["(\[ScriptCapitalU]\[ScriptCapitalD] will reorganize and canonicalize displays.)"]; 
 
 (*Define the starting point:A_v B^v*)
-startTerm = A[\[ScriptCapitalD][\[Nu]]]*B[\[ScriptCapitalU][\[Nu]]];
+startTerm=A[\[ScriptCapitalD][\[Nu]]]B[\[ScriptCapitalU][\[Nu]]];
 
-(*Step 1:Definition*)
-step1Term = g[\[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[Alpha]]]*A[\[ScriptCapitalU][\[Alpha]]]*B[\[ScriptCapitalU][\[Nu]]];
+(*Step 1: Definition*)
+step1Term=(g[\[ScriptCapitalD][\[Nu]],\[ScriptCapitalD][\[Alpha]]]A[\[ScriptCapitalU][\[Alpha]]])B[\[ScriptCapitalU][\[Nu]]];
 
-(*Step 2:Commutation*)
-step2Term = A[\[ScriptCapitalU][\[Alpha]]]*(g[\[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[Alpha]]]*B[\[ScriptCapitalU][\[Nu]]]);
+(*Step 2: Commutation*)
+step2Term=A[\[ScriptCapitalU][\[Alpha]]](g[\[ScriptCapitalD][\[Nu]],\[ScriptCapitalD][\[Alpha]]]B[\[ScriptCapitalU][\[Nu]]]);
 
-(*Step 3:Contraction*)
-step3Term = step2Term /. metricRules;
+(*Step 3: Contraction*)
+step3Term=step2Term/.metricRules;
 
+(*Helper for styling*)
 ClearAll[TableHead];
-TableHead[txt_] := Style[txt, Bold, 12, FontFamily -> "Helvetica"];
+TableHead[txt_]:=Style[txt,Bold,12,FontFamily->"Helvetica"];
 
 Print[Grid[{
-    {TableHead["Step"], TableHead["Expression"], TableHead["Action"]},
-    {"1. Start", startTerm, "Input: A_v B^v"},
-    {"2. Definition", step1Term, "Expand covector: A_v \[rightarrow] g_va A^a"},
-    {"3. Commute", step2Term, "Group metric with B: A^a (g_va B^v)"},
-    {"4. Contract", step3Term, "Lower index on B: A^a B_a"}},
-   Frame -> All,
-   FrameStyle -> Directive[Thin, GrayLevel[0.7]],
-   Background -> {None, {LightGray, None}},
-   Spacings -> {2, 1.5},
-   Alignment -> {{Left, Center, Left}, Center}]];
+{TableHead["Step"],TableHead["Expression"],TableHead["Input"]},
+{"1. Start",startTerm,"Input: A[\[ScriptCapitalD][\[Nu]]]B[\[ScriptCapitalU][\[Nu]]]"},
+{"2. Definition",step1Term,"(g[\[ScriptCapitalD][\[Nu]],\[ScriptCapitalD][\[Alpha]]] A[\[ScriptCapitalU][\[Alpha]]]) B[\[ScriptCapitalU][\[Nu]]]"},
+{"3. Commute?",step2Term,"A[\[ScriptCapitalU][\[Alpha]]] (g[\[ScriptCapitalD][\[Nu]],\[ScriptCapitalD][\[Alpha]]] B[\[ScriptCapitalU][\[Nu]]])"},
+{"4. Contract",step3Term,"step2Term/. metricRules"},
+{"5. Equality?",step3Term===startTerm,"lhs:4 === rhs:1"}},
+Frame->All,
+FrameStyle->Directive[Thin,GrayLevel[0.7]],
+Background->{None,{LightGray,None}},
+Spacings->{2,1.5},
+Alignment->{{Left,Center,Left},Center}]];
 
 Print["\n================================================================"];
-
-
 (* =========================================================================*)
 (*VISUAL SHOWCASE:The "Second Derivative Gallery"*)
 (* =========================================================================*)
@@ -151,5 +144,3 @@ Grid[Prepend[gallery /. {desc_, expr_} :>
   {Style["Description", Bold, 16],
    Style["Rendered Output", Bold, 16]}],
  Frame -> All, Spacings -> {2, 2}, Alignment -> Left]
-
-
