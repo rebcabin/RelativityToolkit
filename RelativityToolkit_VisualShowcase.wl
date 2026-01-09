@@ -47,10 +47,12 @@ VisualizeOp[name_, input_, rule_] :=
      (*Left bar*)FrameStyle -> Thick]];];
 
 VisualizeOp["Index Lowering", 
-  g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]*A[\[ScriptCapitalU][\[Nu]]], metricRules];
+  g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]*A[\[ScriptCapitalU][\[Nu]]], 
+  metricRules];
 
 VisualizeOp["Index Raising", 
-  g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]*p[\[ScriptCapitalD][\[Nu]]], metricRules];
+  g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]*p[\[ScriptCapitalD][\[Nu]]], 
+  metricRules];
 
 VisualizeOp["The Inverse Identity", 
   g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Alpha]]]*g[\[ScriptCapitalD][\[Alpha]], \[ScriptCapitalD][\[Nu]]], 
