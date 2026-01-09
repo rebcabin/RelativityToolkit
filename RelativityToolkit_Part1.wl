@@ -5,7 +5,7 @@
 (* Formal Differential Geometry in the UD Calculus*)
 (* =========================================================================*)
 
-RelativityToolkitVersion = "1.3.9";
+RelativityToolkitVersion = "1.3.0";
 Print["Relativity Toolkit Version\n", RelativityToolkitVersion];
 
 (* 1. CLEAN SLATE ----------------------------------------------------------*)(* \
