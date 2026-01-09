@@ -1,10 +1,10 @@
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT: REGRESSION SUITE                                      *)
-(* Version: 1.3.0 (Script Mode)                                              *)
+(* Version: 1.3.9 (Script Mode)                                              *)
 (* ========================================================================= *)
 
 Print["\n================================================================"];
-Print["RUNNING REGRESSION SUITE v1.3.0"];
+Print["RUNNING REGRESSION SUITE v", RelativityToolkitVersion];
 Print["================================================================\n"];
 
 (* --- TEST HELPER FUNCTIONS ----------------------------------------------- *)
