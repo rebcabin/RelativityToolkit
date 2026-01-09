@@ -1,12 +1,11 @@
 (* =========================================================================*)
-(*RELATIVITY TOOLKIT ENGINE (Script Mode)*)(*Version:1.3.10 
-(Fix:Pattern Destructuring for MakeBoxes)*)
+(*RELATIVITY TOOLKIT ENGINE (Script Mode)*)(*Version:1.4.1 
+(Fix:Comma Notation with Jacobian Exception)*)
 (* =========================================================================*)
-RelativityToolkitVersion = "1.3.10";
+RelativityToolkitVersion = "1.4.1";
 
 (*1. CLEAN SLATE----------------------------------------------------------*)
 Unprotect[MakeBoxes];
-(*Remove ALL definitions for Partials*)
 Quiet[DownValues[MakeBoxes] = 
    Select[DownValues[MakeBoxes], FreeQ[#, Partials] &]];
 Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
@@ -74,47 +73,49 @@ valence[h_[a_, b_, rest___]] :=
 valence[___] := {{}, {}};
 
 (* =========================================================================*)
-(*3. DISPLAY RULES (The Robust Fix)*)
+(*3. DISPLAY RULES (Corrected Logic)*)
 (* =========================================================================*)
 
 Unprotect[MakeBoxes];
 
-(*MONOLITHIC RULE with PATTERN DESTRUCTURING*)
-(*We use Replace to extract parts.*)
-(*This avoids using Part ([[...]]) which can fail inside HoldForm.*)
-
 MakeBoxes[Partials[num_, den_], StandardForm] := 
-  If[MatchQ[num, Partials[_, _]],
-   (*Case:Second Derivative (Nested)*)
-   (*Extract top and bot1 using Pattern Replacement*)
-   Replace[num, Partials[top_, bot1_] :>
+  If[MatchQ[num, Partials[_, _]],(*Case 1:Second Derivative (Nested)*)
+   Replace[num, 
+    Partials[top_, bot1_] :> 
      FractionBox[
       RowBox[{SuperscriptBox["\[PartialD]", "2"], 
-        MakeBoxes[top, StandardForm]}],
-      RowBox[{
-        RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}],
-        RowBox[{"\[PartialD]", MakeBoxes[bot1, StandardForm]}]}]]],
-   (*Case:First Derivative (Base)*)
-   FractionBox[
-    RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}],
-    RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]]];
+        MakeBoxes[top, StandardForm]}], 
+      RowBox[{RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}], 
+        RowBox[{"\[PartialD]", 
+          MakeBoxes[bot1, StandardForm]}]}]]],(*Case 2:
+   Comma Notation Check*)(*Condition:Denominator is x^
+   k AND Numerator is NOT x^j*)
+   If[MatchQ[den, x[\[ScriptCapitalU][_]]] && ! 
+      MatchQ[num, x[\[ScriptCapitalU][_]]],(*YES (Fields):
+    Format as Subscript[num,",k"]*)
+    Replace[den, 
+     x[\[ScriptCapitalU][idx_]] :> 
+      SubscriptBox[MakeBoxes[num, StandardForm], 
+       RowBox[{",", 
+         MakeBoxes[idx, StandardForm]}]]],(*NO (Jacobians or generic):
+    Generic Fraction*)
+    FractionBox[RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}],
+      RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]]]];
 
 (*Gamma& Delta*)
 MakeBoxes[\[CapitalGamma][\[ScriptCapitalU][u_], \[ScriptCapitalD][
-     d1_], \[ScriptCapitalD][d2_]], StandardForm] :=
-  SubsuperscriptBox["\[CapitalGamma]",
+     d1_], \[ScriptCapitalD][d2_]], StandardForm] := 
+  SubsuperscriptBox["\[CapitalGamma]", 
    RowBox[{MakeBoxes[d1, StandardForm], MakeBoxes[d2, StandardForm]}],
-   MakeBoxes[u, StandardForm]];
+    MakeBoxes[u, StandardForm]];
 
 MakeBoxes[\[Delta][\[ScriptCapitalU][up_], \[ScriptCapitalD][down_]], 
-   StandardForm] :=
-  SubsuperscriptBox["\[Delta]",
-   MakeBoxes[down, StandardForm],
+   StandardForm] := 
+  SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], 
    MakeBoxes[up, StandardForm]];
 MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]], 
-   StandardForm] :=
-  SubsuperscriptBox["\[Delta]",
-   MakeBoxes[down, StandardForm],
+   StandardForm] := 
+  SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], 
    MakeBoxes[up, StandardForm]];
 
 (*Generic Tensors*)
@@ -122,12 +123,11 @@ MakeBoxes[h_[indices__],
    StandardForm] /; (h =!= \[Delta]) && (h =!= 
      Partials) && (h =!= \[CapitalGamma]) && 
    MatchQ[{indices}, {(_[\[ScriptCapitalU]] | _[\[ScriptCapitalD]] | \
-\[ScriptCapitalU][_] | \[ScriptCapitalD][_]) ..}] :=
- Module[{formattedScripts},
-  formattedScripts = {indices} /. {
-     \[ScriptCapitalU][i_] :> 
-      SuperscriptBox["", MakeBoxes[i, StandardForm]],
-     \[ScriptCapitalD][i_] :> 
+\[ScriptCapitalU][_] | \[ScriptCapitalD][_]) ..}] := 
+ Module[{formattedScripts}, 
+  formattedScripts = {indices} /. {\[ScriptCapitalU][i_] :> 
+      SuperscriptBox["", 
+       MakeBoxes[i, StandardForm]], \[ScriptCapitalD][i_] :> 
       SubscriptBox["", MakeBoxes[i, StandardForm]]};
   RowBox[Prepend[formattedScripts, MakeBoxes[h, StandardForm]]]]
 
@@ -136,8 +136,8 @@ Protect[MakeBoxes];
 (* =========================================================================*)
 (*4. ALGEBRAIC SIMPLIFICATION& 5. PHYSICS RULES*)
 (* =========================================================================*)
-CanonicalizeTerm[term_] :=
-  Module[{indices, counts, dummies, replacementRules},
+CanonicalizeTerm[term_] := 
+  Module[{indices, counts, dummies, replacementRules}, 
    indices = 
     Cases[term, (\[ScriptCapitalU] | \[ScriptCapitalD])[i_] :> i, 
      Infinity];
@@ -155,49 +155,44 @@ CanonicalizeIndices[expr_Equal] :=
 CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
 metricRules = {g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]]*
-     vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]],
+     vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]], 
    vec_[\[ScriptCapitalU][nu_]]*
      g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]] :> 
-    vec[\[ScriptCapitalD][mu]],
-   
+    vec[\[ScriptCapitalD][mu]], 
    g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]]*
-     vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]],
+     vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]], 
    vec_[\[ScriptCapitalU][nu_]]*
      g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]] :> 
-    vec[\[ScriptCapitalD][mu]],
-   
+    vec[\[ScriptCapitalD][mu]], 
    g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]]*
-     covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
+     covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]], 
    covec_[\[ScriptCapitalD][nu_]]*
      g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]] :> 
-    covec[\[ScriptCapitalU][mu]],
-   
+    covec[\[ScriptCapitalU][mu]], 
    g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]]*
-     covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
+     covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]], 
    covec_[\[ScriptCapitalD][nu_]]*
      g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> 
-    covec[\[ScriptCapitalU][mu]],
-   
+    covec[\[ScriptCapitalU][mu]], 
    g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][\[Alpha]_]]*
      g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][
        nu_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
-   g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][nu_]]*
+    g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][nu_]]*
      g[\[ScriptCapitalU][
        mu_], \[ScriptCapitalU][\[Alpha]_]] :> \[Delta][\
 \[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]};
 
-robustTransformRules = {
-   A_[\[ScriptCapitalU][primed_]] :>
-    Module[{fresh = Unique["\[Mu]"]},
+robustTransformRules = {A_[\[ScriptCapitalU][primed_]] :> 
+    Module[{fresh = Unique["\[Mu]"]}, 
      Partials[x[\[ScriptCapitalU][primed]], x[\[ScriptCapitalU][fresh]]]*
-      A[\[ScriptCapitalU][fresh]]],
-   p_[\[ScriptCapitalD][primed_]] :>
-    Module[{fresh = Unique["\[Nu]"]},
+      A[\[ScriptCapitalU][fresh]]], 
+   p_[\[ScriptCapitalD][primed_]] :> 
+    Module[{fresh = Unique["\[Nu]"]}, 
      Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][primed]]]*
       p[\[ScriptCapitalD][fresh]]]};
 
-TensorForm[expr_] :=
-  Module[{canonExpr, indexMap, prettyIndices},
+TensorForm[expr_] := 
+  Module[{canonExpr, indexMap, prettyIndices}, 
    canonExpr = CanonicalizeIndices[expr];
    prettyIndices = {\[Lambda], \[Kappa], \[Rho], \[Sigma], \[Mu], \
 \[Nu], \[Tau], \[Eta], \[Chi], \[Psi]};

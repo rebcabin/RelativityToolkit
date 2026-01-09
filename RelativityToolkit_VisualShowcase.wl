@@ -118,7 +118,7 @@ Print["\n================================================================"];
 (* =========================================================================*)
 (*VISUAL SHOWCASE:The "Second Derivative Gallery"*)
 (* =========================================================================*)
-Print["\n--- VISUAL SHOWCASE ---"];
+Print["\n--- Gallery of Second Derivatives ---"];
 
 (*Define a list of scenarios to render*)
 gallery = {
@@ -136,7 +136,9 @@ gallery = {
       x[\[ScriptCapitalU][\[Beta]']]]*
      Partials[
       Partials[x[\[ScriptCapitalU][\[Alpha]']], 
-       x[\[ScriptCapitalU][\[Beta]]]], x[\[ScriptCapitalU][\[Alpha]]]]}};
+       x[\[ScriptCapitalU][\[Beta]]]], x[\[ScriptCapitalU][\[Alpha]]]]},
+   {"Comma Notation", Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]}
+  };
 
 (*Display as a formatted grid*)
 Grid[Prepend[gallery /. {desc_, expr_} :>
