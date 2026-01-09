@@ -5,6 +5,9 @@
 (* Formal Differential Geometry in the UD Calculus*)
 (* =========================================================================*)
 
+RelativityToolkitVersion = "1.3.9";
+Print["Relativity Toolkit Version\n", RelativityToolkitVersion];
+
 (* 1. CLEAN SLATE ----------------------------------------------------------*)(* \
 Clear previous definitions to ensure a fresh environment. *)
 ClearAll["RelativityToolkit`*"];
