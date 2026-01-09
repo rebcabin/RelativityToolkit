@@ -134,12 +134,28 @@ CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 (* ========================================================================= *)
 
 metricRules = {
-   (* Lowering *)
+   (* --- Lowering Rules (g_mn A^n -> A_m) --- *)
+   (* Contract Second Index *)
    g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]] * vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]],
    vec_[\[ScriptCapitalU][nu_]] * g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]] :> vec[\[ScriptCapitalD][mu]],
    
-   (* Inverse Identity *)
+   (* Contract First Index (Symmetry) *)
+   g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]] * vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]],
+   vec_[\[ScriptCapitalU][nu_]] * g[\[ScriptCapitalD][nu_], \[ScriptCapitalD][mu_]] :> vec[\[ScriptCapitalD][mu]],
+
+   (* --- Raising Rules (g^mn A_n -> A^m) --- *)
+   (* Contract Second Index *)
+   g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]] * covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
+   covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][nu_]] :> covec[\[ScriptCapitalU][mu]],
+   
+   (* Contract First Index (Symmetry) *)
+   g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] * covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]],
+   covec_[\[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> covec[\[ScriptCapitalU][mu]],
+
+   (* --- Inverse Identity --- *)
    g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] * g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] :> 
+       \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
+   g[\[ScriptCapitalD][alpha_], \[ScriptCapitalD][nu_]] * g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][alpha_]] :> 
        \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]
 };
 
