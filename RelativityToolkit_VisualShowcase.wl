@@ -1,12 +1,10 @@
-(* ::Package::*)
-
 (* =========================================================================*)
-(* VISUAL SHOWCASE:THE RELATIVITY TOOLKIT IN ACTION                         *)
-(* Version 1.3                                                              *)
+(* VISUAL SHOWCASE:THE RELATIVITY TOOLKIT IN ACTION*)
 (* =========================================================================*)
 Print["\n================================================================"];
-Print[Style["VISUAL SHOWCASE: FORMAL DIFFERENTIAL GEOMETRY, v1.3", Bold, 16]];
-Print["\n================================================================\n"];
+Print[Style["VISUAL SHOWCASE: FORMAL DIFFERENTIAL GEOMETRY", Bold, 16]];
+Print[\
+"================================================================\n"];
 
 (*---1. THE ZOO OF TENSORS-----------------------------------------------*)
 Print[Style["1. The Tensor Zoo (Standard Objects)", Bold, 14]];
@@ -15,27 +13,14 @@ structure."];
 
 tensorZoo = {
    {"Object Name", "Wolfram Input", "Textbook Output"},
-   {"Contravariant Vector", "x[\[ScriptCapitalU][\[Mu]]]", 
-    x[\[ScriptCapitalU][\[Mu]]]},
-   {"Covariant Covector", "p[\[ScriptCapitalD][\[Nu]]]", 
-    p[\[ScriptCapitalD][\[Nu]]]},
-   {"Mixed Tensor", 
-    "T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]", 
-    T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]},
-   {"The Metric", 
-    "g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]", 
-    g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]},
-   {"Inverse Metric", 
-    "g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]", 
-    g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]},
-   {"Kronecker Delta", 
-    "\[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]", \
-\[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]}, \
-{"Jacobian (Partial)", 
-    "Partials[x[\[ScriptCapitalU][\[Alpha]]], x[\[ScriptCapitalU]\
-[\[Beta]]]]", 
-    Partials[x[\[ScriptCapitalU][\[Alpha]]], 
-     x[\[ScriptCapitalU][\[Beta]]]]}};
+   {"Contravariant Vector", "x[\[ScriptCapitalU][\[Mu]]]", x[\[ScriptCapitalU][\[Mu]]]},
+   {"Covariant Covector", "p[\[ScriptCapitalD][\[Nu]]]", p[\[ScriptCapitalD][\[Nu]]]},
+   {"Mixed Tensor", "T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]", T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]},
+   {"The Metric", "g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]", g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]},
+   {"Inverse Metric", "g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]", g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]},
+   {"Kronecker Delta", "\[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]", \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]]}, 
+   {"Jacobian (Partial)", "Partials[x[\[ScriptCapitalU][\[Alpha]]], x[\[ScriptCapitalU][\[Beta]]]]", 
+    Partials[x[\[ScriptCapitalU][\[Alpha]]], x[\[ScriptCapitalU][\[Beta]]]]}};
 
 Print[Grid[tensorZoo,
    Frame -> All,
@@ -44,9 +29,7 @@ Print[Grid[tensorZoo,
    Spacings -> {2, 1.5},
    Alignment -> {{Left, Left, Center}, Center}]];
 
-
 (*---2. METRIC GYMNASTICS------------------------------------------------*)
-(*FIX:Use comma instead of <> to separate newline from Style*)
 Print["\n", 
   Style["2. Metric Gymnastics (Raising & Lowering)", Bold, 14]];
 Print["Watch the metric 'swallow' indices to change their variance."];
@@ -64,21 +47,17 @@ VisualizeOp[name_, input_, rule_] :=
      (*Left bar*)FrameStyle -> Thick]];];
 
 VisualizeOp["Index Lowering", 
-  g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]*
-   A[\[ScriptCapitalU][\[Nu]]], metricRules];
+  g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]*A[\[ScriptCapitalU][\[Nu]]], metricRules];
 
 VisualizeOp["Index Raising", 
-  g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]*
-   p[\[ScriptCapitalD][\[Nu]]], metricRules];
+  g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]*p[\[ScriptCapitalD][\[Nu]]], metricRules];
 
 VisualizeOp["The Inverse Identity", 
-  g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Alpha]]]*
-   g[\[ScriptCapitalD][\[Alpha]], \[ScriptCapitalD][\[Nu]]], 
-  metricRules];
+  g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Alpha]]]*g[\[ScriptCapitalD][\[Alpha]], \[ScriptCapitalD][\[Nu]]], 
+  mapitalD[\Nu]], metricRules];
 
 
 (*---3. COORDINATE TRANSFORMATIONS---------------------------------------*)
-(*FIX:Use comma instead of <>*)
 Print["\n", 
   Style["3. Coordinate Transformations (Alpha-Conversion)", Bold, 14]];
 Print["Note the automatically generated unique dummy index (e.g., \
@@ -90,13 +69,10 @@ VisualizeOp["Transforming a Vector",
 
 
 (*---4. PRETTY PRINTING--------------------------------------------------*)
-(*FIX:Use comma instead of <>*)
 Print["\n", Style["4. Canonicalization & Pretty Printing", Bold, 14]];
 Print["Simplifying dummy indices into standard Greek letters."];
 
-rawSum = 
-  A[\[ScriptCapitalU][\[Mu]]]*B[\[ScriptCapitalD][\[Mu]]] + 
-   A[\[ScriptCapitalU][\[Nu]]]*B[\[ScriptCapitalD][\[Nu]]];
+rawSum =   A[\[ScriptCapitalU][\[Mu]]]*B[\[ScriptCapitalD][\[Mu]]] + A[\[ScriptCapitalU][\[Nu]]]*B[\[ScriptCapitalD][\[Nu]]];
 
 Print[Grid[{
     {"Raw Sum (Different Indices):", rawSum},
@@ -118,27 +94,21 @@ Print["Demonstrating that ",
 startTerm = A[\[ScriptCapitalD][\[Nu]]]*B[\[ScriptCapitalU][\[Nu]]];
 
 (*Step 1:Definition*)
-step1Term = 
-  g[\[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[Alpha]]]*
-   A[\[ScriptCapitalU][\[Alpha]]]*B[\[ScriptCapitalU][\[Nu]]];
+step1Term = g[\[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[Alpha]]]*A[\[ScriptCapitalU][\[Alpha]]]*B[\[ScriptCapitalU][\[Nu]]];
 
 (*Step 2:Commutation*)
-step2Term = 
-  A[\[ScriptCapitalU][\[Alpha]]]*(g[\[ScriptCapitalD][\[Nu]], \
-\[ScriptCapitalD][\[Alpha]]]*B[\[ScriptCapitalU][\[Nu]]]);
+step2Term = A[\[ScriptCapitalU][\[Alpha]]]*(g[\[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[Alpha]]]*B[\[ScriptCapitalU][\[Nu]]]);
 
 (*Step 3:Contraction*)
 step3Term = step2Term /. metricRules;
 
-(*Helper for styling-Renamed to avoid'Protected' errors*)
 ClearAll[TableHead];
 TableHead[txt_] := Style[txt, Bold, 12, FontFamily -> "Helvetica"];
 
 Print[Grid[{
     {TableHead["Step"], TableHead["Expression"], TableHead["Action"]},
     {"1. Start", startTerm, "Input: A_v B^v"},
-    {"2. Definition", step1Term, 
-     "Expand covector: A_v \[rightarrow] g_va A^a"},
+    {"2. Definition", step1Term, "Expand covector: A_v \[rightarrow] g_va A^a"},
     {"3. Commute", step2Term, "Group metric with B: A^a (g_va B^v)"},
     {"4. Contract", step3Term, "Lower index on B: A^a B_a"}},
    Frame -> All,
@@ -148,3 +118,36 @@ Print[Grid[{
    Alignment -> {{Left, Center, Left}, Center}]];
 
 Print["\n================================================================"];
+
+
+(* =========================================================================*)
+(*VISUAL SHOWCASE:The "Second Derivative Gallery"*)
+(* =========================================================================*)
+Print["\n--- VISUAL SHOWCASE ---"];
+
+(*Define a list of scenarios to render*)
+gallery = {
+   {"Generic Mixed Partial", Partials[Partials[f, y], x]},
+   {"Coordinate Hessian (The 'Garbage Term')", 
+    Partials[
+     Partials[x[\[ScriptCapitalU][\[Alpha]']], 
+      x[\[ScriptCapitalU][\[Beta]]]], x[\[ScriptCapitalU][\[Alpha]]]]},
+   {"Nested in an Equation", 
+    lhs == Partials[
+      Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]],
+       x[\[ScriptCapitalU][\[Lambda]]]]},
+   {"Multiplied by Jacobian", 
+    Partials[x[\[ScriptCapitalU][\[Beta]]], 
+      x[\[ScriptCapitalU][\[Beta]']]]*
+     Partials[
+      Partials[x[\[ScriptCapitalU][\[Alpha]']], 
+       x[\[ScriptCapitalU][\[Beta]]]], x[\[ScriptCapitalU][\[Alpha]]]]}};
+
+(*Display as a formatted grid*)
+Grid[Prepend[gallery /. {desc_, expr_} :>
+    {Style[desc, Bold, 14], DisplayForm[ToBoxes[expr, StandardForm]]},
+  {Style["Description", Bold, 16],
+   Style["Rendered Output", Bold, 16]}],
+ Frame -> All, Spacings -> {2, 2}, Alignment -> Left]
+
+
