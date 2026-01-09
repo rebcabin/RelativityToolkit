@@ -54,7 +54,7 @@ VisualizeOp["Index Raising",
 
 VisualizeOp["The Inverse Identity", 
   g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Alpha]]]*g[\[ScriptCapitalD][\[Alpha]], \[ScriptCapitalD][\[Nu]]], 
-  mapitalD[\Nu]], metricRules];
+  metricRules];
 
 
 (*---3. COORDINATE TRANSFORMATIONS---------------------------------------*)
