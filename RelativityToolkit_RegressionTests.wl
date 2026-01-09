@@ -4,7 +4,7 @@
 (* ========================================================================= *)
 
 Print["\n================================================================"];
-Print["RUNNING REGRESSION SUITE v", RelativityToolkitVersion];
+Print["RUNNING REGRESSION SUITE v" <> RelativityToolkitVersion];
 Print["================================================================\n"];
 
 (* --- TEST HELPER FUNCTIONS ----------------------------------------------- *)
