@@ -1,5 +1,5 @@
 (* =========================================================================*)
-(* VISUAL SHOWCASE:THE RELATIVITY TOOLKIT IN ACTION*)
+(* VISUAL SHOWCASE v.1.4.3 :THE RELATIVITY TOOLKIT IN ACTION*)
 (* =========================================================================*)
 Print["\n================================================================"];
 Print[Style["VISUAL SHOWCASE: FORMAL DIFFERENTIAL GEOMETRY", Bold, 16]];
@@ -137,7 +137,10 @@ gallery = {
      Partials[
       Partials[x[\[ScriptCapitalU][\[Alpha]']], 
        x[\[ScriptCapitalU][\[Beta]]]], x[\[ScriptCapitalU][\[Alpha]]]]},
-   {"Comma Notation", Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]}
+   {"Comma Notation", Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]},
+   (* NEW: Covariant Derivative Syntax *)
+{"Covariant Derivative (Abstract)", HoldForm[CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]]},
+{"Covariant Derivative (Expanded)", TensorForm@CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]}
   };
 
 (*Display as a formatted grid*)

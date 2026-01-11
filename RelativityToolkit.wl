@@ -1,13 +1,15 @@
 (* =========================================================================*)
-(*RELATIVITY TOOLKIT ENGINE (Script Mode)*)(*Version:1.4.1 
-(Fix:Comma Notation with Jacobian Exception)*)
-(* =========================================================================*)
-RelativityToolkitVersion = "1.4.1";
+(*RELATIVITY TOOLKIT ENGINE (Script Mode)*)
+(*Version:1.4.3 (Feature:\
+Covariant Derivative CD with Semicolon Notation)*)(* =========================================================================*)
+RelativityToolkitVersion = "1.4.3";
 
 (*1. CLEAN SLATE----------------------------------------------------------*)
 Unprotect[MakeBoxes];
 Quiet[DownValues[MakeBoxes] = 
    Select[DownValues[MakeBoxes], FreeQ[#, Partials] &]];
+Quiet[DownValues[MakeBoxes] = 
+   Select[DownValues[MakeBoxes], FreeQ[#, CD] &]]; (*Clean CD rules*)
 Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 Quiet[MakeBoxes[\[CapitalGamma][__], StandardForm] =.];
 Quiet[DownValues[MakeBoxes] = 
@@ -15,9 +17,10 @@ Quiet[DownValues[MakeBoxes] =
     FreeQ[#, \[ScriptCapitalU]] && FreeQ[#, \[ScriptCapitalD]] &]];
 Protect[MakeBoxes];
 
-ClearAll[valence, CanonicalizeIndices, TensorForm, 
-  Partials, \[CapitalGamma], \[Delta], upQ, downQ, x, p, g, u, A, B, 
-  T, P, Q, S, metricRules, robustTransformRules];
+ClearAll[valence, CanonicalizeIndices, TensorForm, Partials, 
+  CD, \[CapitalGamma], \[Delta], upQ, downQ, x, p, g, u, A, B, T, P, 
+  Q, S, metricRules, robustTransformRules, differentiationRules, 
+  ExpandDerivatives];
 
 (* =========================================================================*)
 (*2. VALENCE LOGIC (The Type Checker)*)
@@ -45,11 +48,15 @@ valence[g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Nu]_]]] := \
 valence[\[Delta][\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalD][\[Nu]_]]] \
 := {{\[Mu]}, {\[Nu]}};
 
+(*Partials adds a denominator index*)
 valence[Partials[num_, den_]] := 
   Module[{vn, vd, vdFlipped}, vn = valence[num];
    vd = valence[den];
    vdFlipped = {vd[[2]], vd[[1]]};
    {Join[vn[[1]], vdFlipped[[1]]], Join[vn[[2]], vdFlipped[[2]]]}];
+
+(*CD behaves exactly like Partials for valence*)
+valence[CD[num_, den_]] := valence[Partials[num, den]];
 
 valence[\[CapitalGamma][\[ScriptCapitalU][a_], \[ScriptCapitalD][
      b_], \[ScriptCapitalD][c_]]] := {{a}, {b, c}};
@@ -73,32 +80,37 @@ valence[h_[a_, b_, rest___]] :=
 valence[___] := {{}, {}};
 
 (* =========================================================================*)
-(*3. DISPLAY RULES (Corrected Logic)*)
+(*3. DISPLAY RULES*)
 (* =========================================================================*)
 
 Unprotect[MakeBoxes];
 
+(*Semicolon Notation for CD*)
+MakeBoxes[CD[num_, den_], StandardForm] := 
+  If[MatchQ[den, x[\[ScriptCapitalU][_]]],(*YES:Format as Subscript[
+   num,";k"]*)Replace[den, 
+    x[\[ScriptCapitalU][idx_]] :> 
+     SubscriptBox[MakeBoxes[num, StandardForm], 
+      RowBox[{";", MakeBoxes[idx, StandardForm]}]]],(*Fallback*)
+   RowBox[{"CD", "[", MakeBoxes[num, StandardForm], ",", 
+     MakeBoxes[den, StandardForm], "]"}]];
+
 MakeBoxes[Partials[num_, den_], StandardForm] := 
   If[MatchQ[num, Partials[_, _]],(*Case 1:Second Derivative (Nested)*)
    Replace[num, 
-    Partials[top_, bot1_] :> 
-     FractionBox[
-      RowBox[{SuperscriptBox["\[PartialD]", "2"], 
-        MakeBoxes[top, StandardForm]}], 
+    Partials[top_, bot1_] :> FractionBox[RowBox[{SuperscriptBox["\[PartialD]",\
+ "2"], MakeBoxes[top, StandardForm]}], 
       RowBox[{RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}], 
         RowBox[{"\[PartialD]", 
           MakeBoxes[bot1, StandardForm]}]}]]],(*Case 2:
-   Comma Notation Check*)(*Condition:Denominator is x^
-   k AND Numerator is NOT x^j*)
+   Comma Notation Check*)
    If[MatchQ[den, x[\[ScriptCapitalU][_]]] && ! 
-      MatchQ[num, x[\[ScriptCapitalU][_]]],(*YES (Fields):
-    Format as Subscript[num,",k"]*)
+      MatchQ[num, x[\[ScriptCapitalU][_]]],(*YES (Fields):Comma*)
     Replace[den, 
      x[\[ScriptCapitalU][idx_]] :> 
       SubscriptBox[MakeBoxes[num, StandardForm], 
-       RowBox[{",", 
-         MakeBoxes[idx, StandardForm]}]]],(*NO (Jacobians or generic):
-    Generic Fraction*)
+       RowBox[{",", MakeBoxes[idx, StandardForm]}]]],(*NO (Jacobians):
+    Fraction*)
     FractionBox[RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}],
       RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]]]];
 
@@ -120,8 +132,8 @@ MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]],
 
 (*Generic Tensors*)
 MakeBoxes[h_[indices__], 
-   StandardForm] /; (h =!= \[Delta]) && (h =!= 
-     Partials) && (h =!= \[CapitalGamma]) && 
+   StandardForm] /; (h =!= \[Delta]) && (h =!= Partials) && (h =!= 
+     CD) && (h =!= \[CapitalGamma]) && 
    MatchQ[{indices}, {(_[\[ScriptCapitalU]] | _[\[ScriptCapitalD]] | \
 \[ScriptCapitalU][_] | \[ScriptCapitalD][_]) ..}] := 
  Module[{formattedScripts}, 
@@ -200,3 +212,33 @@ TensorForm[expr_] :=
     Table[Symbol["\[FormalI]" <> ToString[n]] -> 
       prettyIndices[[n]], {n, Length[prettyIndices]}];
    HoldForm[Evaluate[canonExpr /. indexMap]]];
+
+(* =========================================================================*)
+(*6. CALCULUS ENGINE (Automatic Differentiation& CD)*)
+(* =========================================================================*)
+
+differentiationRules = {(*1. Leibniz Product Rule*)
+   Partials[a_*b_, var_] :> 
+    Partials[a, var]*b + 
+     a*Partials[b, var],(*2. Chain Rule for Sums (Linearity)*)
+   Partials[a_ + b_, var_] :> 
+    Partials[a, var] + 
+     Partials[b, 
+      var],(*3. Chain Rule for Coordinates*)(*If differentiating w.r.\
+t.a PRIMED index,switch to UNPRIMED*)
+   Partials[expr_, x[\[ScriptCapitalU][idx_]]] /; 
+     StringContainsQ[ToString[idx], "'"] :> 
+    Module[{fresh = Unique["\[Sigma]"]}, 
+     Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][idx]]]*
+      Partials[expr, x[\[ScriptCapitalU][fresh]]]]};
+
+ExpandDerivatives[expr_] := expr //. differentiationRules;
+
+(*CD Definition (Contravariant Vector)*)
+(*Expands to Partial+Gamma term with a fresh dummy index*)
+CD[vec_[\[ScriptCapitalU][mu_]], x[\[ScriptCapitalU][nu_]]] := 
+  Module[{lam = Unique["\[Lambda]"]}, 
+   Partials[vec[\[ScriptCapitalU][mu]], 
+     x[\[ScriptCapitalU][nu]]] + \[CapitalGamma][\[ScriptCapitalU][
+       mu], \[ScriptCapitalD][nu], \[ScriptCapitalD][lam]]*
+     vec[\[ScriptCapitalU][lam]]];

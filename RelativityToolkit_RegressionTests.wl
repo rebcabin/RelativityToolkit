@@ -1,6 +1,6 @@
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT: REGRESSION SUITE                                      *)
-(* Version: 1.3.9 (Script Mode)                                              *)
+(* Version: 1.4.3 (Script Mode)                                              *)
 (* ========================================================================= *)
 
 Print["\n================================================================"];
@@ -182,6 +182,43 @@ If[hasFraction && hasSquaredSym,
   Print["Expected: FractionBox with SuperscriptBox[_, \"2\"]"];
   Print["Found:"];
   Print[boxStructure] 
+];
+
+Print["\n--- SECTION 4: CALCULUS ENGINE ---"];
+
+(* Test Leibniz Product Rule *)
+(* Input: d(f*g)/dx *)
+(* Expected: (df/dx)g + f(dg/dx) *)
+testProduct = ExpandDerivatives[Partials[f * g, x[\[ScriptCapitalU][\[Mu]]]]];
+expectedProduct = Partials[f, x[\[ScriptCapitalU][\[Mu]]]] * g + f * Partials[g, x[\[ScriptCapitalU][\[Mu]]]];
+
+If[testProduct === expectedProduct,
+   PassCount++;
+   Print["[PASS] Leibniz Product Rule"],
+   FailCount++;
+   Print["[FAIL] Leibniz Product Rule\n   Found: ", testProduct]
+];
+
+(* Test 18: Covariant Derivative Expansion *)
+(* Input: CD[ A^u, x^v ] *)
+(* Expected: Partial[A^u, x^v] + (Something containing Gamma) *)
+testCD = CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]];
+(* LOGIC: It must be a Sum. One part is Partials. The other part MUST contain Gamma. *)
+If[MatchQ[testCD, Plus[Partials[_, _], _]] && !FreeQ[testCD, \[CapitalGamma]],
+   PassCount++;
+   Print["[PASS] CD Expansion Structure (Partial + Connection)"],
+   FailCount++;
+   Print["[FAIL] CD Expansion Structure\n   Found: ", testCD]
+];
+
+(* Test Chain Rule (Linearity) *)
+(* Input: d(A+B)/dx *)
+testLinearity = ExpandDerivatives[Partials[A + B, x[\[ScriptCapitalU][\[Mu]]]]];
+If[MatchQ[testLinearity, Plus[Partials[A, _], Partials[B, _]]],
+   PassCount++;
+   Print["[PASS] Differentiation Linearity"],
+   FailCount++;
+   Print["[FAIL] Differentiation Linearity"]
 ];
 
 (* ========================================================================= *)
