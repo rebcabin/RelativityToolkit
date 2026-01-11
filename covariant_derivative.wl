@@ -25,4 +25,4 @@ prettyResult =
 brokenPartial = Echo[TensorForm[prettyResult],
    "4. Expanded \!\(\*SubscriptBox[\(\[PartialD]\), \
 \(\[Beta]'\)]\)(\!\(\*SuperscriptBox[\(A\), \(\[Alpha]'\)]\)) in \
-Readable Greek"];eek"];
+Readable Greek"];
