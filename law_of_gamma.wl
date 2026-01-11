@@ -3,28 +3,32 @@
 (* =========================================================================*)
 ClearAll[ap, bp, mu, nu];
 
-(*0. SPECIAL RULES*)
+(*0. SPECIAL RULES, not in \[ScriptCapitalU]\[ScriptCapitalD] proper*)
 (*Subscript[A, \
 ,\[Beta]']->\[PartialD]x^\[Mu]/\[PartialD]x^\[Beta]'Subscript[A, ,\
 \[Mu]]*)
 (*Condition/;!MatchQ[expr,x[_\
 ]] prevents expanding a Jacobian itself (dx/dx')*)
-manualChainRule = 
+manualChainRule =
   Partials[expr_, x[\[ScriptCapitalU][bp]]] /; ! MatchQ[expr, x[_]] :>
    Module[{fresh = Unique["\[Mu]"]},
     Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][bp]]]*
      Partials[expr, x[\[ScriptCapitalU][fresh]]]];
 
-(*Combine rules from the engine and here into a single flat list*)
+(*Combine rules from the general engine and the special rule here into\
+ a single flat list*)
 allRules = Flatten[{differentiationRules, manualChainRule}];
 
-(*1. OBJECTIVE*)
-(*Target=Jac*Jac*CD[A_unprimed]*)
+(*1. OBJECTIVE: \
+the transformation law we demand of the covariant derivative, CD*)
+(*Subscript[A^\[Alpha]', ;\[Beta]'] = Jac * Jac * \
+Subscript[A^\[Alpha], ;\[Beta]], CD[A_unprimed]*)
 targetTensor = Echo[
+   (*Jacobians*)
    Partials[x[\[ScriptCapitalU][ap]], x[\[ScriptCapitalU][mu]]]*
     Partials[x[\[ScriptCapitalU][nu]], x[\[ScriptCapitalU][bp]]]*
     CD[A[\[ScriptCapitalU][mu]], x[\[ScriptCapitalU][nu]]],
-   "Target Tensorial Transformation \
+   "Target tensorial Primed object \
 \!\(\*FractionBox[\(\[PartialD]\*SuperscriptBox[\(x\), \(\[Alpha]'\)]\
 \), \(\[PartialD]\*SuperscriptBox[\(x\), \
 \(\[Mu]\)]\)]\)\!\(\*FractionBox[\(\[PartialD]\*SuperscriptBox[\(x\), \
@@ -33,7 +37,7 @@ targetTensor = Echo[
 \!\(\*SuperscriptBox[\(A\), \(\[Lambda]\)]\) \
 \!\(\*SubscriptBox[SuperscriptBox[\(\[CapitalGamma]\), \(\[Mu]\)], \(\
 \[Nu]\[Lambda]\)]\))"];
-(*2. REALITY*)
+(*2. REALITY: what happens when we just calculate*)
 (*Define A' and x'*)
 Aprimed = A[\[ScriptCapitalU][ap]] /. robustTransformRules;
 xprimed = x[\[ScriptCapitalU][bp]];
@@ -43,13 +47,16 @@ Echo[
   HoldForm[
     CD[A[\[ScriptCapitalU][ap]], 
      x[\[ScriptCapitalU][bp]]]] /. {ap -> \[Alpha]', bp -> \[Beta]'},
-  "2a. Definition (The Object we are expanding):"];
+  "2a. The Primed object \!\(\*SubscriptBox[SuperscriptBox[\(A\), \(\
+\[Alpha]'\)], \(; \(\\\ \)\(\[Beta]'\)\)]\) we expect:"];
 
 (*2b.The Expansion*)
-(*Calculate the actual value using the flattened rules list*)
+(*Calculate Subscript[A^\[Alpha]', \
+;\[Beta]'] via the flattened rules above*)
 realityExpanded = Echo[
    CD[Aprimed, xprimed] //. allRules,
-   "2b. Reality (Expanded via Chain Rule):"];
+   "2b. \!\(\*SubscriptBox[SuperscriptBox[\(A\), \(\[Alpha]'\)], \(; \
+\(\[Beta]'\)\)]\) (Expanded via Chain Rule):"];
 
 (*3. THE SOLUTION*)
 (*GammaTerm_Primed=Target-(Reality_without_Gamma_Prime)*)
@@ -89,10 +96,10 @@ Print[Row[{Style[
 
 (*5. VIA THE QUOTIENT THEOREM*)
 
-(*Extract the coefficient of A[\[ScriptCapitalU][cp]].*)
+(*Extract the coefficient of A^cp=A[\[ScriptCapitalU][cp]].*)
 (*When we convert unprimed A to primed A, force 'cp'.*)
 
-(*Define Inverse Rule:A^mu->(dx^mu/dx^cp)*A^cp*)
+(*Define Inverse Rule:A^\[Mu]->(dx^\[Mu]/dx^cp)*A^cp (contravariant)*)
 inverseVectorRuleFixed = A[\[ScriptCapitalU][idx_]] :>
    Partials[x[\[ScriptCapitalU][idx]], x[\[ScriptCapitalU][cp]]]*
     A[\[ScriptCapitalU][cp]];
@@ -115,5 +122,6 @@ Print["\n=== THE TRANSFORMATION LAW ==="];
 Print["By the Quotient Theorem, strip A to find Gamma':"];
 Print[Row[{Style[
      "\!\(\*SubscriptBox[SuperscriptBox[\(\[CapitalGamma]\), \(\
-\[Alpha]'\)], \(\[Beta]' \[Gamma]'\)]\)  =  ", Bold, 16],
+\[Alpha]'\)], \(\[Beta]' \[Gamma]'\)]\) = ", Bold, 16],
     TensorForm[prettyResult]}]];
+Print["Not Tensorial!"]
