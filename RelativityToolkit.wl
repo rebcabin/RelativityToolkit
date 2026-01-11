@@ -1,15 +1,15 @@
 (* =========================================================================*)
 (*RELATIVITY TOOLKIT ENGINE (Script Mode)*)
-(*Version:1.4.3 (Feature:\
-Covariant Derivative CD with Semicolon Notation)*)(* =========================================================================*)
-RelativityToolkitVersion = "1.4.3";
+(*Version:1.5.0 (Feature:Full Tensor Calculus-Up and Down Indices)*)(* \
+=========================================================================*)
+RelativityToolkitVersion = "1.5.0";
 
 (*1. CLEAN SLATE----------------------------------------------------------*)
 Unprotect[MakeBoxes];
 Quiet[DownValues[MakeBoxes] = 
    Select[DownValues[MakeBoxes], FreeQ[#, Partials] &]];
 Quiet[DownValues[MakeBoxes] = 
-   Select[DownValues[MakeBoxes], FreeQ[#, CD] &]]; (*Clean CD rules*)
+   Select[DownValues[MakeBoxes], FreeQ[#, CD] &]];
 Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 Quiet[MakeBoxes[\[CapitalGamma][__], StandardForm] =.];
 Quiet[DownValues[MakeBoxes] = 
@@ -48,14 +48,12 @@ valence[g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Nu]_]]] := \
 valence[\[Delta][\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalD][\[Nu]_]]] \
 := {{\[Mu]}, {\[Nu]}};
 
-(*Partials adds a denominator index*)
 valence[Partials[num_, den_]] := 
   Module[{vn, vd, vdFlipped}, vn = valence[num];
    vd = valence[den];
    vdFlipped = {vd[[2]], vd[[1]]};
    {Join[vn[[1]], vdFlipped[[1]]], Join[vn[[2]], vdFlipped[[2]]]}];
 
-(*CD behaves exactly like Partials for valence*)
 valence[CD[num_, den_]] := valence[Partials[num, den]];
 
 valence[\[CapitalGamma][\[ScriptCapitalU][a_], \[ScriptCapitalD][
@@ -87,34 +85,32 @@ Unprotect[MakeBoxes];
 
 (*Semicolon Notation for CD*)
 MakeBoxes[CD[num_, den_], StandardForm] := 
-  If[MatchQ[den, x[\[ScriptCapitalU][_]]],(*YES:Format as Subscript[
-   num,";k"]*)Replace[den, 
+  If[MatchQ[den, x[\[ScriptCapitalU][_]]], 
+   Replace[den, 
     x[\[ScriptCapitalU][idx_]] :> 
      SubscriptBox[MakeBoxes[num, StandardForm], 
-      RowBox[{";", MakeBoxes[idx, StandardForm]}]]],(*Fallback*)
+      RowBox[{";", MakeBoxes[idx, StandardForm]}]]], 
    RowBox[{"CD", "[", MakeBoxes[num, StandardForm], ",", 
      MakeBoxes[den, StandardForm], "]"}]];
 
 MakeBoxes[Partials[num_, den_], StandardForm] := 
-  If[MatchQ[num, Partials[_, _]],(*Case 1:Second Derivative (Nested)*)
+  If[MatchQ[num, Partials[_, _]], 
    Replace[num, 
-    Partials[top_, bot1_] :> FractionBox[RowBox[{SuperscriptBox["\[PartialD]",\
- "2"], MakeBoxes[top, StandardForm]}], 
+    Partials[top_, bot1_] :> 
+     FractionBox[
+      RowBox[{SuperscriptBox["\[PartialD]", "2"], 
+        MakeBoxes[top, StandardForm]}], 
       RowBox[{RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}], 
-        RowBox[{"\[PartialD]", 
-          MakeBoxes[bot1, StandardForm]}]}]]],(*Case 2:
-   Comma Notation Check*)
+        RowBox[{"\[PartialD]", MakeBoxes[bot1, StandardForm]}]}]]], 
    If[MatchQ[den, x[\[ScriptCapitalU][_]]] && ! 
-      MatchQ[num, x[\[ScriptCapitalU][_]]],(*YES (Fields):Comma*)
+      MatchQ[num, x[\[ScriptCapitalU][_]]], 
     Replace[den, 
      x[\[ScriptCapitalU][idx_]] :> 
       SubscriptBox[MakeBoxes[num, StandardForm], 
-       RowBox[{",", MakeBoxes[idx, StandardForm]}]]],(*NO (Jacobians):
-    Fraction*)
+       RowBox[{",", MakeBoxes[idx, StandardForm]}]]], 
     FractionBox[RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}],
       RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]]]];
 
-(*Gamma& Delta*)
 MakeBoxes[\[CapitalGamma][\[ScriptCapitalU][u_], \[ScriptCapitalD][
      d1_], \[ScriptCapitalD][d2_]], StandardForm] := 
   SubsuperscriptBox["\[CapitalGamma]", 
@@ -130,7 +126,6 @@ MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]],
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], 
    MakeBoxes[up, StandardForm]];
 
-(*Generic Tensors*)
 MakeBoxes[h_[indices__], 
    StandardForm] /; (h =!= \[Delta]) && (h =!= Partials) && (h =!= 
      CD) && (h =!= \[CapitalGamma]) && 
@@ -217,15 +212,9 @@ TensorForm[expr_] :=
 (*6. CALCULUS ENGINE (Automatic Differentiation& CD)*)
 (* =========================================================================*)
 
-differentiationRules = {(*1. Leibniz Product Rule*)
-   Partials[a_*b_, var_] :> 
-    Partials[a, var]*b + 
-     a*Partials[b, var],(*2. Chain Rule for Sums (Linearity)*)
-   Partials[a_ + b_, var_] :> 
-    Partials[a, var] + 
-     Partials[b, 
-      var],(*3. Chain Rule for Coordinates*)(*If differentiating w.r.\
-t.a PRIMED index,switch to UNPRIMED*)
+differentiationRules = {Partials[a_*b_, var_] :> 
+    Partials[a, var]*b + a*Partials[b, var], 
+   Partials[a_ + b_, var_] :> Partials[a, var] + Partials[b, var], 
    Partials[expr_, x[\[ScriptCapitalU][idx_]]] /; 
      StringContainsQ[ToString[idx], "'"] :> 
     Module[{fresh = Unique["\[Sigma]"]}, 
@@ -234,11 +223,30 @@ t.a PRIMED index,switch to UNPRIMED*)
 
 ExpandDerivatives[expr_] := expr //. differentiationRules;
 
-(*CD Definition (Contravariant Vector)*)
-(*Expands to Partial+Gamma term with a fresh dummy index*)
+(*CD Case 1:Contravariant Vector (UP index)*)
 CD[vec_[\[ScriptCapitalU][mu_]], x[\[ScriptCapitalU][nu_]]] := 
   Module[{lam = Unique["\[Lambda]"]}, 
    Partials[vec[\[ScriptCapitalU][mu]], 
      x[\[ScriptCapitalU][nu]]] + \[CapitalGamma][\[ScriptCapitalU][
        mu], \[ScriptCapitalD][nu], \[ScriptCapitalD][lam]]*
      vec[\[ScriptCapitalU][lam]]];
+
+(*CD Case 2:Covariant Vector (DOWN index)*)
+CD[covec_[\[ScriptCapitalD][mu_]], x[\[ScriptCapitalU][nu_]]] := 
+  Module[{lam = Unique["\[Lambda]"]}, 
+   Partials[covec[\[ScriptCapitalD][mu]], 
+     x[\[ScriptCapitalU][nu]]] - \[CapitalGamma][\[ScriptCapitalU][
+       lam], \[ScriptCapitalD][mu], \[ScriptCapitalD][nu]]*
+     covec[\[ScriptCapitalD][lam]]];
+
+(*CD Case 3:Rank-2 Covariant Tensor (e.g.Metric g_mu_nu)*)
+CD[tensor_[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]], 
+   x[\[ScriptCapitalU][lam_]]] := 
+  Module[{rho = Unique["\[Rho]"]}, 
+   Partials[tensor[\[ScriptCapitalD][mu], \[ScriptCapitalD][nu]], 
+     x[\[ScriptCapitalU][lam]]] - \[CapitalGamma][\[ScriptCapitalU][
+       rho], \[ScriptCapitalD][mu], \[ScriptCapitalD][lam]]*
+     tensor[\[ScriptCapitalD][rho], \[ScriptCapitalD][
+       nu]] - \[CapitalGamma][\[ScriptCapitalU][
+       rho], \[ScriptCapitalD][nu], \[ScriptCapitalD][lam]]*
+     tensor[\[ScriptCapitalD][mu], \[ScriptCapitalD][rho]]];
