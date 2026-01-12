@@ -86,7 +86,7 @@ prettyResult =
 Print["\n=== \[CapitalGamma] TRANSFORMATION LAW ==="];
 Print["By a Quotient Theorem, stripping A to find \[CapitalGamma]':"];
 (*MORE MAGIC FROM TensorForm*)
-Echo[TensorForm[prettyResult], 
-  "5. \!\(\*SubscriptBox[SuperscriptBox[\(\[CapitalGamma]\), \(\
+temp$ = Echo[TensorForm[prettyResult], 
+   "5. \!\(\*SubscriptBox[SuperscriptBox[\(\[CapitalGamma]\), \(\
 \[Alpha]'\)], \(\[Beta]' \[Gamma]'\)]\) ="];
 Print["Not Tensorial!"]
