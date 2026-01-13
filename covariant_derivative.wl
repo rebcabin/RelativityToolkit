@@ -1,15 +1,18 @@
 ClearAll[ap, bp, mu];
 
-(*Step 1:Define the Input*)
+(*Step 1: Define the Input*)
 (*Partial derivative of the Transformed Vector A' w.r.t x'*)
-(*Input:d(A^a')/d(x^b')*)
+(*Input: via Partials*)
 inputTerm = Echo[
    Partials[
-    (*Expand A^a' into J*A^mu immediately via existing rule*)
+    (*Expand A^\[Alpha]' into Jac * 
+    A^\[Mu] immediately via existing rule*)
     A[\[ScriptCapitalU][ap]] /. robustTransformRules, 
     x[\[ScriptCapitalU][bp]]],
    "1. Input \!\(\*SubscriptBox[\(\[PartialD]\), \(\[Beta]'\)]\)(\!\(\
-\*SuperscriptBox[\(A\), \(\[Alpha]'\)]\)):"];
+\*SuperscriptBox[\(A\), \(\[Alpha]'\)]\)) \[Congruent] \
+\!\(\*SubscriptBox[SuperscriptBox[\(A\), \(\[Alpha]'\)], \(, \(\\\ \)\
+\(\[Beta]'\)\)]\):"];
 
 (*Step 2:Mechanical Expansion*)
 (*Apply Leibniz and Chain Rule repeatedly until stable*)
