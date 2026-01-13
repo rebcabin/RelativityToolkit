@@ -25,8 +25,9 @@ targetTensor = Echo[
    Partials[x[\[ScriptCapitalU][ap]], x[\[ScriptCapitalU][mu]]]*
     Partials[x[\[ScriptCapitalU][nu]], x[\[ScriptCapitalU][bp]]]*
     CD[A[\[ScriptCapitalU][mu]], x[\[ScriptCapitalU][nu]]],
-   "CD says \!\(\*SubscriptBox[SuperscriptBox[\(A\), \(\[Alpha]'\)], \
-\(; \(\\\ \)\(\[Beta]'\)\)]\) ="];
+   "1. \[ScriptCapitalU]\[ScriptCapitalD] says \
+\!\(\*SubscriptBox[SuperscriptBox[\(A\), \(\[Alpha]'\)], \(; \(\\\ \)\
+\(\[Beta]'\)\)]\) ="];
 
 (*2. just calculate*)
 (*Define A' and x'*)
@@ -59,7 +60,7 @@ Print["The term involving \[CapitalGamma]' must satisfy:"];
 (*Tensor Form does index coalescing and simplification!*)
 Echo[
   TensorForm[Collect[prettyResult, A[\[ScriptCapitalU][_]]]],
-  "3b. \!\(\*SuperscriptBox[\(A\), \(\[Gamma]'\(\\\ \
+  "4. \!\(\*SuperscriptBox[\(A\), \(\[Gamma]'\(\\\ \
 \)\)]\)\!\(\*SubscriptBox[SuperscriptBox[\(\[CapitalGamma]\), \(\\\ \
 \(\[Alpha]'\)\)], \(\[Beta]' \[Gamma]'\)]\) = "];
 
@@ -85,6 +86,7 @@ prettyResult =
 
 Print["\n=== \[CapitalGamma] TRANSFORMATION LAW ==="];
 Print["By a Quotient Theorem, stripping A to find \[CapitalGamma]':"];
+
 (*MORE MAGIC FROM TensorForm*)
 temp$ = Echo[TensorForm[prettyResult], 
    "5. \!\(\*SubscriptBox[SuperscriptBox[\(\[CapitalGamma]\), \(\
