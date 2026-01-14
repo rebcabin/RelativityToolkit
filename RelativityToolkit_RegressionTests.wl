@@ -1,63 +1,69 @@
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT: REGRESSION SUITE                                      *)
-(* Version: 1.4.3 (Script Mode)                                              *)
 (* ========================================================================= *)
 
 Print["\n================================================================"];
 Print["RUNNING REGRESSION SUITE v" <> RelativityToolkitVersion];
 Print["================================================================\n"];
 
-(* --- TEST HELPER FUNCTIONS ----------------------------------------------- *)
+(* --- TEST HELPERS ------------------------------------------------------- *)
+ClearAll[AssertValence, AssertEqual, PassCount, FailCount, pass, fail];
 PassCount = 0;
 FailCount = 0;
+pass[label_, v_]:=
+  (PassCount++;
+   Print["[", Style["PASS", Green], "] ", label, " \[LongRightArrow] ", v]);
+fail[label_, expected_, v_]:=
+  (FailCount++;
+   Print["[", Style["FAIL", Red], "] ", label, 
+     "\n\tExpected ", expected,
+     "\n\tGot ", v]);
 
 AssertValence[expr_, expected_, label_] :=
-  Module[{v = Echo@valence[expr]},
+  Module[{v = valence[expr]},
    If[v === expected,
-    PassCount++;
-    Print["[PASS] ", label, " -> ", v],
-    FailCount++;
-    Print["[FAIL] ", label, " \n\tExpected: ", expected, 
-     "\n\tGot:      ", v]]];
+    pass[label, v],
+    fail[label, expected, v]]];
 
 AssertEqual[expr1_, expr2_, label_] :=
-  Module[{c1 = Echo@CanonicalizeIndices[expr1], c2 = CanonicalizeIndices[expr2]},
+  Module[{c1 = CanonicalizeIndices[expr1], c2 = CanonicalizeIndices[expr2]},
    If[c1 === c2,
-    PassCount++;
-    Print["[PASS] ", label],
-    FailCount++;
-    Print["[FAIL] ", label, " \n\tLHS: ", c1, "\n\tRHS: ", c2]]];
+    pass[label, c1],
+    fail[label, c1, c2]]];
+    
+AssertTrue[expr_, label_] :=
+  If[expr, pass[label, True], fail[label, True, False]];
 
 (* ========================================================================= *)
 Print["--- SECTION 1: TYPE CHECKING (VALENCE) ---"];
 (* ========================================================================= *)
 
 (* 1. Atoms *)
-AssertValence[x[\[ScriptCapitalU][\[Mu]]], {{\[Mu]}, {}}, "Vector x^u"];
-AssertValence[p[\[ScriptCapitalD][\[Nu]]], {{}, {\[Nu]}}, "Covector p_v"];
-AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]], {{\[Mu]}, {\[Nu]}}, "Mixed Tensor T^u_v"];
-AssertValence[T[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], {{}, {\[Mu], \[Nu]}}, "Mixed Tensor T_uv"];
-AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]], {{\[Mu], \[Nu]}, {}}, "Mixed Tensor T^uv"];
-AssertValence[T[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalU][\[Nu]]], {{\[Nu]}, {\[Mu]}}, "Mixed Tensor T_u^v"];
+AssertValence[x[\[ScriptCapitalU][\[Mu]]], {{\[Mu]}, {}}, "Vector \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\)"];
+AssertValence[p[\[ScriptCapitalD][\[Nu]]], {{}, {\[Nu]}}, "Covector \!\(\*SubscriptBox[\(p\), \(\[Nu]\)]\)"];
+AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]], {{\[Mu]}, {\[Nu]}}, "Mixed Tensor \!\(\*SubscriptBox[SuperscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\)"];
+AssertValence[T[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], {{}, {\[Mu], \[Nu]}}, "Mixed Tensor \!\(\*SubscriptBox[\(T\), \(\[Mu]\[Nu]\)]\)"];
+AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]], {{\[Mu], \[Nu]}, {}}, "Mixed Tensor \!\(\*SuperscriptBox[\(T\), \(\[Mu]\[Nu]\)]\)"];
+AssertValence[T[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalU][\[Nu]]], {{\[Nu]}, {\[Mu]}}, "Mixed Tensor \!\(\*SuperscriptBox[SubscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\)"];
 
 (* 2. Contractions *)
-AssertValence[x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]], {{}, {}}, "Scalar Contraction x^u p_u"];
-AssertValence[p[\[ScriptCapitalD][\[Mu]]]*x[\[ScriptCapitalU][\[Mu]]], {{}, {}}, "Scalar Contraction p_u x^u"];
-AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]] * x[\[ScriptCapitalU][\[Nu]]], {{\[Mu]}, {}}, "Tensor-Vector T^u_v x^v -> x^u"];
-AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]] * x[\[ScriptCapitalD][\[Mu]]], {{}, {\[Nu]}}, "Tensor-Vector T^u_v x_u -> x_n"];
+AssertValence[x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]], {{}, {}}, "Scalar Contraction \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(p\), \(\[Mu]\)]\)"];
+AssertValence[p[\[ScriptCapitalD][\[Mu]]]*x[\[ScriptCapitalU][\[Mu]]], {{}, {}}, "Scalar Contraction \!\(\*SubscriptBox[\(p\), \(\[Mu]\)]\) \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\)"];
+AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]] * x[\[ScriptCapitalU][\[Nu]]], {{\[Mu]}, {}}, "Tensor-Vector \!\(\*SubscriptBox[SuperscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(x\), \(\[Nu]\)]\) -> \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\)"];
+AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]] * x[\[ScriptCapitalD][\[Mu]]], {{}, {\[Nu]}}, "Tensor-Vector \!\(\*SubscriptBox[SuperscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\) -> \!\(\*SubscriptBox[\(x\), \(\[Nu]\)]\)"];
 
 (* 3. Arithmetic *)
 AssertValence[(x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]])^2, {{}, {}}, "Power of Scalar"];
 AssertValence[5*x[\[ScriptCapitalU][\[Mu]]], {{\[Mu]}, {}}, "Scalar Multiplication"];
 
 (* 4. Differentiation (The Gradient Test) *)
-AssertValence[Derivative[1][f][x[\[ScriptCapitalU][\[Alpha]]]], {{}, {\[Alpha]}}, "Gradient d(f)/dx^a -> Down[a]"];
+AssertValence[Derivative[1][f][x[\[ScriptCapitalU][\[Alpha]]]], {{}, {\[Alpha]}}, "Gradient d(f)/\!\(\*SuperscriptBox[\(dx\), \(\[Alpha]\)]\) -> Down[\[Alpha]]"];
 
 (* 5. Error Handling *)
 Quiet[Module[{badSum = x[\[ScriptCapitalU][\[Mu]]] + p[\[ScriptCapitalD][\[Mu]]]}, 
-   If[valence[badSum] === {{}, {}}, PassCount++;
-    Print["[PASS] Mismatch Detection (Handled Gracefully)"], 
-    FailCount++; Print["[FAIL] Mismatch Detection failed"]]]];
+   If[Echo[valence[badSum], "expect error message above"] === {{}, {}}, 
+    pass["Mismatch Handled Gracefully", {{}, {}}],
+    fail["Mismatch Detection failed", {{}, {}}, valence[badSum]]]]];
 
 (* ========================================================================= *)
 Print["\n--- SECTION 2: ALGEBRA (CANONICALIZATION) ---"];
@@ -67,36 +73,34 @@ Print["\n--- SECTION 2: ALGEBRA (CANONICALIZATION) ---"];
 AssertEqual[
   x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]],
   x[\[ScriptCapitalU][\[Nu]]]*p[\[ScriptCapitalD][\[Nu]]],
-  "Dummy Renaming (A^u B_u == A^v B_v)"];
+  "Dummy Renaming (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) == \!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Nu]\)]\))"];
 
 (* 2. Commutativity *)
 AssertEqual[
   x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]],
   p[\[ScriptCapitalD][\[Nu]]]*x[\[ScriptCapitalU][\[Nu]]],
-  "Commutativity (A^u B_u == B_v A^v)"];
+  "Commutativity (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) == \!\(\*SubscriptBox[\(B\), \(\[Nu]\)]\)\!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\))"];
 
 (* 3. Distributivity/Sums *)
 AssertEqual[
   x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]] + 
    x[\[ScriptCapitalU][\[Nu]]]*p[\[ScriptCapitalD][\[Nu]]],
   2*x[\[ScriptCapitalU][\[Rho]]]*p[\[ScriptCapitalD][\[Rho]]],
-  "Index Coalescing (Summing identical terms)"];
+  "Index Coalescing (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) + \!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Nu]\)]\) == 2 \!\(\*SuperscriptBox[\(A\), \(\[Rho]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Rho]\)]\))"];
 
 (* 4. Multi-Index Tensors *)
 AssertEqual[
-  P[\[ScriptCapitalU][\[Mu]]]*Q[\[ScriptCapitalD][\[Mu]]]*   S[\[ScriptCapitalU][\[Nu]]]*T[\[ScriptCapitalD][\[Nu]]],
-  S[\[ScriptCapitalU][\[Alpha]]]*T[\[ScriptCapitalD][\[Alpha]]]*   P[\[ScriptCapitalU][\[Beta]]]*Q[\[ScriptCapitalD][\[Beta]]],
-  "Double Dummy Pairs (P^u Q_u S^v T_v)"];
+  P[\[ScriptCapitalU][\[Mu]]]*Q[\[ScriptCapitalD][\[Mu]]]* S[\[ScriptCapitalU][\[Nu]]]*T[\[ScriptCapitalD][\[Nu]]],
+  S[\[ScriptCapitalU][\[Alpha]]]*T[\[ScriptCapitalD][\[Alpha]]]* P[\[ScriptCapitalU][\[Beta]]]*Q[\[ScriptCapitalD][\[Beta]]],
+  "Double Dummy Pairs (\!\(\*SuperscriptBox[\(P\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(Q\), \(\[Mu]\)]\) \!\(\*SuperscriptBox[\(S\), \(\[Nu]\)]\) \!\(\*SubscriptBox[\(T\), \(\[Nu]\)]\))"];
 
 (* 5. Negative Test *)
-If[CanonicalizeIndices[
-    A[\[ScriptCapitalU][\[Alpha]]]*B[\[ScriptCapitalU][\[Beta]]]] =!= 
-   CanonicalizeIndices[
-    A[\[ScriptCapitalU][\[Mu]]]*B[\[ScriptCapitalU][\[Mu]]]],
-  PassCount++;
-  Print["[PASS] Free Indices Preserved (Distinct indices do not merge)"],
-  FailCount++;
-  Print["[FAIL] Free Indices Incorrectly Merged"]];
+Module[{
+   is1 = CanonicalizeIndices[A[\[ScriptCapitalU][\[Alpha]]] * B[\[ScriptCapitalU][\[Beta]]]],
+   is2 = CanonicalizeIndices[A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalU][\[Mu]]]]},
+  If[is1 =!= is2,
+    pass["Free Indices Preserved", {is1, is2}],
+    fail["Free Indices Incorrectly Merged", is1, is2]]];
 
 (* ========================================================================= *)
 Print["\n--- SECTION 3: PHYSICS (METRIC & TRANSFORMATIONS) ---"];
@@ -106,18 +110,18 @@ Print["\n--- SECTION 3: PHYSICS (METRIC & TRANSFORMATIONS) ---"];
 AssertEqual[
   (g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]*A[\[ScriptCapitalU][\[Nu]]]) /. metricRules,
   A[\[ScriptCapitalD][\[Mu]]],
-  "Lowering Index (g_uv A^v -> A_u)"];
+  "Lowering Index (\!\(\*SubscriptBox[\(g\), \(\[Mu]\[Nu]\)]\) \!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\) \[Rule] \!\(\*SubscriptBox[\(A\), \(\[Mu]\)]\))"];
 
 AssertEqual[
   (g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]*p[\[ScriptCapitalD][\[Nu]]]) /. metricRules,
   p[\[ScriptCapitalU][\[Mu]]],
-  "Raising Index (g^uv p_v -> p^u)"];
+  "Raising Index (\!\(\*SuperscriptBox[\(g\), \(\[Mu]\[Nu]\)]\) \!\(\*SubscriptBox[\(p\), \(\[Nu]\)]\) \[Rule] \!\(\*SuperscriptBox[\(p\), \(\[Mu]\)]\))"];
 
 (* 2. Inverse Identity *)
 AssertEqual[
   (g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Alpha]]]*g[\[ScriptCapitalD][\[Alpha]], \[ScriptCapitalD][\[Nu]]]) /. metricRules,
   \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
-  "Inverse Metric (g^ua g_av -> delta^u_v)"];
+  "Inverse Metric (\!\(\*SuperscriptBox[\(g\), \(\[Mu]\[Alpha]\)]\) \!\(\*SubscriptBox[\(g\), \(\[Alpha]\[Nu]\)]\) \[Rule] \!\(\*SubsuperscriptBox[\(\[Delta]\), \(\[Nu]\), \(\[Mu]\)]\))"];
 
 (* 3. Alpha-Conversion (Collision Safety) *)
 Module[{t1, t2, res, dummies, unique},
@@ -129,106 +133,99 @@ Module[{t1, t2, res, dummies, unique},
     Infinity];
   unique = DeleteDuplicates[dummies];
   If[Length[unique] == 2,
-    PassCount++;
-    Print["[PASS] Alpha-Conversion (Generated distinct indices: ", unique, ")"],
-    FailCount++;
-    Print["[FAIL] Alpha-Conversion (Collision detected: ", unique, ")"]];];
+    pass["Alpha-Conversion: distinct indices)", unique],
+    fail["Alpha-Conversion: collision", 2, Length[unique]]]];
 
 (* ========================================================================= *)
-Print["\n--- METRIC EQUIVALENCE (A^u B_u == A_v B^v) ---"];
+Print["\n--- SECTION 4: METRIC EQUIVALENCE (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) == \!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\)) ---"];
 (* ========================================================================= *)
 
-termUp = A[\[ScriptCapitalU][\[Mu]]]*B[\[ScriptCapitalD][\[Mu]]]; 
-termDown = A[\[ScriptCapitalD][\[Nu]]]*B[\[ScriptCapitalU][\[Nu]]];
+Echo[termUp = A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalD][\[Mu]]], "termUp: "]; 
+Echo[termDown = A[\[ScriptCapitalD][\[Nu]]] * B[\[ScriptCapitalU][\[Nu]]], "termDown: "];
 
-If[CanonicalizeIndices[termUp] =!= CanonicalizeIndices[termDown],
-  PassCount++;
-  Print["[PASS] Structural Distinction (A^u B_u != A_v B^v initially)"],
-  FailCount++;
-  Print["[FAIL] Structural Distinction failed"]];
+Module[{
+   is1 = CanonicalizeIndices[termUp], 
+   is2 = CanonicalizeIndices[termDown]},
+If[is1 =!= CanonicalizeIndices[termDown],
+  pass["Structural Distinction \!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) != \!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\) initially", {is1, is2}],
+  fail["Structural Distinction Failed", is1, is2]]];
 
 expandRule = A[\[ScriptCapitalD][idx_]] :>
    Module[{fresh = Unique["\[Alpha]"]},
-    g[\[ScriptCapitalD][idx], \[ScriptCapitalD][fresh]]*Hold[A[\[ScriptCapitalU][fresh]]]];
+    g[\[ScriptCapitalD][idx], \[ScriptCapitalD][fresh]] * Hold[A[\[ScriptCapitalU][fresh]]]];
 
-termExpanded = termDown /. expandRule;
-termReduced = termExpanded /. metricRules;
-termFinal = ReleaseHold[termReduced];
+Print[Style["\[ScriptCapitalU]\[ScriptCapitalD] will rearrange terms", Gray]];
+Echo[termDownExpanded = termDown /. expandRule, "termDown expanded: "];
+Echo[termDownReduced = termDownExpanded /. metricRules, "termDown reduced: "];
+Echo[termFinal = ReleaseHold[termDownReduced], "termDown final: "];
 
 AssertEqual[termFinal, termUp, 
-  "Metric Equivalence (A_v B^v reduces to A^u B_u)"];
+  "Metric Equivalence (\!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\) reduces to \!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\))"];
   
 (* ========================================================================= *)
-Print["\n--- SECOND DERIVATIVE Box Structure ---"];
+Print["\n--- SECTION 5: SECOND DERIVATIVE Box Structure ---"];
 (* ========================================================================= *)
 
 (* 1. EXECUTE (Direct Injection) *)
-(* We pass the structure DIRECTLY to MakeBoxes to bypass variable evaluation issues *)
-boxStructure = MakeBoxes[Partials[Partials[f, x], y], StandardForm];
+(* Pass the structure DIRECTLY to MakeBoxes to bypass variable evaluation issues *)
+Echo[boxStructure = MakeBoxes[Partials[Partials[f, x], y], StandardForm], 
+  "box structure: "];
 
 (* 2. VALIDATION *)
 (* Check for FractionBox *)
-hasFraction = MatchQ[boxStructure, FractionBox[_, _]];
+Echo[hasFraction = MatchQ[boxStructure, FractionBox[_, _]], 
+  "has fraction: "];
 
 (* Check for Superscript "2" (Robust against encoding differences) *)
-hasSquaredSym = !FreeQ[boxStructure, SuperscriptBox[_, "2"]];
+Echo[hasSquaredSym = !FreeQ[boxStructure, SuperscriptBox[_, "2"]],
+  "has squared symbol: "];
 
 If[hasFraction && hasSquaredSym,
-  PassCount++;
-  Print["[PASS] formatting rule detected (Found FractionBox + ^2)"],
-  (* ELSE *)
-  FailCount++;
-  Print["[FAIL] formatting rule NOT detected."];
-  Print["Expected: FractionBox with SuperscriptBox[_, \"2\"]"];
-  Print["Found:"];
-  Print[boxStructure] 
-];
+  pass["Found FractionBox + ^2", True],
+  fail["formatting rule NOT detected", True, False]];
 
-Print["\n--- SECTION 4: CALCULUS ENGINE ---"];
+Print["\n--- SECTION 6: CALCULUS ENGINE ---"];
 
 (* Test Leibniz Product Rule *)
 (* Input: d(f*g)/dx *)
 (* Expected: (df/dx)g + f(dg/dx) *)
-testProduct = ExpandDerivatives[Partials[f * g, x[\[ScriptCapitalU][\[Mu]]]]];
-expectedProduct = Partials[f, x[\[ScriptCapitalU][\[Mu]]]] * g + f * Partials[g, x[\[ScriptCapitalU][\[Mu]]]];
+Echo[testProduct = ExpandDerivatives[Partials[f * g, x[\[ScriptCapitalU][\[Mu]]]]],
+  "test product: "];
+Echo[expectedProduct = Partials[f, x[\[ScriptCapitalU][\[Mu]]]] * g + f * Partials[g, x[\[ScriptCapitalU][\[Mu]]]],
+  "expected product: "];
+AssertEqual[testProduct, expectedProduct, "Leibniz Product Rule"];
 
-If[testProduct === expectedProduct,
-   PassCount++;
-   Print["[PASS] Leibniz Product Rule"],
-   FailCount++;
-   Print["[FAIL] Leibniz Product Rule\n   Found: ", testProduct]
-];
-
-(* Test 18: Covariant Derivative Expansion *)
+(* Covariant Derivative Expansion *)
 (* Input: CD[ A^u, x^v ] *)
 (* Expected: Partial[A^u, x^v] + (Something containing Gamma) *)
-testCD = CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]];
+Echo[testCD = CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]], 
+  "CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] : "];
 (* LOGIC: It must be a Sum. One part is Partials. The other part MUST contain Gamma. *)
-If[MatchQ[testCD, Plus[Partials[_, _], _]] && !FreeQ[testCD, \[CapitalGamma]],
+AssertTrue[MatchQ[testCD, Plus[Partials[_, _], _]] && !FreeQ[testCD, \[CapitalGamma]],
+  "Covariant Derivative Expansion"];
+(*If[MatchQ[testCD, Plus[Partials[_, _], _]] && !FreeQ[testCD, \[CapitalGamma]],
    PassCount++;
    Print["[PASS] CD Expansion Structure (Partial + Connection)"],
    FailCount++;
    Print["[FAIL] CD Expansion Structure\n   Found: ", testCD]
-];
+];*)
 
 (* Test Chain Rule (Linearity) *)
 (* Input: d(A+B)/dx *)
-testLinearity = ExpandDerivatives[Partials[A + B, x[\[ScriptCapitalU][\[Mu]]]]];
-If[MatchQ[testLinearity, Plus[Partials[A, _], Partials[B, _]]],
-   PassCount++;
-   Print["[PASS] Differentiation Linearity"],
-   FailCount++;
-   Print["[FAIL] Differentiation Linearity"]
-];
+Echo[testLinearity = ExpandDerivatives[Partials[A + B, x[\[ScriptCapitalU][\[Mu]]]]],
+  "(A + B\!\(\*SubscriptBox[\()\), \(, \(\[Mu]\)\)]\) : "];
+AssertTrue[MatchQ[testLinearity, Plus[Partials[A, _], Partials[B, _]]],
+  "Differentiation Linearity"];
 
 (* ========================================================================= *)
 (* SUMMARY                                                                   *)
 (* ========================================================================= *)
+
 Print["\n----------------------------------------------------------------"];
 Print["REGRESSION SUITE COMPLETE"];
 Print["PASSED: ", PassCount];
 Print["FAILED: ", FailCount];
 If[FailCount == 0,
-  Print["STATUS: GREEN (Ready for Publication)"],
-  Print["STATUS: RED (Fix bugs before publishing)"]];
+  Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
+  Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];

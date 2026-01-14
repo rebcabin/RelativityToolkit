@@ -1,9 +1,9 @@
 (* =========================================================================*)
-(* VISUAL SHOWCASE v.1.4.3 :THE RELATIVITY TOOLKIT IN ACTION*)
+(* VISUAL SHOWCASE: THE RELATIVITY TOOLKIT IN ACTION*)
 (* =========================================================================*)
 Print["\n================================================================"];
 Print[Style["VISUAL SHOWCASE: FORMAL DIFFERENTIAL GEOMETRY", Bold, 16]];
-Print["version " <> RelativityToolkitVersion];
+Print["v" <> RelativityToolkitVersion];
 Print["\n================================================================\n"];
 
 (*---1. THE ZOO OF TENSORS-----------------------------------------------*)
@@ -118,7 +118,7 @@ Print["\n================================================================"];
 (* =========================================================================*)
 (*VISUAL SHOWCASE:The "Second Derivative Gallery"*)
 (* =========================================================================*)
-Print["\n--- Gallery of Second Derivatives ---"];
+Print["\n--- Gallery of Derivatives ---"];
 
 (*Define a list of scenarios to render*)
 gallery = {
