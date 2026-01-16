@@ -121,26 +121,31 @@ Print["\n================================================================"];
 Print["\n--- Gallery of Derivatives ---"];
 
 (*Define a list of scenarios to render*)
+(* Define a list of scenarios to render *)
 gallery = {
+   (* 1. STANDARD CALCULUS *)
    {"Generic Mixed Partial", Partials[Partials[f, y], x]},
-   {"Coordinate Hessian (The 'Garbage Term')", 
+   {"Coordinate Hessian", 
     Partials[
      Partials[x[\[ScriptCapitalU][\[Alpha]']], 
       x[\[ScriptCapitalU][\[Beta]]]], x[\[ScriptCapitalU][\[Alpha]]]]},
-   {"Nested in an Equation", 
-    lhs == Partials[
-      Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]],
-       x[\[ScriptCapitalU][\[Lambda]]]]},
-   {"Multiplied by Jacobian", 
-    Partials[x[\[ScriptCapitalU][\[Beta]]], 
-      x[\[ScriptCapitalU][\[Beta]']]]*
-     Partials[
-      Partials[x[\[ScriptCapitalU][\[Alpha]']], 
-       x[\[ScriptCapitalU][\[Beta]]]], x[\[ScriptCapitalU][\[Alpha]]]]},
-   {"Comma Notation", Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]},
-   (* NEW: Covariant Derivative Syntax *)
-{"Covariant Derivative (Abstract)", HoldForm[CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]]},
-{"Covariant Derivative (Expanded)", TensorForm@CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]}
+      
+   (* 2. THE FIX: ROBUST COMMA NOTATION *)
+   {"Atomic Tensor", 
+    Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]},
+    
+   {"Sealed Product (v.1.6.1 fix)", 
+    Partials[A[\[ScriptCapitalU][\[Mu]]] * \[CapitalGamma][\[ScriptCapitalU][\[Rho]], \[ScriptCapitalD][\[Sigma]], \[ScriptCapitalD][\[Lambda]]], x[\[ScriptCapitalU][\[Nu]]]]},
+    
+   {"Sealed Sum (Linearity)", 
+    Partials[A[\[ScriptCapitalU][\[Mu]]] + B[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]},
+    
+   {"Sealed Power (Non-Linear)", 
+    Partials[\[Phi]^2, x[\[ScriptCapitalU][\[Nu]]]]},
+   
+   (* 3. COVARIANT DERIVATIVES *)
+   {"Covariant Derivative (Abstract)", HoldForm[CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]]},
+   {"Covariant Derivative (Expanded)", TensorForm@CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]]}
   };
 
 (*Display as a formatted grid*)

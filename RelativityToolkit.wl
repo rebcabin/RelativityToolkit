@@ -1,10 +1,13 @@
 (* =========================================================================*)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode) *)
-(* Version: 1.6.0 (Feature: Riemann) *)
+(* Version: 1.6.1 (Feature: Riemann, fix display bug (A.\[CapitalGamma]),\[Mu]) *)
 (* =========================================================================*)
-RelativityToolkitVersion = "1.6.0";
+RelativityToolkitVersion = "1.6.1";
 
+(* =========================================================================*)
 (* 1. CLEAN SLATE ----------------------------------------------------------*)
+(* =========================================================================*)
+
 Unprotect[MakeBoxes];
 Quiet[DownValues[MakeBoxes] = 
    Select[DownValues[MakeBoxes], FreeQ[#, Partials] &]];
@@ -100,22 +103,38 @@ MakeBoxes[CD[num_, den_], StandardForm] :=
    RowBox[{"CD", "[", MakeBoxes[num, StandardForm], ",", 
      MakeBoxes[den, StandardForm], "]"}]];
 
+(* PARTIAL DERIVATIVES (The Comma Operator) *)
+
 MakeBoxes[Partials[num_, den_], StandardForm] := 
-  If[MatchQ[num, Partials[_, _]], 
+  If[MatchQ[num, Partials[_, _]],
+   
+   (* CASE 1: Nested Derivative -> Fraction *)
    Replace[num, 
     Partials[top_, bot1_] :> 
      FractionBox[
-      RowBox[{SuperscriptBox["\[PartialD]", "2"], 
-        MakeBoxes[top, StandardForm]}], 
+      RowBox[{SuperscriptBox["\[PartialD]", "2"], MakeBoxes[top, StandardForm]}], 
       RowBox[{RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}], 
-        RowBox[{"\[PartialD]", MakeBoxes[bot1, StandardForm]}]}]]], 
-   If[MatchQ[den, x[\[ScriptCapitalU][_]]] && !MatchQ[num, x[\[ScriptCapitalU][_]]], 
+        RowBox[{"\[PartialD]", MakeBoxes[bot1, StandardForm]}]}]]],
+   
+   (* CASE 2 & 3 *)
+   If[MatchQ[den, x[\[ScriptCapitalU][_]]] && ! MatchQ[num, x[\[ScriptCapitalU][_]]],
+    
+    (* CASE 2: Comma Notation *)
     Replace[den, 
      x[\[ScriptCapitalU][idx_]] :> 
-      SubscriptBox[MakeBoxes[num, StandardForm], 
-       RowBox[{",", MakeBoxes[idx, StandardForm]}]]], 
-    FractionBox[RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}],
-      RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]]]];
+      SubscriptBox[
+       (* THE v1.6.1 FIX: Wrap in parentheses if Product/Sum/Power *)
+       If[MemberQ[{Times, Plus, Power}, Head[num]], 
+        RowBox[{"(", MakeBoxes[num, StandardForm], ")"}], 
+        MakeBoxes[num, StandardForm]], 
+       
+       (* Comma and Index *)
+       RowBox[{",", MakeBoxes[idx, StandardForm]}]]],
+    
+    (* CASE 3: Default -> Fraction *)
+    FractionBox[
+     RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}], 
+     RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]] ] ];
 
 MakeBoxes[\[CapitalGamma][\[ScriptCapitalU][u_], \[ScriptCapitalD][d1_], \[ScriptCapitalD][d2_]], StandardForm] := 
   SubsuperscriptBox["\[CapitalGamma]", 
@@ -176,13 +195,14 @@ robustTransformRules = {
 
 (* DYNAMIC TENSOR FORM *)
 TensorForm[expr_] := 
-  Module[{canonExpr, formalPattern,formalIndices, usedSymbols, greekPool, availableGreek, indexMap},
+  Module[{canonExpr, formalPattern,formalIndices, 
+          usedSymbols, greekPool, availableGreek, indexMap},
    
    (* 1. Canonicalize first *)
    canonExpr = CanonicalizeIndices[expr];
 
-(* 2. Define the Formal Pattern: Any symbol starting with \[FormalA]...\[FormalZ] *)
-   (* This covers \[FormalS], \[FormalI]1, \[FormalI]2, etc. automatically *)
+   (* 2. Define Formal Pattern: Any symbol starting with \[FormalA]...\[FormalZ] *)
+   (* This covers \[FormalS], \[FormalI]1, \[FormalI]2, etc. *)
    formalPattern = CharacterRange["\[FormalA]", "\[FormalZ]"];
 
    (* 3. Identify ALL Formal Indices *)
@@ -190,21 +210,20 @@ TensorForm[expr_] :=
      s_Symbol /; StringStartsQ[SymbolName[s], formalPattern], 
      Infinity];
 
-   (* 4. Identify symbols ALREADY in the expression *)
+   (* 4a. Identify symbols ALREADY in the expression *)
    usedSymbols = DeleteDuplicates @ Cases[canonExpr, _Symbol, Infinity];
-   (* 4. Define our preferred Greek pool *)
+   
+   (* 4b. Define our preferred Greek pool *)
    greekPool = {\[Lambda], \[Kappa], \[Rho], \[Sigma], \[Mu], \[Nu], \[Tau], \[Eta], \[Chi], \[Psi], \[Alpha], \[Beta], \[Gamma]};
 
    (* 5. Filter the pool: Remove symbols that are already used *)
    availableGreek = DeleteElements[greekPool, usedSymbols];
 
-   (* 6. Create the Map *)
-   (* Map the ordered found formals to the available Greek letters *)
+   (* 6. Map the ordered, found formals to the available Greek letters *)
    indexMap = Thread[formalIndices -> Take[availableGreek, UpTo[Length[formalIndices]]]];
 
    (* 7. Apply *)
-   HoldForm[Evaluate[canonExpr /. indexMap]]
-  ];
+   HoldForm[Evaluate[canonExpr /. indexMap]] ];
  
 (* EXTRACT COEFFICIENT FIELD (Quotient-Theorem Tool) *)
 ExtractCoefficient[expr_, field_Symbol] := 
@@ -254,7 +273,7 @@ metricRules = {
   g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][\[Alpha]_]]*g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][nu_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
   g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][nu_]]*g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
   
-  (* \[Delta] Contraction Rules (For Associativity) *)
+  (* \[Delta]-Contraction Rules (For Associativity) *)
 
   (* Rule: T^\[Beta] * Subscript[\[Delta]^\[Alpha], \[Beta]] -> T^\[Alpha] *)
   expr_ * \[Delta][\[ScriptCapitalU][b_], \[ScriptCapitalD][a_]] /; !FreeQ[expr, \[ScriptCapitalD][b]] :> 
@@ -304,12 +323,8 @@ Partials[Partials[f_, x[\[ScriptCapitalU][a_]]], x[\[ScriptCapitalU][b_]]] /;
 (* 7. COVARIANT DERIVATIVE                                                   *)
 (* ========================================================================= *)
 
-(* ========================================================================= *)
-(* 7. COVARIANT DERIVATIVE (The Master Rule)                                 *)
-(* ========================================================================= *)
-
 (* CONFIGURATION: The Connection Symbol *)
-(* Default is \[CapitalGamma], but user can change it to A, C, etc., for Electrodynamics, Yang-Mills, whatever *)
+(* Default is \[CapitalGamma], but user can change it to A, C, etc., for Electrodynamics, Yang-Mills, ... *)
 RelativityConnection = \[CapitalGamma];
 
 SetConnection[sym_Symbol] := (
@@ -337,8 +352,7 @@ CD[prod_Times /; !FreeQ[prod, RelativityConnection], var_] :=
       RelativityConnection[\[ScriptCapitalU][lam], \[ScriptCapitalD][idx], \[ScriptCapitalD][var[[1,1]]]] * (prod /. idx -> lam)
      ], {idx, down}];
      
-   partialTerm + upCorrections - downCorrections
-  ];
+   partialTerm + upCorrections - downCorrections ];
 
 (* Rule 1: Linearity *)
 CD[a_ + b_, var_] := CD[a, var] + CD[b, var];
@@ -364,6 +378,5 @@ CD[expr_, x[\[ScriptCapitalU][nu_]]] :=
      RelativityConnection[\[ScriptCapitalU][lam], \[ScriptCapitalD][idx], \[ScriptCapitalD][nu]] * (expr /. idx -> lam)
     ], {idx, down}];
     
-  partialTerm + upCorrections - downCorrections
- ];
+  partialTerm + upCorrections - downCorrections ];
 
