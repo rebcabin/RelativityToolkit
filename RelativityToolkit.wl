@@ -276,8 +276,8 @@ metricRules = {
 (* Torsion-Free Geometry (General Relativity) *)
 (* User must apply this manually: expr //. torsionRules *)
 torsionRules = {
-  \[CapitalGamma][u_, \[ScriptCapitalD][a_], \[ScriptCapitalD][b_]] :> 
-   \[CapitalGamma][u, \[ScriptCapitalD][Sort[{a, b}][[1]]], \[ScriptCapitalD][Sort[{a, b}][[2]]]]
+  RelativityConnection[u_, a_, b_] :> 
+   RelativityConnection[u, Sort[{a, b}][[1]], Sort[{a, b}][[2]]]
 };
 
 (* =========================================================================*)
