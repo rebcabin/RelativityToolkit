@@ -1,8 +1,8 @@
 (* =========================================================================*)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode) *)
-(* Version: 1.5.3 (Feature: Riemann) *)
+(* Version: 1.6.0 (Feature: Riemann) *)
 (* =========================================================================*)
-RelativityToolkitVersion = "1.5.3";
+RelativityToolkitVersion = "1.6.0";
 
 (* 1. CLEAN SLATE ----------------------------------------------------------*)
 Unprotect[MakeBoxes];
