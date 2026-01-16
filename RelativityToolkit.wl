@@ -1,8 +1,8 @@
 (* =========================================================================*)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode) *)
-(* Version:1.5.2 (Feature:Full Tensor Calculus-Up and Down Indices) *)
+(* Version: 1.5.3 (Feature: Riemann) *)
 (* =========================================================================*)
-RelativityToolkitVersion = "1.5.2";
+RelativityToolkitVersion = "1.5.3";
 
 (* 1. CLEAN SLATE ----------------------------------------------------------*)
 Unprotect[MakeBoxes];
@@ -146,7 +146,6 @@ Protect[MakeBoxes];
 
 (* =========================================================================*)
 (* 4. ALGEBRAIC SIMPLIFICATION *)
-(* 5. PHYSICS RULES *)
 (* =========================================================================*)
 
 CanonicalizeTerm[term_] := 
@@ -167,6 +166,78 @@ CanonicalizeIndices[expr_Equal] :=
 
 CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
+robustTransformRules = {
+  A_[\[ScriptCapitalU][primed_]] :> 
+    Module[{fresh = Unique["\[Mu]"]}, 
+     Partials[x[\[ScriptCapitalU][primed]], x[\[ScriptCapitalU][fresh]]]*A[\[ScriptCapitalU][fresh]]], 
+  p_[\[ScriptCapitalD][primed_]] :> 
+    Module[{fresh = Unique["\[Nu]"]}, 
+     Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][primed]]]*p[\[ScriptCapitalD][fresh]]]};
+
+(* DYNAMIC TENSOR FORM *)
+TensorForm[expr_] := 
+  Module[{canonExpr, formalPattern,formalIndices, usedSymbols, greekPool, availableGreek, indexMap},
+   
+   (* 1. Canonicalize first *)
+   canonExpr = CanonicalizeIndices[expr];
+
+(* 2. Define the Formal Pattern: Any symbol starting with \[FormalA]...\[FormalZ] *)
+   (* This covers \[FormalS], \[FormalI]1, \[FormalI]2, etc. automatically *)
+   formalPattern = CharacterRange["\[FormalA]", "\[FormalZ]"];
+
+   (* 3. Identify ALL Formal Indices *)
+   formalIndices = Sort @ DeleteDuplicates @ Cases[canonExpr, 
+     s_Symbol /; StringStartsQ[SymbolName[s], formalPattern], 
+     Infinity];
+
+   (* 4. Identify symbols ALREADY in the expression *)
+   usedSymbols = DeleteDuplicates @ Cases[canonExpr, _Symbol, Infinity];
+   (* 4. Define our preferred Greek pool *)
+   greekPool = {\[Lambda], \[Kappa], \[Rho], \[Sigma], \[Mu], \[Nu], \[Tau], \[Eta], \[Chi], \[Psi], \[Alpha], \[Beta], \[Gamma]};
+
+   (* 5. Filter the pool: Remove symbols that are already used *)
+   availableGreek = DeleteElements[greekPool, usedSymbols];
+
+   (* 6. Create the Map *)
+   (* Map the ordered found formals to the available Greek letters *)
+   indexMap = Thread[formalIndices -> Take[availableGreek, UpTo[Length[formalIndices]]]];
+
+   (* 7. Apply *)
+   HoldForm[Evaluate[canonExpr /. indexMap]]
+  ];
+ 
+(* EXTRACT COEFFICIENT FIELD (Quotient-Theorem Tool) *)
+ExtractCoefficient[expr_, field_Symbol] := 
+ Module[{processTerm, expanded, termList},
+  expanded = Expand[expr];
+  termList = If[Head[expanded] === Plus, 
+    List @@ expanded, 
+    {expanded}];
+  
+  processTerm[term_] := Module[{canonTerm, dummyIndex, targetIdx, normalizedTerm},
+    (* 1. Canonicalize locally *)
+    canonTerm = CanonicalizeIndices[term];
+    
+    (* 2. Find the index attached to the field *)
+    dummyIndex = Cases[canonTerm, field[_[idx_]] :> idx, Infinity];
+    If[dummyIndex === {}, Return[0]];
+    
+    (* 3. NORMALIZE: Swap the vector's index to a Reserved Symbol (FormalS) *)
+    (* This prevents it from colliding with internal dummies (i1, i2) in other terms *)
+    targetIdx = First[dummyIndex];
+    normalizedTerm = canonTerm /. targetIdx -> Symbol["\[FormalS]"];
+    
+    (* 4. Extract coefficient of A^S *)
+    Coefficient[normalizedTerm, field[\[ScriptCapitalU][Symbol["\[FormalS]"]]]] + 
+    Coefficient[normalizedTerm, field[\[ScriptCapitalD][Symbol["\[FormalS]"]]]]];
+
+  Total[processTerm /@ termList]];
+
+(* =========================================================================*)
+(* 5. APPLICATION-SPECIFIC RULES *)
+(*    User must explicitly apply these when wanted *)
+(* =========================================================================*)
+
 metricRules = {
   g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]]*vec_[\[ScriptCapitalU][nu_]] :> vec[\[ScriptCapitalD][mu]], 
   vec_[\[ScriptCapitalU][nu_]]*g[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]] :> vec[\[ScriptCapitalD][mu]], 
@@ -181,24 +252,33 @@ metricRules = {
   covec_[\[ScriptCapitalD][nu_]]*g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> covec[\[ScriptCapitalU][mu]], 
   
   g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][\[Alpha]_]]*g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][nu_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
-  g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][nu_]]*g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]]};
+  g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][nu_]]*g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
+  
+  (* \[Delta] Contraction Rules (For Associativity) *)
 
-robustTransformRules = {
-  A_[\[ScriptCapitalU][primed_]] :> 
-    Module[{fresh = Unique["\[Mu]"]}, 
-     Partials[x[\[ScriptCapitalU][primed]], x[\[ScriptCapitalU][fresh]]]*A[\[ScriptCapitalU][fresh]]], 
-  p_[\[ScriptCapitalD][primed_]] :> 
-    Module[{fresh = Unique["\[Nu]"]}, 
-     Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][primed]]]*p[\[ScriptCapitalD][fresh]]]};
+  (* Rule: T^\[Beta] * Subscript[\[Delta]^\[Alpha], \[Beta]] -> T^\[Alpha] *)
+  expr_ * \[Delta][\[ScriptCapitalU][b_], \[ScriptCapitalD][a_]] /; !FreeQ[expr, \[ScriptCapitalD][b]] :> 
+    (expr /. \[ScriptCapitalD][b] -> \[ScriptCapitalD][a]),
+  \[Delta][\[ScriptCapitalU][b_], \[ScriptCapitalD][a_]] * expr_ /; !FreeQ[expr, \[ScriptCapitalD][b]] :> 
+    (expr /. \[ScriptCapitalD][b] -> \[ScriptCapitalD][a]),
 
-TensorForm[expr_] := 
-  Module[{canonExpr, indexMap, prettyIndices}, 
-   canonExpr = CanonicalizeIndices[expr];
-   prettyIndices = {\[Lambda], \[Kappa], \[Rho], \[Sigma], \[Mu], \[Nu], \[Tau], \[Eta], \[Chi], \[Psi]};
-   indexMap = 
-    Table[Symbol["\[FormalI]" <> ToString[n]] -> 
-      prettyIndices[[n]], {n, Length[prettyIndices]}];
-   HoldForm[Evaluate[canonExpr /. indexMap]]];
+  (* Rule: Subscript[T, \[Alpha] * ]Subscript[\[Delta]^\[Alpha], \[Beta]] -> Subscript[T, \[Beta]] *)
+  expr_ * \[Delta][\[ScriptCapitalU][a_], \[ScriptCapitalD][b_]] /; !FreeQ[expr, \[ScriptCapitalU][b]] :> 
+    (expr /. \[ScriptCapitalU][b] -> \[ScriptCapitalU][a]),
+  \[Delta][\[ScriptCapitalU][a_], \[ScriptCapitalD][b_]] * expr_ /; !FreeQ[expr, \[ScriptCapitalU][b]] :> 
+    (expr /. \[ScriptCapitalU][b] -> \[ScriptCapitalU][a]),
+
+  (* Cleanup: Delta on itself *)
+  \[Delta][\[ScriptCapitalU][a_], \[ScriptCapitalD][b_]] * \[Delta][\[ScriptCapitalU][b_], \[ScriptCapitalD][c_]] :> \[Delta][\[ScriptCapitalU][a], \[ScriptCapitalD][c]]
+
+  };
+  
+(* Torsion-Free Geometry (General Relativity) *)
+(* User must apply this manually: expr //. torsionRules *)
+torsionRules = {
+  \[CapitalGamma][u_, \[ScriptCapitalD][a_], \[ScriptCapitalD][b_]] :> 
+   \[CapitalGamma][u, \[ScriptCapitalD][Sort[{a, b}][[1]]], \[ScriptCapitalD][Sort[{a, b}][[2]]]]
+};
 
 (* =========================================================================*)
 (* 6. DIFFERENTIATION ENGINE *)
@@ -214,26 +294,76 @@ differentiationRules = {
 
 ExpandDerivatives[expr_] := expr //. differentiationRules;
 
-(* =========================================================================*)
-(* 7. COVARIANT DERIVATIVE *)
-(* =========================================================================*)
+(* Schwarz's Theorem (Sort Partial Derivatives) *)
+(* If variables are out of canonical order, swap them *)
+Partials[Partials[f_, x[\[ScriptCapitalU][a_]]], x[\[ScriptCapitalU][b_]]] /; 
+  !OrderedQ[{a, b}] := 
+  Partials[Partials[f, x[\[ScriptCapitalU][b]]], x[\[ScriptCapitalU][a]]];
 
-(*CD Case 1:Contravariant Vector (UP index)*)
-CD[vec_[\[ScriptCapitalU][mu_]], x[\[ScriptCapitalU][nu_]]] := 
-  Module[{lam = Unique["\[Lambda]"]}, 
-   Partials[vec[\[ScriptCapitalU][mu]], x[\[ScriptCapitalU][nu]]] + 
-     \[CapitalGamma][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu], \[ScriptCapitalD][lam]]*vec[\[ScriptCapitalU][lam]]];
+(* ========================================================================= *)
+(* 7. COVARIANT DERIVATIVE                                                   *)
+(* ========================================================================= *)
 
-(*CD Case 2:Covariant Vector (DOWN index)*)
-CD[covec_[\[ScriptCapitalD][mu_]], x[\[ScriptCapitalU][nu_]]] := 
-  Module[{lam = Unique["\[Lambda]"]}, 
-   Partials[covec[\[ScriptCapitalD][mu]], x[\[ScriptCapitalU][nu]]] - 
-     \[CapitalGamma][\[ScriptCapitalU][lam], \[ScriptCapitalD][mu], \[ScriptCapitalD][nu]]*
-     covec[\[ScriptCapitalD][lam]]];
+(* ========================================================================= *)
+(* 7. COVARIANT DERIVATIVE (The Master Rule)                                 *)
+(* ========================================================================= *)
 
-(*CD Case 3:Rank-2 Covariant Tensor (e.g.Metric g_mu_nu)*)
-CD[tensor_[\[ScriptCapitalD][mu_], \[ScriptCapitalD][nu_]], x[\[ScriptCapitalU][lam_]]] := 
-  Module[{rho = Unique["\[Rho]"]}, 
-   Partials[tensor[\[ScriptCapitalD][mu], \[ScriptCapitalD][nu]], x[\[ScriptCapitalU][lam]]] - 
-     \[CapitalGamma][\[ScriptCapitalU][rho], \[ScriptCapitalD][mu], \[ScriptCapitalD][lam]]*tensor[\[ScriptCapitalD][rho], \[ScriptCapitalD][nu]] - 
-     \[CapitalGamma][\[ScriptCapitalU][rho], \[ScriptCapitalD][nu], \[ScriptCapitalD][lam]]*tensor[\[ScriptCapitalD][mu], \[ScriptCapitalD][rho]]];
+(* CONFIGURATION: The Connection Symbol *)
+(* Default is \[CapitalGamma], but user can change it to A, C, etc., for Electrodynamics, Yang-Mills, whatever *)
+RelativityConnection = \[CapitalGamma];
+
+SetConnection[sym_Symbol] := (
+   RelativityConnection = sym;
+   Print["Relativity Engine: Connection set to ", sym]
+);
+
+(* Rule 0: Connection-Binding (The "Gamma Glue") *)
+(* DYNAMIC: Checks if prod contains the CURRENT RelativityConnection symbol *)
+(* This treats 'Gamma * A' as a single atom to enforce correct scope *)
+CD[prod_Times /; !FreeQ[prod, RelativityConnection], var_] := 
+  Module[{up, down, partialTerm, upCorrections, downCorrections},
+   
+   {up, down} = valence[prod];
+   partialTerm = Partials[prod, var];
+   
+   (* Apply Corrections using the CURRENT Connection Symbol *)
+   upCorrections = Sum[
+     Module[{lam = Unique["\[Lambda]"]},
+      RelativityConnection[\[ScriptCapitalU][idx], \[ScriptCapitalD][var[[1,1]]], \[ScriptCapitalD][lam]] * (prod /. idx -> lam)
+     ], {idx, up}];
+     
+   downCorrections = Sum[
+     Module[{lam = Unique["\[Lambda]"]},
+      RelativityConnection[\[ScriptCapitalU][lam], \[ScriptCapitalD][idx], \[ScriptCapitalD][var[[1,1]]]] * (prod /. idx -> lam)
+     ], {idx, down}];
+     
+   partialTerm + upCorrections - downCorrections
+  ];
+
+(* Rule 1: Linearity *)
+CD[a_ + b_, var_] := CD[a, var] + CD[b, var];
+
+(* Rule 2: Product Rule *)
+CD[a_ * b_, var_] := CD[a, var] * b + a * CD[b, var];
+
+(* Rule 3: The General Tensor Rule (Master Rule) *)
+CD[expr_, x[\[ScriptCapitalU][nu_]]] := 
+ Module[{up, down, partialTerm, upCorrections, downCorrections},
+  
+  {up, down} = valence[expr];
+  partialTerm = Partials[expr, x[\[ScriptCapitalU][nu]]];
+  
+  (* DYNAMIC: Generate corrections using RelativityConnection *)
+  upCorrections = Sum[
+    Module[{lam = Unique["\[Lambda]"]},
+     RelativityConnection[\[ScriptCapitalU][idx], \[ScriptCapitalD][nu], \[ScriptCapitalD][lam]] * (expr /. idx -> lam)
+    ], {idx, up}];
+    
+  downCorrections = Sum[
+    Module[{lam = Unique["\[Lambda]"]},
+     RelativityConnection[\[ScriptCapitalU][lam], \[ScriptCapitalD][idx], \[ScriptCapitalD][nu]] * (expr /. idx -> lam)
+    ], {idx, down}];
+    
+  partialTerm + upCorrections - downCorrections
+ ];
+
