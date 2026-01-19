@@ -3,7 +3,7 @@
 (* Copy of compiler POC that exposes *)
 (* Schwarzschild metric and Christoffel symbols *)
 
-Module[{metricObj, rawCoords, workingCoords, simpleMap, symbolicGamma, myGammaArray},
+Module[{metricObj, rawCoords, workingCoords, simpleMap, symbolicGamma},
 
 (* Pull covariant Schwarzschild metric from WFR. In \[ScriptCapitalU]\[ScriptCapitalD], this is g[\[ScriptCapitalD][\[Mu]],\[ScriptCapitalD][\[Nu]]] *)
 
