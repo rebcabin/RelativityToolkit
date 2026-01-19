@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[    313541,       6996]
-NotebookOptionsPosition[    297087,       6721]
-NotebookOutlinePosition[    297538,       6739]
-CellTagsIndexPosition[    297495,       6736]
+NotebookDataLength[    313572,       6996]
+NotebookOptionsPosition[    297117,       6721]
+NotebookOutlinePosition[    297568,       6739]
+CellTagsIndexPosition[    297525,       6736]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -6391,19 +6391,19 @@ bf9ffa1a9329"],
 Cell["\<\
 In this notebook, \[ScriptCapitalU]\[ScriptCapitalD] automates one of the \
 most error-prone exercises in differential geometry for relativistic \
-gravitation: calculating the Riemann curvature tensor from scratch \
+gravitation: calculating the Riemann curvature tensor from scratch. \
 \[ScriptCapitalU]\[ScriptCapitalD]\[CloseCurlyQuote]s automation avoids the \
 eager-expansion trap of student lore: \[OpenCurlyDoubleQuote]\[CapitalGamma] \
 is not a tensor.\[CloseCurlyDoubleQuote]\
 \>", "Text",
  CellChangeTimes->{{3.977536225547858*^9, 3.977536249271407*^9}, {
-  3.977536308146929*^9, 3.977536341788349*^9}, {3.977536440174911*^9, 
-  3.977536464833129*^9}, {3.9775364985199013`*^9, 3.977536523247518*^9}, {
-  3.977536585051519*^9, 3.977536585130732*^9}, {3.977536656083826*^9, 
-  3.977536656975308*^9}, {3.97753777534731*^9, 3.9775377902230377`*^9}, {
-  3.977647534141658*^9, 3.97764770759956*^9}, {3.977678391232296*^9, 
-  3.977678392274164*^9}, {3.977749895547062*^9, 
-  3.97774997402324*^9}},ExpressionUUID->"91f99b6b-76ab-413f-9680-\
+   3.977536308146929*^9, 3.977536341788349*^9}, {3.977536440174911*^9, 
+   3.977536464833129*^9}, {3.9775364985199013`*^9, 3.977536523247518*^9}, {
+   3.977536585051519*^9, 3.977536585130732*^9}, {3.977536656083826*^9, 
+   3.977536656975308*^9}, {3.97753777534731*^9, 3.9775377902230377`*^9}, {
+   3.977647534141658*^9, 3.97764770759956*^9}, {3.977678391232296*^9, 
+   3.977678392274164*^9}, {3.977749895547062*^9, 3.97774997402324*^9}, 
+   3.977777546325234*^9},ExpressionUUID->"91f99b6b-76ab-413f-9680-\
 25c503bb53ef"],
 
 Cell["\<\
@@ -6981,21 +6981,21 @@ Cell[281103, 6371, 237, 6, 23, "Echo",ExpressionUUID->"dde7ddfd-38a0-42c7-95c5-1
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[281413, 6385, 157, 3, 66, "Section",ExpressionUUID->"44078a61-e046-484d-88fb-bf9ffa1a9329"],
-Cell[281573, 6390, 996, 16, 55, "Text",ExpressionUUID->"91f99b6b-76ab-413f-9680-25c503bb53ef"],
-Cell[282572, 6408, 757, 13, 33, "Text",ExpressionUUID->"71ba8cde-2587-4aa5-9544-f6c03900f4cb"],
-Cell[283332, 6423, 700, 12, 33, "Text",ExpressionUUID->"97fc24d9-d092-4af1-b6a4-6561d2f04830"],
-Cell[284035, 6437, 522, 9, 33, "Text",ExpressionUUID->"039ac630-bf12-4daf-b4a0-b77305a6d970"],
-Cell[284560, 6448, 488, 9, 33, "Text",ExpressionUUID->"3b2f6cbb-b544-400c-b240-c4cf66e1c725"]
+Cell[281573, 6390, 1026, 16, 55, "Text",ExpressionUUID->"91f99b6b-76ab-413f-9680-25c503bb53ef"],
+Cell[282602, 6408, 757, 13, 33, "Text",ExpressionUUID->"71ba8cde-2587-4aa5-9544-f6c03900f4cb"],
+Cell[283362, 6423, 700, 12, 33, "Text",ExpressionUUID->"97fc24d9-d092-4af1-b6a4-6561d2f04830"],
+Cell[284065, 6437, 522, 9, 33, "Text",ExpressionUUID->"039ac630-bf12-4daf-b4a0-b77305a6d970"],
+Cell[284590, 6448, 488, 9, 33, "Text",ExpressionUUID->"3b2f6cbb-b544-400c-b240-c4cf66e1c725"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[285085, 6462, 685, 11, 66, "Section",ExpressionUUID->"d347c5b5-401c-4ef2-a2ab-e917feb8284c"],
-Cell[285773, 6475, 1558, 33, 30, "ItemNumbered",ExpressionUUID->"5a5186f3-3e56-41ad-8380-e5f7fdff11a8"],
-Cell[287334, 6510, 1634, 33, 30, "ItemNumbered",ExpressionUUID->"f5024369-fc9a-4681-a718-32f21ce11f7d"],
-Cell[288971, 6545, 1706, 35, 30, "ItemNumbered",ExpressionUUID->"4d3374f3-deee-4080-8fbc-63749ec6f55e"],
-Cell[290680, 6582, 1288, 24, 30, "ItemNumbered",ExpressionUUID->"ed4efd47-9ea4-4e86-be23-4218728a3adf"],
-Cell[291971, 6608, 1771, 37, 30, "ItemNumbered",ExpressionUUID->"3c223a9c-2994-47d8-b3bd-4659d07cfb75"],
-Cell[293745, 6647, 1834, 37, 30, "ItemNumbered",ExpressionUUID->"28adb113-0e29-4705-adc5-10e328a8944e"],
-Cell[295582, 6686, 1477, 31, 30, "ItemNumbered",ExpressionUUID->"f225bdae-b422-4d77-a985-0a64a6ef23b1"]
+Cell[285115, 6462, 685, 11, 66, "Section",ExpressionUUID->"d347c5b5-401c-4ef2-a2ab-e917feb8284c"],
+Cell[285803, 6475, 1558, 33, 30, "ItemNumbered",ExpressionUUID->"5a5186f3-3e56-41ad-8380-e5f7fdff11a8"],
+Cell[287364, 6510, 1634, 33, 30, "ItemNumbered",ExpressionUUID->"f5024369-fc9a-4681-a718-32f21ce11f7d"],
+Cell[289001, 6545, 1706, 35, 30, "ItemNumbered",ExpressionUUID->"4d3374f3-deee-4080-8fbc-63749ec6f55e"],
+Cell[290710, 6582, 1288, 24, 30, "ItemNumbered",ExpressionUUID->"ed4efd47-9ea4-4e86-be23-4218728a3adf"],
+Cell[292001, 6608, 1771, 37, 30, "ItemNumbered",ExpressionUUID->"3c223a9c-2994-47d8-b3bd-4659d07cfb75"],
+Cell[293775, 6647, 1834, 37, 30, "ItemNumbered",ExpressionUUID->"28adb113-0e29-4705-adc5-10e328a8944e"],
+Cell[295612, 6686, 1477, 31, 30, "ItemNumbered",ExpressionUUID->"f225bdae-b422-4d77-a985-0a64a6ef23b1"]
 }, Open  ]]
 }, Open  ]]
 }
