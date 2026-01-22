@@ -1,8 +1,17 @@
+(* ::Package:: *)
+
 (* =========================================================================*)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode) *)
-(* Version: 1.6.1 (Feature: Riemann, fix display bug (A.\[CapitalGamma]),\[Mu]) *)
+(* Version: 1.6.2 (better isolation) *)
 (* =========================================================================*)
-RelativityToolkitVersion = "1.6.1";
+Echo[RelativityToolkitVersion = "1.6.2", "Relativity Toolkit version :"];
+
+(* CONFIGURATION: The Connection Symbol *)
+(* Default is \[CapitalGamma]; change it to A, C, etc., for Electrodynamics, Yang-Mills, etc. *)
+Echo[RelativityConnection = \[CapitalGamma], "Relativity Connection Symbol :"];
+(* TODO: complete the removal of hard-coded \[CapitalGamma]. Currently, only torsionRules,
+   CD, and SetConnection know about RelativityConnection. There are several
+   places in MakeBoxes and other display functions that hard-code \[CapitalGamma]. *)
 
 (* =========================================================================*)
 (* 1. CLEAN SLATE ----------------------------------------------------------*)
@@ -41,8 +50,10 @@ contractValence[{u_List, d_List}] :=
   Module[{common}, common = Intersection[u, d];
    {DeleteElements[u, common], DeleteElements[d, common]}];
 
-valence[x_Symbol] := {{}, {}};
-valence[_?NumericQ] := {{}, {}};
+noValence := {{}, {}}; (* := (set delayed) means fresh instance each time *)
+
+valence[x_Symbol] := noValence;
+valence[_?NumericQ] := noValence;
 valence[] := Null;
 
 valence[_[\[ScriptCapitalU][\[Alpha]_]]] := {{\[Alpha]}, {}};
@@ -60,32 +71,33 @@ valence[Partials[num_, den_]] :=
 
 valence[CD[num_, den_]] := valence[Partials[num, den]];
 
-valence[\[CapitalGamma][\[ScriptCapitalU][a_], \[ScriptCapitalD][
-     b_], \[ScriptCapitalD][c_]]] := {{a}, {b, c}};
+(* TODO: Opportunity for replacement by RelativityConnection *)
+valence[\[CapitalGamma][\[ScriptCapitalU][a_], \[ScriptCapitalD][b_], \[ScriptCapitalD][c_]]] := {{a}, {b, c}};
 
 valence[Derivative[1][f_][arg_]] := 
   Module[{u, d}, {u, d} = valence[arg]; {d, u}];
-valence[Derivative[_][_][f_] /; (valence[f] =!= {{}, {}})] := 
+
+valence[Derivative[_][_][f_] /; (valence[f] =!= noValence)] := 
   valence[f];
 
 valence[(h : _[\[ScriptCapitalU][_]] | _[\[ScriptCapitalD][_]])[___]] := valence[h];
 
 valence[prod_Times] := 
   contractValence[
-   Fold[Join[#1, valence[#2], 2] &, {{}, {}}, List @@ prod]];
+   Fold[Join[#1, valence[#2], 2] &, noValence, List @@ prod]];
 
 valence[sum_Plus] := 
   Module[{vs}, vs = valence /@ (List @@ sum); 
    If[Apply[SameQ, vs], 
    First[vs], 
-   Print["Valence Mismatch"]; {{}, {}}]];
+   Print["Valence Mismatch"]; noValence]];
    
 valence[Power[b_, _]] := valence[b];
 
 valence[h_[a_, b_, rest___]] := 
   Join[valence[h[a]], valence[h[b, rest]], 2];
   
-valence[___] := {{}, {}};
+valence[___] := noValence;
 
 (* =========================================================================*)
 (* 3. DISPLAY RULES *)
@@ -123,7 +135,7 @@ MakeBoxes[Partials[num_, den_], StandardForm] :=
     Replace[den, 
      x[\[ScriptCapitalU][idx_]] :> 
       SubscriptBox[
-       (* THE v1.6.1 FIX: Wrap in parentheses if Product/Sum/Power *)
+       (* Wrap in parentheses if Product/Sum/Power *)
        If[MemberQ[{Times, Plus, Power}, Head[num]], 
         RowBox[{"(", MakeBoxes[num, StandardForm], ")"}], 
         MakeBoxes[num, StandardForm]], 
@@ -136,6 +148,7 @@ MakeBoxes[Partials[num_, den_], StandardForm] :=
      RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}], 
      RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]] ] ];
 
+(* TODO: Potential replacement by RelativityConnection *)
 MakeBoxes[\[CapitalGamma][\[ScriptCapitalU][u_], \[ScriptCapitalD][d1_], \[ScriptCapitalD][d2_]], StandardForm] := 
   SubsuperscriptBox["\[CapitalGamma]", 
    RowBox[{MakeBoxes[d1, StandardForm], MakeBoxes[d2, StandardForm]}],
@@ -152,7 +165,7 @@ MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]], StandardFo
 MakeBoxes[h_[indices__], StandardForm] /; (h =!= \[Delta]) && 
 (h =!= Partials) && 
 (h =!= CD) && 
-(h =!= \[CapitalGamma]) && 
+(h =!= \[CapitalGamma]) && (* TODO: Potential replacement by RelativityConnection *)
 MatchQ[{indices}, {(_[\[ScriptCapitalU]] | _[\[ScriptCapitalD]] | \[ScriptCapitalU][_] | \[ScriptCapitalD][_]) ..}] := 
  Module[{formattedScripts}, 
   formattedScripts = {indices} /. {\[ScriptCapitalU][i_] :> 
@@ -323,10 +336,6 @@ Partials[Partials[f_, x[\[ScriptCapitalU][a_]]], x[\[ScriptCapitalU][b_]]] /;
 (* 7. COVARIANT DERIVATIVE                                                   *)
 (* ========================================================================= *)
 
-(* CONFIGURATION: The Connection Symbol *)
-(* Default is \[CapitalGamma], but user can change it to A, C, etc., for Electrodynamics, Yang-Mills, ... *)
-RelativityConnection = \[CapitalGamma];
-
 SetConnection[sym_Symbol] := (
    RelativityConnection = sym;
    Print["Relativity Engine: Connection set to ", sym]
@@ -379,4 +388,93 @@ CD[expr_, x[\[ScriptCapitalU][nu_]]] :=
     ], {idx, down}];
     
   partialTerm + upCorrections - downCorrections ];
+  
+(* ========================================================================= *)
+(* 8. RIEMANN CURVATURE TENSOR FROM METRIC                                   *)
+(* ========================================================================= *)
+
+ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_] := 
+  1/2 gUU[\[ScriptCapitalU][\[Sigma]],\[ScriptCapitalU][\[Lambda]]] (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
+                     Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
+                     Partials[gDD[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Lambda]]]]);
+
+                                          
+(* ========================================================================= *)
+(* 9. COMPILER AND SUPPORT FUNCTIONS                                         *)
+(* ========================================================================= *)
+
+(* Use Case: Convert a Wolfram Matrix to 2-D UD Rules *)
+(* Input: A square, 2D matrix 'mat' of components,
+          a Symbol 'g' to affect, e.g. gDD or gUU,
+          a valence indicator, \[ScriptCapitalU] or \[ScriptCapitalD]. 
+          a List of coordinate symbols, e.g., {t, r, \[Theta], \[Phi]} *)
+(* Notes: Works only for 'homovalent' symbols like gDD or gUU.
+   Heterovalent symbols like gUD or gDU are not handled here. *)
+(* Output: A list of rules like {gDD[\[ScriptCapitalD][0], \[ScriptCapitalD][0]] -> A[r], ...} *)
+
+MatrixToUD[mat_, g_Symbol, UorD_ /; (UorD === \[ScriptCapitalU] || UorD === \[ScriptCapitalD]), coords_List] := 
+  Module[{dim, rules},
+    dim = Length[mat];
+    rules = Flatten @ Table[
+      g[UorD[coords[[i]]], UorD[coords[[j]]]] -> mat[[i, j]],
+      {i, 1, dim}, {j, 1, dim}];
+    (* Filter out zeros to keep the rule list short *)
+    Select[rules, (#[[2]] =!= 0) &]];
+
+(* Explicitly expand Einstein summation for a specific index *)
+ContractIndices[expr_, index_Symbol, coords_List] := 
+  Total[expr /. index -> # & /@ coords];
+
+EvaluateUDPartials[expr_] := expr /. 
+  With[{killBogusChainRule = {(\[ScriptCapitalU]|\[ScriptCapitalD])'[idx_] -> 0}},
+    { 
+    (* CASE: Standard UD Syntax *)
+      Partials[f_, x[\[ScriptCapitalU][idx_]]] :> (D[f, idx] /. killBogusChainRule),
+      
+      (* CASE: Pretty-Printed Subscript Notation (The comma) *)
+      Subscript[f_, {idx_}] :> (D[f, idx] /. killBogusChainRule),
+      
+      (* CASE: Derivatives of Numerical Partials *)
+      Partials[n_, x[(\[ScriptCapitalU]|\[ScriptCapitalD])[_]]] /; NumberQ[n] :> 0
+   }];
+
+(* Use Case: Make a function that can retrieve components from a Wolfram array       *)
+(*           that represents a tensor-like object using symbolic coordinate symbols. *)
+(* Usage (example): \[CapitalGamma]get = MakeIndexer[\[CapitalGamma]table, {t, r, \[Theta], \[Phi]}];                        *)
+(*                  \[CapitalGamma]get[r, t, t] ~~> A'[r]/(2 B[r]])                                *)
+(* Input: `table` is a 1-indexed Wolfram array of any dimension containing           *)
+(*                components of a tensor-like object such as \[CapitalGamma], g, or R.             *)
+(*        `coords` is a list of coordinate symbols, such as {t, r, \[Theta], \[Phi]}.            *)
+(*        The Length of coords must match the dimension of the array (unchecked).    *)
+(* Returns: a function that looks up components in the array by coord symbols.       *)
+MakeIndexer[table_List, coords_List] :=
+  Module[{dispatcher = Dispatch[MapIndexed[(#1 -> #2[[1]])&, coords]]},
+    (* double-delayed; single-delay evaluates `Lookup` too early *)
+    table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
+  
+(* Subscript[R^\[VeryThinSpace]\[Mu], \[VeryThinSpace]\[Lambda]\[VeryThinSpace]\[Nu]\[VeryThinSpace]\[Rho]] = Subscript[Subsuperscript[\[CapitalGamma], \[Lambda]\[Nu], \[Mu]], ,\[Rho]] - Subscript[Subsuperscript[\[CapitalGamma], \[Lambda]\[Rho], \[Mu]], ,\[Nu]]  + \!\(
+\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Lambda] \[Nu]\), \(\[Kappa]\)]\ 
+\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Kappa] \[Rho]\), \(\[Mu]\)]\) - \!\(
+\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Lambda] \[Rho]\), \(\[Kappa]\)]\ 
+\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Kappa] \[Nu]\), \(\[Mu]\)]\) *)
+(* Send in \[CapitalGamma]Get so as not to recompute it on every call. *)
+CalculateRiemannComponent[\[Mu]Up_, \[Lambda]Dn_, \[Nu]Dn_, \[Rho]Dn_, \[CapitalGamma]get_, coords_List] := 
+  Module[{d\[CapitalGamma]1, d\[CapitalGamma]2, interact1, interact2},
+  (* Derivative Terms: Subscript[\[CapitalGamma]^\[VeryThinSpace]\[Mu], \[Lambda]\[VeryThinSpace]\[Nu],\[Rho]] - Subscript[\[CapitalGamma]^\[VeryThinSpace]\[Mu], \[VeryThinSpace]\[Lambda]\[VeryThinSpace]\[Rho],\[Nu]] *)
+  d\[CapitalGamma]1 = D[\[CapitalGamma]get[\[Mu]Up, \[Lambda]Dn, \[Nu]Dn], \[Rho]Dn];
+  d\[CapitalGamma]2 = D[\[CapitalGamma]get[\[Mu]Up, \[Lambda]Dn, \[Rho]Dn], \[Nu]Dn];
+  
+  (* Interaction Terms: \!\(
+\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Lambda] \[Nu]\), \(\[Kappa]\)]\ 
+\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Kappa] \[Rho]\), \(\[Mu]\)]\) - \!\(
+\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Lambda] \[Rho]\), \(\[Kappa]\)]\ 
+\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Kappa] \[Nu]\), \(\[Mu]\)]\) *)
+  interact1 = Sum[\[CapitalGamma]get[\[Kappa], \[Lambda]Dn, \[Nu]Dn] * \[CapitalGamma]get[\[Mu]Up, \[Kappa], \[Rho]Dn], {\[Kappa], coords}];
+  interact2 = Sum[\[CapitalGamma]get[\[Kappa], \[Lambda]Dn, \[Rho]Dn] * \[CapitalGamma]get[\[Mu]Up, \[Kappa], \[Nu]Dn], {\[Kappa], coords}];
+  
+  Simplify[d\[CapitalGamma]1 - d\[CapitalGamma]2 + interact1 - interact2]
+];
+
+
+
 
