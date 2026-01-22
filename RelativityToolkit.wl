@@ -416,6 +416,15 @@ SubscriptBox[\(g\), \(\[Lambda]\)], \(\[Nu]\)], \(, \(\[Mu]\)\)]\  - \
 \*SubscriptBox[
 SubscriptBox[\(g\), \(\[VeryThinSpace]\(\[Mu]\[VeryThinSpace]\[Nu]\)\)], \(, \(\[Lambda]\)\)])\)\)\) *)
 ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_]/;(gDD =!= gUU) := 
+  Module[{\[Lambda] = Unique["\[Lambda]"]},
+    (1/2) gUU[\[ScriptCapitalU][\[Sigma]],\[ScriptCapitalU][\[Lambda]]] 
+      (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
+       Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
+       Partials[gDD[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Lambda]]]])];
+
+(* This overload has a hard-coded, user-supplied summation index *)
+(* So that ContractIndex can work on the result *)
+ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_, \[Lambda]_]/;(gDD =!= gUU) := 
   Module[{},
     (1/2) gUU[\[ScriptCapitalU][\[Sigma]],\[ScriptCapitalU][\[Lambda]]] 
       (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
@@ -483,7 +492,40 @@ MatrixToUDRules[mat_, g_Symbol, UorD_ /; (UorD === \[ScriptCapitalU] || UorD ===
 
 (* Explicitly expand Einstein summation for a specific index *)
 ContractIndex[expr_, index_Symbol, coords_List] := 
-  Total[expr /. index -> # & /@ coords];
+  Total[expr /. index -> # & /@ coords]
+  
+(* 2. CONTRACT INDICES: The Canonical Pipeline *)
+ContractIndices[expr_, coords_List] := Module[{
+    canonicalExpr, recursiveScanner, result, PD},
+  
+  (* PHASE A: Canonicalize Variance *)
+  (* Convert "Partial w.r.t Upper" (x^i) to "Lower Operator" (PD_i) *)
+  (* This explicitly creates the D[i] index the scanner needs. *)
+  canonicalExpr = expr /. Partials[f_, x[\[ScriptCapitalU][i_]]] :> PD[f, \[ScriptCapitalD][i]];
+  
+  (* PHASE B: The Recursive Scanner *)
+  recursiveScanner[term_] := Module[{ups, downs, pairs, idx},
+    ups = Cases[term, \[ScriptCapitalU][s_Symbol] :> s, Infinity];
+    downs = Cases[term, \[ScriptCapitalD][s_Symbol] :> s, Infinity];
+    
+    (* Exclude coordinate names from contraction *)
+    pairs = Complement[Intersection[ups, downs], coords];
+    
+    If[Length[pairs] === 0,
+     term,
+     (idx = First[pairs];
+      (* Recurse on the expansion *)
+      recursiveScanner[Total[term /. idx -> # & /@ coords]])]];
+  
+  (* Run Scanner on Expanded Expression *)
+  result = If[Head[Expand[canonicalExpr]] === Plus, 
+     Map[recursiveScanner, Expand[canonicalExpr]], 
+     recursiveScanner[Expand[canonicalExpr]]];
+  
+  (* PHASE C: Restoration *)
+  (* Convert internal Grad back to Partials for evaluation *)
+  result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
+
 
 EvaluateUDPartials[expr_] := expr /. 
   With[{killBogusChainRule = {(\[ScriptCapitalU]|\[ScriptCapitalD])'[idx_] -> 0}},
