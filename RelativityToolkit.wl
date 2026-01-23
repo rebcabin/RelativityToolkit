@@ -422,14 +422,6 @@ ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_]/;(gDD =!= gUU) :=
        Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
        Partials[gDD[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Lambda]]]])];
 
-(* This overload has a hard-coded, user-supplied summation index *)
-(* So that ContractIndex can work on the result *)
-ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_, \[Lambda]_]/;(gDD =!= gUU) := 
-  Module[{},
-    (1/2) gUU[\[ScriptCapitalU][\[Sigma]],\[ScriptCapitalU][\[Lambda]]] 
-      (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
-       Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
-       Partials[gDD[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Lambda]]]])];
 
 (* Riemann *)
 
@@ -490,17 +482,54 @@ MatrixToUDRules[mat_, g_Symbol, UorD_ /; (UorD === \[ScriptCapitalU] || UorD ===
     (* Filter out zeros to keep the rule list short *)
     Select[rules, (#[[2]] =!= 0) &]];
 
-(* Explicitly expand Einstein summation for a specific index *)
-ContractIndex[expr_, index_Symbol, coords_List] := 
-  Total[expr /. index -> # & /@ coords]
-  
-(* 2. CONTRACT INDICES: The Canonical Pipeline *)
-ContractIndices[expr_, coords_List] := Module[{
+(* Contraction *)
+
+(* In imitation of Wolfram's Replace and ReplaceAll, we present    *)
+(* contraction functions that Total a list of terms with bound     *)
+(* indices (repeated up-down indices in a term) where the bound    *)
+(* indices are replaced by all the coords, in order.               *)
+(* Contract performs contraction on the first detected bound       *)
+(* index and ContractAll performs contraction on all bound indices *)
+
+(* Contract on the first bound index (repeated up-down in a term) *)
+Contract[expr_, coords_List] :=
+  Module[{canonicalExpr, oneShotScanner, result, PD},
+
+    (* Convert "Partial w.r.t Upper" (x^i) to "lower inert operator" (PD_i) *)
+    (* Explicitly creates the D[i] index needed for scanning. *)
+    canonicalExpr = expr /. Partials[f_, x[\[ScriptCapitalU][i_]]] :> PD[f, \[ScriptCapitalD][i]];
+
+    (* Find a bound index pair that is not a coordinate symbol. *)
+    oneShotScanner[term_] := Module[{ups, downs, pairs, idx},
+      ups = Cases[term, \[ScriptCapitalU][s_Symbol] :> s, Infinity];
+      downs = Cases[term, \[ScriptCapitalD][s_Symbol] :> s, Infinity];
+    
+      (* Exclude coordinate names from contraction *)
+      pairs = Complement[Intersection[ups, downs], coords];
+    
+      If[Length[pairs] === 0,
+       term,
+       (idx = First[pairs];
+       (* Total up on the expansion over all coords *)
+       Total[term /. idx -> # & /@ coords])]];
+       
+      (* Apply the scanner to all terms with the same bound index *)
+      With[{ec = Expand[canonicalExpr]},
+        result = If[Head[ec] === Plus,
+          Map[oneShotScanner, ec],
+          oneShotScanner[ec]]];
+          
+      (* Restore Partials from PD for downstream UD evaluation. *)
+      result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
+
+
+(* ContractAll: Contract on all bound indices (repeated up-down in a term) *)
+ContractAll[expr_, coords_List] := Module[{
     canonicalExpr, recursiveScanner, result, PD},
   
-  (* PHASE A: Canonicalize Variance *)
-  (* Convert "Partial w.r.t Upper" (x^i) to "Lower Operator" (PD_i) *)
-  (* This explicitly creates the D[i] index the scanner needs. *)
+  (* PHASE A: Canonicalize Valence *)
+  (* Convert "Partial w.r.t Upper" (x^i) to "lower inert operator" (PD_i) *)
+  (* Explicitly creates the D[i] index needed for scanning. *)
   canonicalExpr = expr /. Partials[f_, x[\[ScriptCapitalU][i_]]] :> PD[f, \[ScriptCapitalD][i]];
   
   (* PHASE B: The Recursive Scanner *)
@@ -518,12 +547,13 @@ ContractIndices[expr_, coords_List] := Module[{
       recursiveScanner[Total[term /. idx -> # & /@ coords]])]];
   
   (* Run Scanner on Expanded Expression *)
-  result = If[Head[Expand[canonicalExpr]] === Plus, 
-     Map[recursiveScanner, Expand[canonicalExpr]], 
-     recursiveScanner[Expand[canonicalExpr]]];
+  With[{ec = Expand[canonicalExpr]},
+    result = If[Head[ec] === Plus, 
+       Map[recursiveScanner, ec], 
+       recursiveScanner[ec]]];
   
   (* PHASE C: Restoration *)
-  (* Convert internal Grad back to Partials for evaluation *)
+  (* Convert internal PD back to Partials for UD. *)
   result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
 
 
