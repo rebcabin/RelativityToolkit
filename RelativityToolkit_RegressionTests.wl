@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT: REGRESSION SUITE                                      *)
 (* ========================================================================= *)
@@ -385,6 +387,83 @@ Module[{checkDisplay, box, hasParens, isSubscript},
 ];
 
 (* ========================================================================= *)
+Print["\n--- SECTION 10: EINSTEIN SUMMATION (Contract & ContractAll) ---"];
+(* ========================================================================= *)
+
+Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial, resSingle, resDouble, resPartial},
+  
+  (* Define dummy coordinates for deterministic summation *)
+  coords = {1, 2};
+
+  (* TEST 1: Single Contraction (Contract) *)
+  (* A^u B_u -> A^1 B_1 + A^2 B_2 *)
+  exprSingle = A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalD][\[Mu]]];
+  resSingle = Contract[exprSingle, coords];
+  
+  AssertEqual[resSingle, 
+    A[\[ScriptCapitalU][1]]*B[\[ScriptCapitalD][1]] + A[\[ScriptCapitalU][2]]*B[\[ScriptCapitalD][2]], 
+    "Single Contraction (A^u B_u)"];
+
+  (* TEST 2: Recursive vs One-Shot (The Double Contraction) *)
+  (* A^u B_u C^v D_v *)
+  exprDouble = A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalD][\[Mu]]] * C[\[ScriptCapitalU][\[Nu]]] * D[\[ScriptCapitalD][\[Nu]]];
+  
+  (* Contract (One-Shot): Should only expand ONE pair (e.g., Mu), leaving Nu symbolic *)
+  Module[{resOneShot, hasMu, hasNu},
+    resOneShot = Contract[exprDouble, coords];
+    hasMu = !FreeQ[resOneShot, \[Mu]];
+    hasNu = !FreeQ[resOneShot, \[Nu]];
+    
+    (* One should be gone, one should remain *)
+    If[Xor[hasMu, hasNu],
+      pass["Contract (One-Shot) expanded exactly one pair", {hasMu, hasNu}],
+      fail["Contract (One-Shot) behavior incorrect", "One pair remaining", {hasMu, hasNu}]
+    ];
+  ];
+
+  (* ContractAll (Recursive): Should expand BOTH pairs *)
+  resDouble = ContractAll[exprDouble, coords];
+  If[FreeQ[resDouble, \[Mu]] && FreeQ[resDouble, \[Nu]],
+     pass["ContractAll expanded all pairs recursively", True],
+     fail["ContractAll left symbolic indices", "None", resDouble]
+  ];
+
+  (* TEST 3: Variance Handling in Partials *)
+  (* d(A^u)/dx^u -> Treated as A^u and D_u *)
+  (* This validates the canonicalization pipeline: Partials[..., x[U]] -> PD[..., D] *)
+  exprPartial = Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Mu]]]];
+  resPartial = ContractAll[exprPartial, coords];
+  
+  AssertEqual[resPartial, 
+    Partials[A[\[ScriptCapitalU][1]], x[\[ScriptCapitalU][1]]] + Partials[A[\[ScriptCapitalU][2]], x[\[ScriptCapitalU][2]]], 
+    "Variance Handling (Divergence: d(A^u)/dx^u)"];
+
+  (* TEST 4: Mixed Sum/Product *)
+  (* A^u B_u + C^v D_v *)
+  (* ContractAll should handle distribution over Plus *)
+  exprMixed = A[\[ScriptCapitalU][\[Mu]]]*B[\[ScriptCapitalD][\[Mu]]] + C[\[ScriptCapitalU][\[Nu]]]*D[\[ScriptCapitalD][\[Nu]]];
+  AssertTrue[FreeQ[ContractAll[exprMixed, coords], \[ScriptCapitalU][_Symbol]], 
+    "Distribution over Sum (A^u B_u + C^v D_v)"];
+
+  (* TEST 5: Protection of Free Indices *)
+  (* A^u B_v (No match) -> Should remain untouched *)
+  AssertEqual[ContractAll[A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalD][\[Nu]]], coords], 
+    A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalD][\[Nu]]], 
+    "Free Indices Protected (No Contraction)"];
+
+  (* TEST 6: Coordinate Exclusion *)
+  (* Ensure the symbols in 'coords' themselves are not treated as indices if they appear in the expression *)
+  (* e.g. if coords={t,r}, don't try to contract 't' in A^t *)
+  Module[{badExpr},
+    badExpr = A[\[ScriptCapitalU][1]]; (* 1 is a coord *)
+    AssertEqual[
+      ContractAll[badExpr, coords], 
+      badExpr, 
+      "Coordinate Symbols Excluded from Scanner"];
+  ];
+];
+
+(* ========================================================================= *)
 (* SUMMARY                                                                   *)
 (* ========================================================================= *)
 
@@ -396,3 +475,6 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
+
+
+
