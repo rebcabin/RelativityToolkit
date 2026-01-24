@@ -32,13 +32,46 @@ Quiet[DownValues[MakeBoxes] =
     FreeQ[#, \[ScriptCapitalU]] && FreeQ[#, \[ScriptCapitalD]] &]];
 Protect[MakeBoxes];
 
-ClearAll[contractValence, valence, Partials, CanonicalizeTerm,
-CanonicalizeIndices, TensorForm, 
-  CD, \[CapitalGamma], \[Delta], upQ, downQ, 
+Module[{symbols = Symbol /@ {
+	"CalculateRicciComponent",
+	"CalculateRiemannComponent",
+	"CanonicalizeIndices",
+	"CanonicalizeTerm",
+	"CD",
+	"ChristoffelsFromMetric",
+	"Contract",
+	"ContractAll",
+	"contractValence",
+	"differentiationRules",
+	"downQ",
+	"EvaluateUDPartials",
+	"ExpandDerivatives",
+	"ExtractCoefficient",
+	"g", (* reserved for metric tensors (will be relaxed later ) *)
+	"MakeIndexer",
+	"MatrixToUDRules",
+	"metricRules",
+	"noValence",
+	"Partials",
+	"RelativityConnection",
+	"RelativityToolkitVersion",
+	"robustTransformRules",
+	"SetConnection",
+	"TensorForm",
+	"torsionRules",
+	"upQ",
+	"valence",
+	"x", (* all coordinate functions are named x *)
+	"\[ScriptCapitalD]", (* essential syntax *)
+	"\[ScriptCapitalU]", (* essential syntax *)
+	"\[CapitalGamma]", (* reserved for GR *)
+	"\[Delta]"  (* reserved for the Kronecker symbol *)
+	}},
+ClearAll[Sequence[symbols]];
+ClearAll[
   \[Lambda], \[Kappa], \[Rho], \[Sigma], \[Mu], \[Nu], \[Tau], \[Eta], \[Chi], \[Psi],
   x, p, g, u, A, B, T, 
-  P, Q, S, metricRules, robustTransformRules, differentiationRules, 
-  ExpandDerivatives];
+  P, Q, S]];
 
 (* ========================================================================= *)
 (* 2. VALENCE LOGIC (The Type Checker)                                       *)
