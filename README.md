@@ -21,7 +21,7 @@ RT is based on the novel $\mathcal{U}\mathcal{D}$ (up-down) calculus, which mani
 
 RT compiles representations of the Christoffel symbols, Riemann, and Ricci tensors into concrete component arrays, differential equations, and physical solutions, supporting calculations such as the derivation of the Schwarzschild metric.
 
-## Key Features
+## Features
 
 - **Canonicalization:** Automatic renaming of dummy summation indices to prevent capture of free indices.
 
