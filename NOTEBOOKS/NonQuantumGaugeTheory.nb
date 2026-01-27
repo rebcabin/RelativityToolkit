@@ -3,10 +3,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[         0,          0]
-NotebookDataLength[    233310,       4582]
-NotebookOptionsPosition[    218635,       4344]
-NotebookOutlinePosition[    219114,       4363]
-CellTagsIndexPosition[    219071,       4360]
+NotebookDataLength[    257873,       5095]
+NotebookOptionsPosition[    240768,       4824]
+NotebookOutlinePosition[    241250,       4843]
+CellTagsIndexPosition[    241207,       4840]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -346,13 +346,16 @@ Cell["Covariant Derivatives, Revisited", "Section",
 969955fdadc1"],
 
 Cell["\<\
-So far, for general relativity, we figured out how to take derivatives of \
-vectors and tensors that inhabit the tangent (and cotangent) spaces of curved \
+So far, for general relativity (GR), we learned to take covariant derivatives \
+of tensors that inhabit the tangent and cotangent tensor spaces of curved \
 manifolds. The canonical example is the covariant derivative of a \
-contravariant vector\
+contravariant vector with respect to a basis of coordinate functions:\
 \>", "Text",
- CellChangeTimes->{{3.978358277995886*^9, 
-  3.9783584188849707`*^9}},ExpressionUUID->"e00680e2-ffc2-4e2a-8e3d-\
+ CellChangeTimes->{{3.978358277995886*^9, 3.9783584188849707`*^9}, {
+  3.978383640074443*^9, 3.978383662411972*^9}, {3.9784599115016127`*^9, 
+  3.978459914575747*^9}, {3.978462549387083*^9, 3.9784625526681013`*^9}, {
+  3.978468160423418*^9, 
+  3.978468193398802*^9}},ExpressionUUID->"e00680e2-ffc2-4e2a-8e3d-\
 60cc05e325e2"],
 
 Cell[CellGroupData[{
@@ -374,12 +377,12 @@ Cell[BoxData[
     RowBox[{"Echo", "[", 
      RowBox[{
       RowBox[{"TensorForm", "@@", "example"}], ",", 
-      RowBox[{"example", " ", "\"\<\>\""}]}], "]"}]}], "]"}], ";"}]], "Input",\
-
+      RowBox[{"example", "\"\<\>\""}]}], "]"}]}], "]"}], ";"}]], "Input",
  CellChangeTimes->{{3.978358547373548*^9, 3.978358772499927*^9}, {
   3.978359072474093*^9, 3.978359157811211*^9}, {3.9783592724273376`*^9, 
-  3.978359272556822*^9}, {3.9783593063094587`*^9, 3.9783593921632147`*^9}},
- CellLabel->"In[8]:=",ExpressionUUID->"78497388-807e-47b1-a2f3-54ab4ce22561"],
+  3.978359272556822*^9}, {3.9783593063094587`*^9, 3.9783593921632147`*^9}, {
+  3.978383680431888*^9, 3.978383735895418*^9}},
+ CellLabel->"In[14]:=",ExpressionUUID->"78497388-807e-47b1-a2f3-54ab4ce22561"],
 
 Cell[BoxData[
  RowBox[{
@@ -407,8 +410,8 @@ Cell[BoxData[
       RowBox[{"\[Nu]", "\[Lambda]"}], "\[Mu]"]}]}],
    HoldForm]}]], "Echo",
  CellChangeTimes->{
-  3.978383250037692*^9},ExpressionUUID->"73b095dc-aed8-4473-85b7-\
-40749cca7779"]
+  3.978383736772393*^9},ExpressionUUID->"58b8f4b0-b19c-4ab5-8213-\
+b9588295485a"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -420,8 +423,15 @@ Cell[TextData[{
      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], 
     RowBox[{"\[Nu]", "\[VeryThinSpace]", "\[Lambda]"}]], TraditionalForm]],
   ExpressionUUID->"664e81ac-4907-453b-9c7a-4541c1e37f80"],
- " account for the twisting and turning of the basis vectors of the tangent \
-spaces as the vector is parallel-transported ",
+ " account for the twisting and turning of basis vectors of the tangent \
+spaces as the vector ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["A", 
+    RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "73b94643-bacd-4c12-a57b-2bfb49e0a9a9"],
+ " is parallel-transported ",
  StyleBox["back",
   FontSlant->"Italic"],
  " from position ",
@@ -440,9 +450,187 @@ spaces as the vector is parallel-transported ",
  ", where we take the limit that produces the derivative. "
 }], "Text",
  CellChangeTimes->{{3.978359427011059*^9, 3.978359781833878*^9}, {
-  3.9783832904953938`*^9, 
-  3.978383292332605*^9}},ExpressionUUID->"404d6c0e-cac6-4e99-867b-\
-9cc4b8514e01"],
+  3.9783832904953938`*^9, 3.978383292332605*^9}, {3.978468204450382*^9, 
+  3.978468218955337*^9}, {3.978473813640461*^9, 
+  3.9784738456436*^9}},ExpressionUUID->"404d6c0e-cac6-4e99-867b-9cc4b8514e01"],
+
+Cell[TextData[{
+ StyleBox["As mentioned in several places in the ",
+  FontSlant->"Italic"],
+ "\[ScriptCapitalU]\[ScriptCapitalD]",
+ StyleBox[" series of notebooks, the connection coefficients inform ",
+  FontSlant->"Italic"],
+ StyleBox["forces",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ StyleBox[". Specifically, in GR, initially parallel geodesics converge or \
+diverge in curved space. This ",
+  FontSlant->"Italic"],
+ StyleBox["geodesic deviation",
+  FontWeight->"Bold"],
+ StyleBox[" is indistinguishable from a force. See MTW.",
+  FontSlant->"Italic"]
+}], "Item",
+ CellChangeTimes->{{3.978462477155856*^9, 3.978462655974498*^9}, {
+  3.9784738665228443`*^9, 
+  3.978473950191752*^9}},ExpressionUUID->"9e8961c6-4915-4055-8466-\
+f43e1d44c1f3"],
+
+Cell[TextData[{
+ "Our covariant derivative does not depend on choice of coordinate frame: it \
+transforms like a tensor: physics is ",
+ StyleBox["locally Lorentz invariant",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ ". Quantities measured in any inertial (non-accelerating) frame ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["x", 
+    RowBox[{"\[VeryThinSpace]", 
+     RowBox[{"\[Mu]", "\[VeryThinSpace]", "'"}]}]], TraditionalForm]],
+  ExpressionUUID->"b5b0ca86-9575-4cff-9bbc-eb693915f207"],
+ ", moving at some 3\[NoBreak]-\[NoBreak]velocity ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox[
+    OverscriptBox[
+     StyleBox["v",
+      FontWeight->"Bold"], "\[RightVector]"],
+    FontWeight->"Bold"], TraditionalForm]],ExpressionUUID->
+  "d39685c6-27ce-4021-9d0c-f675d33e6dbe"],
+ " (with magnitude ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox[
+     RowBox[{"\[LeftBracketingBar]", 
+      OverscriptBox[
+       StyleBox["v",
+        FontWeight->"Bold"], "\[RightVector]"], "\[RightBracketingBar]"}],
+     FontWeight->"Bold"], "<", "c"}], TraditionalForm]],ExpressionUUID->
+  "91aceee6-6d6b-413b-ae92-437c96086a20"],
+ ", of course) transform via Lorentz or Poincar\[EAcute] transformation into \
+quantities measured in another inertial frame ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["x", 
+    RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], TraditionalForm]],ExpressionUUID->
+  "ff6002e6-ee5f-40d1-a0a8-034fc549bb4e"],
+ ". "
+}], "Text",
+ CellChangeTimes->{{3.978445417175521*^9, 3.9784458155633173`*^9}, {
+  3.978459680469887*^9, 3.978459807868965*^9}, {3.978459965549313*^9, 
+  3.978459967667185*^9}, {3.978463220298867*^9, 3.9784632273701277`*^9}, {
+  3.978468281477968*^9, 3.978468378234469*^9}, {3.978472488066071*^9, 
+  3.978472554452949*^9}, {3.978475168854097*^9, 
+  3.978475184009779*^9}},ExpressionUUID->"ccef3411-d62b-4b46-9fd6-\
+d814a2aeaeb2"],
+
+Cell[TextData[{
+ "This invariance of physics with respect to Lorentz or Poincar\[EAcute] \
+transformations should remind one of Noether\[CloseCurlyQuote]s theorem, by \
+which any continuous invariance implies a conservation law. In GR, the \
+conserved quantity is ",
+ StyleBox["spin current",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ ", and arises by expressing the metric in non-coordinate bases: writing \
+Lorentz and Poincar\[EAcute] invariance as local gauge invariance as Noether\
+\[CloseCurlyQuote]s theorem expects (see the appendix). "
+}], "Text",
+ CellChangeTimes->{{3.97845997416617*^9, 3.978460004155486*^9}, {
+  3.978463243960688*^9, 3.978463300297812*^9}, {3.978463332095664*^9, 
+  3.978463335920586*^9}, {3.97846338093931*^9, 3.978463408901082*^9}, {
+  3.978468401057563*^9, 3.978468455548519*^9}, {3.978468488822113*^9, 
+  3.9784684911545258`*^9}, {3.978472572488409*^9, 3.9784725734720163`*^9}, {
+  3.978473580065061*^9, 3.978473778472005*^9}, {3.978474060960484*^9, 
+  3.978474166136396*^9}, {3.9784749326844473`*^9, 3.9784749447544317`*^9}, {
+  3.978475204781249*^9, 3.978475207340055*^9}, {3.978476929042704*^9, 
+  3.9784769292023773`*^9}},ExpressionUUID->"91c0e44b-e074-4c86-b23b-\
+d0062415bf76"],
+
+Cell["\<\
+In this notebook, we consider, on top of the tensor spaces of GR, other \
+spaces attached, like decals, to points in the curved spacetime manifold. \
+These are spaces of gauge fields representing electromagnetism and matter. \
+These spaces have their own differential geometries above and beyond the \
+differential geometry of spacetime itself, which we have studied via \
+\[ScriptCapitalU]\[ScriptCapitalD] for GR. \[ScriptCapitalU]\[ScriptCapitalD] \
+should apply, however, to these gauge-field differential geometries just as \
+well as \[ScriptCapitalU]\[ScriptCapitalD] applies to GR. The topic of this \
+notebook is to apply \[ScriptCapitalU]\[ScriptCapitalD] to transformation \
+laws, invariants, and conserved quantities of \[OpenCurlyDoubleQuote]decal\
+\[CloseCurlyDoubleQuote] gauge fields. \
+\>", "Text",
+ CellChangeTimes->{{3.9783837526856213`*^9, 3.978383767375452*^9}, {
+   3.978383830618404*^9, 3.978383928527316*^9}, {3.978383962011525*^9, 
+   3.97838404059065*^9}, {3.978468507513084*^9, 3.978468605912599*^9}, {
+   3.978472599671873*^9, 3.9784726563363256`*^9}, {3.978473087285945*^9, 
+   3.978473480862424*^9}, {3.978474197935852*^9, 3.9784742400526867`*^9}, {
+   3.9784752358303823`*^9, 3.978475319367342*^9}, {3.9784767900522614`*^9, 
+   3.9784768082796087`*^9}, 3.978476840981501*^9, {3.978476976570915*^9, 
+   3.978476983892303*^9}},ExpressionUUID->"ea0340b3-89be-4a3b-9fba-\
+a251bde0f602"],
+
+Cell[TextData[{
+ "Before leaving this introduction, let me touch upon a point of frustration. \
+Despite many similarities, GR, as a gauge theory, is profoundly different \
+from the others. In GR, the connection ",
+ StyleBox["is",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " the geometry, constructed directly from the metric. Its curvature is the \
+curvature of spacetime itself, and the forces it produces arise solely from \
+that curvature. In electromagnetism and Yang-Mills, connections ",
+ StyleBox["live on top",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " of curved spacetime. They create stress-energy that curves the background \
+metric, but their mathematical forms do not depend on the metric nor on the \
+gauge fields extracted from GR. They remain distinct from the spacetime \
+manifold, merely attached to it. This distinction\[LongDash]geometry as field \
+versus field on geometry\[LongDash]is one of the barriers, but not the only \
+one, keeping the holy grail of Quantum Gravity out of reach."
+}], "Text",
+ CellChangeTimes->{{3.978468620606276*^9, 3.97846911114847*^9}, {
+  3.978469141294344*^9, 3.9784691461195297`*^9}, {3.978472306403426*^9, 
+  3.978472320221815*^9}, {3.9784723687853622`*^9, 3.978472450443771*^9}, {
+  3.978472664705765*^9, 3.978472735490921*^9}, {3.978472777458582*^9, 
+  3.9784730792459106`*^9}, {3.978473545584929*^9, 3.97847356212976*^9}, {
+  3.9784742664768457`*^9, 3.978474269864506*^9}, {3.978474326964053*^9, 
+  3.9784747296574306`*^9}, {3.9784750125056353`*^9, 3.9784751268946743`*^9}, {
+  3.9784753513672647`*^9, 3.978475589917285*^9}, {3.97847562133663*^9, 
+  3.9784756386234913`*^9}, {3.978475744816267*^9, 3.9784757455383787`*^9}, {
+  3.978475785163684*^9, 3.978475786767466*^9}, {3.978477031996523*^9, 
+  3.978477051363613*^9}},ExpressionUUID->"6322e05b-94da-44ff-88a0-\
+d11414dd9287"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ StyleBox["You may recall from an earlier notebook that we initially derived \
+the covariant derivative and connections without reference to a metric. It \
+was only later, when deriving the Christoffel symbols for GR, that we invoked \
+the metric plus constraints like torsion freedom. Relaxing torsion freedom \
+unveils the spin connection\[LongDash]the gauge field of local Lorentz \
+invariance\[LongDash]which is the only way GR can couple to spin density. In \
+standard GR, this field is effectively hidden inside the Christoffel symbols. \
+Pulling it out explicitly only strengthens the frustrating point that, unlike \
+the ",
+  FontSlant->"Italic"],
+ StyleBox["independent",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ StyleBox[" gauge fields of electromagnetism and Yang-Mills, the gauge field \
+of GR is entirely in the geometry itself.",
+  FontSlant->"Italic"]
+}], "Item",
+ CellChangeTimes->{{3.978475800350834*^9, 3.978476179296729*^9}, {
+  3.97847621293364*^9, 3.978476323290929*^9}, {3.97847652517805*^9, 
+  3.978476764343961*^9}, {3.978477079619814*^9, 3.978477080255661*^9}, {
+  3.9784771179205236`*^9, 
+  3.9784771217682133`*^9}},ExpressionUUID->"9d032eb1-9069-4c1c-b14b-\
+1f3cdbc15076"],
 
 Cell[CellGroupData[{
 
@@ -486,6 +674,216 @@ Cell[BoxData[
 
  CellChangeTimes->{{3.978343601886656*^9, 3.9783436184357777`*^9}},
  CellLabel->"In[12]:=",ExpressionUUID->"eb6b6702-e197-4a79-94bd-9a9165bfe2cc"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Appendix: Spin Current and Gravitation as a Gauge Theory", "Section",
+ CellChangeTimes->{{3.9784634251754417`*^9, 3.978463431650586*^9}, {
+  3.978467221274311*^9, 
+  3.978467228737336*^9}},ExpressionUUID->"8b07ab75-9d83-4f32-9461-\
+b8e99837bcf0"],
+
+Cell["\<\
+To align gravitation with gauge theory, we are led to the conservation of \
+spin current as a consequence of Lorentz invariance, specifically in the \
+Einstein-Cartan-Sciama-Kibble (ECSK) theory.\
+\>", "Text",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637888906593`*^9}, {
+   3.978467146885333*^9, 3.9784671744670887`*^9}, {3.978467237695951*^9, 
+   3.978467248435212*^9}, {3.978467484630767*^9, 3.978467573417486*^9}, 
+   3.978467641682742*^9},ExpressionUUID->"3c19d593-6ddb-49e5-bed9-\
+0aa8c7dd4c77"],
+
+Cell["Here are some references that explicitly discuss this point:", "Text",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.978463822489818*^9}, 
+   3.978463853492107*^9},ExpressionUUID->"bd8117b2-3d13-414f-b8ce-\
+6391e381f873"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ " Sean Carroll, ",
+ StyleBox["Spacetime and Geometry: An Introduction to General Relativity",
+  FontSlant->"Italic"]
+}], "Item",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 
+   3.978463851463154*^9}},ExpressionUUID->"9c9f3996-4222-4a12-ab63-\
+24c6e6811ef6"],
+
+Cell["\<\
+Appendix J, Page 486\[VeryThinSpace]ff, under local Lorentz invariance, \
+tetrads, and the spin connection:\
+\>", "ItemParagraph",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.97846430622845*^9}, {
+   3.978466130000834*^9, 3.97846617162918*^9}, {3.978467658624906*^9, 
+   3.9784676636610527`*^9}},ExpressionUUID->"47b81c5e-7466-4414-923f-\
+9d96f0db6d9a"],
+
+Cell[TextData[{
+ "Carroll details how the spin connection ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[Omega]", "\[Mu]", 
+    RowBox[{"\[VeryThinSpace]", 
+     RowBox[{"a", "\[VeryThinSpace]", "b"}]}]], TraditionalForm]],
+  ExpressionUUID->"e9336ba3-8ca5-4d1e-90fb-c0c62756493b"],
+ " acts as the gauge field for local Lorentz transformations. He also \
+explains that standard GR, via the metric formulation, assumes that the \
+torsion tensor ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    SuperscriptBox["T", 
+     RowBox[{"\[VeryThinSpace]", "\[Lambda]"}]], 
+    RowBox[{"\[VeryThinSpace]", 
+     RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Nu]"}]}]], TraditionalForm]],
+  ExpressionUUID->"a2057e92-422b-4a77-9933-c88cddc68b1b"],
+ " is zero, locking the Levi-Civita connection to the metric and hiding \
+everything else in the energy-momentum tensor."
+}], "ItemParagraph",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466361194891*^9}, {
+   3.9784673056989098`*^9, 3.9784673452325478`*^9}, {3.978467678759273*^9, 
+   3.978467692377183*^9}},ExpressionUUID->"97d54446-4cbf-430e-a1e8-\
+cb1b09e4fe1f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Friedrich W. Hehl et al., ",
+ StyleBox["General Relativity with Spin and Torsion: Foundations and \
+Prospects",
+  FontSlant->"Italic"],
+ " (Rev. Mod. Phys. 48, 393, 1976)"
+}], "Item",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466361194891*^9}, {
+   3.9784673056989098`*^9, 
+   3.978467354942222*^9}},ExpressionUUID->"d42a3ca6-0f7d-47c3-9359-\
+6874822f94ed"],
+
+Cell["This definitive review paper proves that:", "ItemParagraph",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466361194891*^9}, {
+   3.9784673056989098`*^9, 
+   3.978467385382815*^9}},ExpressionUUID->"a73a9876-1fbd-482e-9c22-\
+bc8c848e8035"],
+
+Cell["\<\
+Invariance under general transformations (diffeomorphisms), leads to the \
+conservation of the energy-momentum tensor.\
+\>", "Subitem",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.9784663902544317`*^9}, {
+   3.978467723999647*^9, 
+   3.978467743088092*^9}},ExpressionUUID->"e27bbfa1-6988-428c-98d9-\
+bdafe05f0bdb"],
+
+Cell["\<\
+Invariance under local Lorentz transformations implies conservation of the \
+spin angular momentum tensor (the spin current).\
+\>", "Subitem",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.9784664333289547`*^9}, {
+   3.978467424580559*^9, 3.9784674399227*^9}, {3.9784677547756577`*^9, 
+   3.9784677558930273`*^9}},ExpressionUUID->"ffef7d33-5cb1-492d-bbdd-\
+8d514fcd685e"],
+
+Cell["\<\
+Standard Einstein GT with vanishing torsion, which we assumed in this series \
+of notebooks, collapses the two symmetries and hides the independent spin \
+current.\
+\>", "Subitem",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466451046755*^9}, {
+   3.978467764934806*^9, 
+   3.9784678683187*^9}},ExpressionUUID->"ae825c12-7bee-4d85-8900-\
+83a223968980"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "T. W. B. Kibble, ",
+ StyleBox["Lorentz Invariance and the Gravitational Field",
+  FontSlant->"Italic"],
+ " (J. Math. Phys. 2, 212, 1961)"
+}], "Item",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 
+   3.978466486720623*^9}},ExpressionUUID->"0a9b9626-464b-4f9c-8d94-\
+07d51225c9e0"],
+
+Cell["\<\
+Foundational paper that derives gravity as the gauge theory of the Poincar\
+\[EAcute] group, i.e., Lorentz + translations\
+\>", "ItemParagraph",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466510390306*^9}, {
+   3.9784669609195147`*^9, 3.978467137541203*^9}, {3.978467883335359*^9, 
+   3.9784679272681417`*^9}, {3.978468065503084*^9, 
+   3.97846807401269*^9}},ExpressionUUID->"32e2ca27-b4f9-4e82-a0b0-\
+78a1f5617ef1"],
+
+Cell["\<\
+Kibble shows that gauging translations yields the tetrad-metric, coupled to \
+energy-momentum, and gauging the Lorentz subgroup, boost + rotation, yields \
+the spin connection, permitting transformation of spinors, otherwise \
+impossible.\
+\>", "ItemParagraph",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466510390306*^9}, {
+   3.9784669609195147`*^9, 3.978467137541203*^9}, {3.978467883335359*^9, 
+   3.9784679272681417`*^9}, {3.978468090057158*^9, 
+   3.978468133493339*^9}},ExpressionUUID->"1ad636d7-77b3-42a0-a832-\
+24fe0037322f"]
+}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2316,7 +2714,7 @@ HABgEAaA///17FwJZgscus2lltdb+Hw+n8/n83/171zqpD9b5/h8Pp/P5/O3
   ImageSizeRaw->{609., 224.},
   PlotRange->{{0, 609.}, {0, 224.}}]], "Input",
  Evaluatable->False,ExpressionUUID->"ae3563d7-6f1b-452b-9539-d9cc2693a391"]
-}, Open  ]],
+}, Closed]],
 
 Cell[CellGroupData[{
 
@@ -3204,7 +3602,7 @@ Cell[BoxData[
   3.978341563582185*^9}},
  CellLabel->"In[17]:=",ExpressionUUID->"baa2a22e-e810-49dd-9e5a-03465a98faa6"]
 }, Open  ]]
-}, Open  ]],
+}, Closed]],
 
 Cell[CellGroupData[{
 
@@ -3254,7 +3652,7 @@ Cell[BoxData[{
   3.978341178093062*^9}, {3.978341776186894*^9, 3.978341791626193*^9}},
  CellLabel->"In[19]:=",ExpressionUUID->"2ccf8fab-11ce-436f-9fe0-4f9cf52cc451"]
 }, Open  ]]
-}, Open  ]],
+}, Closed]],
 
 Cell[CellGroupData[{
 
@@ -3905,7 +4303,7 @@ compiler_poc.wl\>\""}]], "Input",
   3.9777497927885647`*^9}},
  CellLabel->"In[34]:=",ExpressionUUID->"13f1bd74-fcfa-4afa-a656-5c95f9babb97"]
 }, Open  ]]
-}, Open  ]],
+}, Closed]],
 
 Cell[CellGroupData[{
 
@@ -3983,7 +4381,7 @@ In future work, we will continue to extend and expand \[ScriptCapitalU]\
   3.977647871321611*^9, 
   3.97764790291636*^9}},ExpressionUUID->"3b2f6cbb-b544-400c-b240-\
 c4cf66e1c725"]
-}, Open  ]],
+}, Closed]],
 
 Cell[CellGroupData[{
 
@@ -4337,13 +4735,95 @@ Archibald",
    3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
    3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
    3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
-   3.977315824765572*^9}},ExpressionUUID->"f225bdae-b422-4d77-a985-\
-0a64a6ef23b1"]
+   3.977315824765572*^9}, {3.9784634778774223`*^9, 
+   3.9784634778792048`*^9}},ExpressionUUID->"f225bdae-b422-4d77-a985-\
+0a64a6ef23b1"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Sean Carroll, ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/a8A0P97"], None},
+  ButtonNote->"https://a.co/d/a8A0P97"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Spacetime and Geometry: An Introduction to General \
+Relativity",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/a8A0P97"], None},
+  ButtonNote->"https://a.co/d/a8A0P97"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Cambridge University Press, 2019."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463525398262*^9, 3.978463568840535*^9}, {3.978463647808242*^9, 
+   3.978463687986936*^9}},ExpressionUUID->"fcb215d1-bd1a-41de-a921-\
+083fb81e3e4a"],
+
+Cell[TextData[{
+ "Friedrich W. Hehl et al., ",
+ StyleBox["General Relativity with Spin and Torsion: Foundations and \
+Prospects",
+  FontSlant->"Italic"],
+ " (Rev. Mod. Phys. 48, 393, 1976)"
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463525398262*^9, 
+   3.9784635433588142`*^9}},ExpressionUUID->"f3341c48-53c5-49e9-976a-\
+15dcb73e56c4"],
+
+Cell[TextData[{
+ "T. W. B. Kibble, ",
+ StyleBox["Lorentz Invariance and the Gravitational Field",
+  FontSlant->"Italic"],
+ " (J. Math. Phys. 2, 212, 1961)"
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463524614047*^9, 
+   3.9784635246159153`*^9}},ExpressionUUID->"02594bf2-2c8b-41f0-95ff-\
+50ecf041f554"]
 }, Open  ]]
 }, Open  ]]
 },
 WindowSize->{1707, 1381},
-WindowMargins->{{Automatic, 1706}, {Automatic, 0}},
+WindowMargins->{{Automatic, 1706}, {Automatic, -323}},
 PrintingCopies->1,
 PrintingPageRange->{1, Automatic},
 Magnification:>1.5 Inherited,
@@ -4413,168 +4893,201 @@ Cell[13091, 328, 371, 8, 74, "Input",ExpressionUUID->"2b33fb69-f8c2-48fe-a7a1-6d
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[13511, 342, 177, 3, 99, "Section",ExpressionUUID->"7f6b77f4-b0fc-4a67-b903-969955fdadc1"],
-Cell[13691, 347, 396, 8, 83, "Text",ExpressionUUID->"e00680e2-ffc2-4e2a-8e3d-60cc05e325e2"],
+Cell[13691, 347, 642, 11, 83, "Text",ExpressionUUID->"e00680e2-ffc2-4e2a-8e3d-60cc05e325e2"],
 Cell[CellGroupData[{
-Cell[14112, 359, 909, 22, 74, "Input",ExpressionUUID->"78497388-807e-47b1-a2f3-54ab4ce22561"],
-Cell[15024, 383, 718, 27, 37, "Echo",ExpressionUUID->"73b095dc-aed8-4473-85b7-40749cca7779"]
+Cell[14358, 362, 952, 22, 74, "Input",ExpressionUUID->"78497388-807e-47b1-a2f3-54ab4ce22561"],
+Cell[15313, 386, 718, 27, 37, "Echo",ExpressionUUID->"58b8f4b0-b19c-4ab5-8213-b9588295485a"]
 }, Open  ]],
-Cell[15757, 413, 1145, 31, 83, "Text",ExpressionUUID->"404d6c0e-cac6-4e99-867b-9cc4b8514e01"],
+Cell[16046, 416, 1441, 38, 83, "Text",ExpressionUUID->"404d6c0e-cac6-4e99-867b-9cc4b8514e01"],
+Cell[17490, 456, 750, 20, 76, "Item",ExpressionUUID->"9e8961c6-4915-4055-8466-f43e1d44c1f3"],
+Cell[18243, 478, 1860, 48, 116, "Text",ExpressionUUID->"ccef3411-d62b-4b46-9fd6-d814a2aeaeb2"],
+Cell[20106, 528, 1222, 21, 116, "Text",ExpressionUUID->"91c0e44b-e074-4c86-b23b-d0062415bf76"],
+Cell[21331, 551, 1422, 21, 149, "Text",ExpressionUUID->"ea0340b3-89be-4a3b-9fba-a251bde0f602"],
+Cell[22756, 574, 1846, 31, 181, "Text",ExpressionUUID->"6322e05b-94da-44ff-88a0-d11414dd9287"],
 Cell[CellGroupData[{
-Cell[16927, 448, 522, 12, 44, "Input",ExpressionUUID->"67cbb9ea-e987-407e-b730-e2e624555585"],
-Cell[17452, 462, 507, 15, 52, "Output",ExpressionUUID->"619b6d01-8401-44a2-8a48-af2fff7f0f99"]
+Cell[24627, 609, 1221, 23, 165, "Item",ExpressionUUID->"9d032eb1-9069-4c1c-b14b-1f3cdbc15076"],
+Cell[CellGroupData[{
+Cell[25873, 636, 522, 12, 44, "Input",ExpressionUUID->"67cbb9ea-e987-407e-b730-e2e624555585"],
+Cell[26398, 650, 507, 15, 52, "Output",ExpressionUUID->"619b6d01-8401-44a2-8a48-af2fff7f0f99"]
 }, Open  ]],
-Cell[17974, 480, 316, 7, 44, "Input",ExpressionUUID->"eb6b6702-e197-4a79-94bd-9a9165bfe2cc"]
+Cell[26920, 668, 316, 7, 44, "Input",ExpressionUUID->"eb6b6702-e197-4a79-94bd-9a9165bfe2cc"]
+}, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[18327, 492, 171, 3, 99, "Section",ExpressionUUID->"87596be0-8981-4ae7-855a-80a10f05ea5d"],
-Cell[18501, 497, 500, 11, 50, "Text",ExpressionUUID->"c083be3d-c745-4a6f-9908-4b00b4616026"],
-Cell[19004, 510, 27663, 459, 154, "Text",ExpressionUUID->"f5df19f4-5997-4536-b82f-be0f0ae4a067"],
-Cell[46670, 971, 513, 10, 50, "Text",ExpressionUUID->"6899950a-59bf-4ed3-a1f4-3545771149cd"],
-Cell[47186, 983, 81089, 1334, 300, "Input",ExpressionUUID->"ae3563d7-6f1b-452b-9539-d9cc2693a391",
+Cell[27285, 681, 252, 4, 99, "Section",ExpressionUUID->"8b07ab75-9d83-4f32-9461-b8e99837bcf0"],
+Cell[27540, 687, 543, 10, 83, "Text",ExpressionUUID->"3c19d593-6ddb-49e5-bed9-0aa8c7dd4c77"],
+Cell[28086, 699, 250, 4, 50, "Text",ExpressionUUID->"bd8117b2-3d13-414f-b8ce-6391e381f873"],
+Cell[CellGroupData[{
+Cell[28361, 707, 349, 9, 46, "Item",ExpressionUUID->"9c9f3996-4222-4a12-ab63-24c6e6811ef6"],
+Cell[28713, 718, 536, 10, 35, "ItemParagraph",ExpressionUUID->"47b81c5e-7466-4414-923f-9d96f0db6d9a"],
+Cell[29252, 730, 1428, 30, 68, "ItemParagraph",ExpressionUUID->"97d54446-4cbf-430e-a1e8-cb1b09e4fe1f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[30717, 765, 701, 15, 46, "Item",ExpressionUUID->"d42a3ca6-0f7d-47c3-9359-6874822f94ed"],
+Cell[31421, 782, 566, 9, 35, "ItemParagraph",ExpressionUUID->"a73a9876-1fbd-482e-9c22-bc8c848e8035"],
+Cell[31990, 793, 645, 12, 38, "Subitem",ExpressionUUID->"e27bbfa1-6988-428c-98d9-bdafe05f0bdb"],
+Cell[32638, 807, 700, 12, 38, "Subitem",ExpressionUUID->"ffef7d33-5cb1-492d-bbdd-8d514fcd685e"],
+Cell[33341, 821, 686, 13, 38, "Subitem",ExpressionUUID->"ae825c12-7bee-4d85-8900-83a223968980"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[34064, 839, 615, 13, 46, "Item",ExpressionUUID->"0a9b9626-464b-4f9c-8d94-07d51225c9e0"],
+Cell[34682, 854, 751, 13, 35, "ItemParagraph",ExpressionUUID->"32e2ca27-b4f9-4e82-a0b0-78a1f5617ef1"],
+Cell[35436, 869, 869, 15, 65, "ItemParagraph",ExpressionUUID->"1ad636d7-77b3-42a0-a832-24fe0037322f"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[36354, 890, 171, 3, 99, "Section",ExpressionUUID->"87596be0-8981-4ae7-855a-80a10f05ea5d"],
+Cell[36528, 895, 500, 11, 50, "Text",ExpressionUUID->"c083be3d-c745-4a6f-9908-4b00b4616026"],
+Cell[37031, 908, 27663, 459, 154, "Text",ExpressionUUID->"f5df19f4-5997-4536-b82f-be0f0ae4a067"],
+Cell[64697, 1369, 513, 10, 50, "Text",ExpressionUUID->"6899950a-59bf-4ed3-a1f4-3545771149cd"],
+Cell[65213, 1381, 81089, 1334, 300, "Input",ExpressionUUID->"ae3563d7-6f1b-452b-9539-d9cc2693a391",
  Evaluatable->False]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[146339, 2720, 228, 4, 76, "Section",ExpressionUUID->"c39c3893-98eb-4770-8ae9-e6023cbe233b"],
+Cell[146570, 2726, 385, 8, 50, "Text",ExpressionUUID->"c1717b71-6757-406a-8ecd-8b44a3672bb3"],
+Cell[CellGroupData[{
+Cell[146980, 2738, 187, 3, 79, "Subsection",ExpressionUUID->"5d2d52a2-99ca-49f2-924d-46316a3e8fa6"],
+Cell[147170, 2743, 860, 17, 83, "Text",ExpressionUUID->"4b077bde-2e12-4f86-9749-e5c2a764e725"],
+Cell[148033, 2762, 1490, 32, 84, "Input",ExpressionUUID->"8f47eff2-161e-45ac-abe0-994c181b1f22"],
+Cell[149526, 2796, 502, 11, 76, "Item",ExpressionUUID->"4bc96260-a2fb-4718-8b89-ff207b4bc3fd"],
+Cell[150031, 2809, 538, 11, 76, "Item",ExpressionUUID->"7971ff42-0706-44ba-8c6a-93b164426ae4"],
+Cell[150572, 2822, 1505, 40, 151, "Text",ExpressionUUID->"8d9b8faa-3fd9-4ee6-b326-a2febb867cc4"],
+Cell[CellGroupData[{
+Cell[152102, 2866, 179, 3, 65, "Subsubsection",ExpressionUUID->"d5479e2c-ddc1-4ccb-8f91-89f15076f8f0"],
+Cell[152284, 2871, 2750, 61, 84, "Text",ExpressionUUID->"40806801-03db-41f7-8e74-98faca5c388b"],
+Cell[155037, 2934, 1858, 38, 50, "Text",ExpressionUUID->"9513fead-4291-4937-9529-3eb31487940e"],
+Cell[156898, 2974, 917, 19, 83, "Text",ExpressionUUID->"0fa57c91-c60f-4610-8e76-4537855e4767"],
+Cell[157818, 2995, 1819, 42, 116, "Text",ExpressionUUID->"9910a85e-2bba-45ec-b23f-e7caad461b51"],
+Cell[159640, 3039, 1345, 34, 52, "Text",ExpressionUUID->"3994da14-b995-457b-bd0a-61f4dabf8303"],
+Cell[160988, 3075, 1611, 42, 80, "Input",ExpressionUUID->"61b2e451-809d-40dd-9cda-52a664fa25f1"],
+Cell[162602, 3119, 1102, 19, 76, "Item",ExpressionUUID->"53b7095b-7ffd-4e9a-8a5f-49b84ca7f9b7"],
+Cell[163707, 3140, 393, 6, 50, "Text",ExpressionUUID->"f8c7ce29-06b2-44b1-badd-33538fe570b8"],
+Cell[164103, 3148, 708, 16, 46, "Input",ExpressionUUID->"416ee8b0-9d46-4d73-96fe-18365b1492b8"],
+Cell[164814, 3166, 705, 13, 83, "Text",ExpressionUUID->"14bc7c28-8bc4-4033-9912-fb595cf98f98"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[128312, 2322, 228, 4, 99, "Section",ExpressionUUID->"c39c3893-98eb-4770-8ae9-e6023cbe233b"],
-Cell[128543, 2328, 385, 8, 50, "Text",ExpressionUUID->"c1717b71-6757-406a-8ecd-8b44a3672bb3"],
-Cell[CellGroupData[{
-Cell[128953, 2340, 187, 3, 79, "Subsection",ExpressionUUID->"5d2d52a2-99ca-49f2-924d-46316a3e8fa6"],
-Cell[129143, 2345, 860, 17, 83, "Text",ExpressionUUID->"4b077bde-2e12-4f86-9749-e5c2a764e725"],
-Cell[130006, 2364, 1490, 32, 84, "Input",ExpressionUUID->"8f47eff2-161e-45ac-abe0-994c181b1f22"],
-Cell[131499, 2398, 502, 11, 46, "Item",ExpressionUUID->"4bc96260-a2fb-4718-8b89-ff207b4bc3fd"],
-Cell[132004, 2411, 538, 11, 46, "Item",ExpressionUUID->"7971ff42-0706-44ba-8c6a-93b164426ae4"],
-Cell[132545, 2424, 1505, 40, 117, "Text",ExpressionUUID->"8d9b8faa-3fd9-4ee6-b326-a2febb867cc4"],
-Cell[CellGroupData[{
-Cell[134075, 2468, 179, 3, 65, "Subsubsection",ExpressionUUID->"d5479e2c-ddc1-4ccb-8f91-89f15076f8f0"],
-Cell[134257, 2473, 2750, 61, 84, "Text",ExpressionUUID->"40806801-03db-41f7-8e74-98faca5c388b"],
-Cell[137010, 2536, 1858, 38, 50, "Text",ExpressionUUID->"9513fead-4291-4937-9529-3eb31487940e"],
-Cell[138871, 2576, 917, 19, 83, "Text",ExpressionUUID->"0fa57c91-c60f-4610-8e76-4537855e4767"],
-Cell[139791, 2597, 1819, 42, 116, "Text",ExpressionUUID->"9910a85e-2bba-45ec-b23f-e7caad461b51"],
-Cell[141613, 2641, 1345, 34, 52, "Text",ExpressionUUID->"3994da14-b995-457b-bd0a-61f4dabf8303"],
-Cell[142961, 2677, 1611, 42, 80, "Input",ExpressionUUID->"61b2e451-809d-40dd-9cda-52a664fa25f1"],
-Cell[144575, 2721, 1102, 19, 76, "Item",ExpressionUUID->"53b7095b-7ffd-4e9a-8a5f-49b84ca7f9b7"],
-Cell[145680, 2742, 393, 6, 50, "Text",ExpressionUUID->"f8c7ce29-06b2-44b1-badd-33538fe570b8"],
-Cell[146076, 2750, 708, 16, 46, "Input",ExpressionUUID->"416ee8b0-9d46-4d73-96fe-18365b1492b8"],
-Cell[146787, 2768, 705, 13, 83, "Text",ExpressionUUID->"14bc7c28-8bc4-4033-9912-fb595cf98f98"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[147529, 2786, 178, 3, 65, "Subsubsection",ExpressionUUID->"e7927d72-3e4f-4539-955d-420c837f7cee"],
-Cell[147710, 2791, 446, 10, 44, "Input",ExpressionUUID->"dcdd3e97-2533-4519-ad64-822d5eec22d5"]
+Cell[165556, 3184, 178, 3, 65, "Subsubsection",ExpressionUUID->"e7927d72-3e4f-4539-955d-420c837f7cee"],
+Cell[165737, 3189, 446, 10, 44, "Input",ExpressionUUID->"dcdd3e97-2533-4519-ad64-822d5eec22d5"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[148205, 2807, 189, 3, 79, "Subsection",ExpressionUUID->"e5f9acae-9721-4942-ba8a-f03cb056abc5"],
-Cell[148397, 2812, 529, 11, 50, "Text",ExpressionUUID->"980d453a-fc5a-49fc-8265-52fe77240a63"],
+Cell[166232, 3205, 189, 3, 79, "Subsection",ExpressionUUID->"e5f9acae-9721-4942-ba8a-f03cb056abc5"],
+Cell[166424, 3210, 529, 11, 50, "Text",ExpressionUUID->"980d453a-fc5a-49fc-8265-52fe77240a63"],
 Cell[CellGroupData[{
-Cell[148951, 2827, 480, 8, 46, "Item",ExpressionUUID->"17b60920-e10f-410a-a18f-1661d9e830f2"],
-Cell[149434, 2837, 970, 19, 74, "Input",ExpressionUUID->"8edd2ca6-739b-4c11-9ae9-174527c5c075"]
+Cell[166978, 3225, 480, 8, 46, "Item",ExpressionUUID->"17b60920-e10f-410a-a18f-1661d9e830f2"],
+Cell[167461, 3235, 970, 19, 74, "Input",ExpressionUUID->"8edd2ca6-739b-4c11-9ae9-174527c5c075"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[150453, 2862, 178, 3, 79, "Subsection",ExpressionUUID->"0798bfd9-ec3a-4660-b6fb-dceeccdda63a"],
-Cell[150634, 2867, 562, 11, 50, "Text",ExpressionUUID->"c991b992-a225-48cd-9654-8be28bed3995"],
+Cell[168480, 3260, 178, 3, 79, "Subsection",ExpressionUUID->"0798bfd9-ec3a-4660-b6fb-dceeccdda63a"],
+Cell[168661, 3265, 562, 11, 50, "Text",ExpressionUUID->"c991b992-a225-48cd-9654-8be28bed3995"],
 Cell[CellGroupData[{
-Cell[151221, 2882, 865, 22, 76, "Item",ExpressionUUID->"23a79924-59ef-441c-becf-ddb6297abe9f"],
-Cell[152089, 2906, 388, 9, 44, "Input",ExpressionUUID->"6c115821-aea7-42a4-9aa4-f48247d3eb9d"]
+Cell[169248, 3280, 865, 22, 76, "Item",ExpressionUUID->"23a79924-59ef-441c-becf-ddb6297abe9f"],
+Cell[170116, 3304, 388, 9, 44, "Input",ExpressionUUID->"6c115821-aea7-42a4-9aa4-f48247d3eb9d"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[152526, 2921, 168, 3, 79, "Subsection",ExpressionUUID->"573dd0d0-71e4-4d5f-a62a-ea242f12d852"],
-Cell[152697, 2926, 1492, 32, 116, "Text",ExpressionUUID->"66b5264d-f6de-4b91-999d-51e020d821a7"],
-Cell[154192, 2960, 378, 8, 44, "Input",ExpressionUUID->"0521e6a5-10f1-4049-9638-f51ab77c825e"],
-Cell[154573, 2970, 13053, 221, 66, "Input",ExpressionUUID->"21d1bbbf-7817-400f-be56-2edc7c10548a",
+Cell[170553, 3319, 168, 3, 79, "Subsection",ExpressionUUID->"573dd0d0-71e4-4d5f-a62a-ea242f12d852"],
+Cell[170724, 3324, 1492, 32, 116, "Text",ExpressionUUID->"66b5264d-f6de-4b91-999d-51e020d821a7"],
+Cell[172219, 3358, 378, 8, 44, "Input",ExpressionUUID->"0521e6a5-10f1-4049-9638-f51ab77c825e"],
+Cell[172600, 3368, 13053, 221, 66, "Input",ExpressionUUID->"21d1bbbf-7817-400f-be56-2edc7c10548a",
  Evaluatable->False],
-Cell[167629, 3193, 519, 11, 44, "Input",ExpressionUUID->"baa2a22e-e810-49dd-9e5a-03465a98faa6"]
+Cell[185656, 3591, 519, 11, 44, "Input",ExpressionUUID->"baa2a22e-e810-49dd-9e5a-03465a98faa6"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[186224, 3608, 167, 3, 76, "Section",ExpressionUUID->"0e9b1b6e-1a30-458a-b8d7-450704b5fb26"],
+Cell[186394, 3613, 574, 10, 83, "Text",ExpressionUUID->"8959856b-d3dd-4b7a-867c-109b67689108"],
+Cell[186971, 3625, 257, 4, 44, "Input",ExpressionUUID->"0ab210ee-ffda-40f7-87ec-04698e393ca3"],
+Cell[CellGroupData[{
+Cell[187253, 3633, 184, 3, 79, "Subsection",ExpressionUUID->"c443c63d-5cf2-4575-b7fa-a64d50b46f5f"],
+Cell[187440, 3638, 732, 14, 74, "Input",ExpressionUUID->"2ccf8fab-11ce-436f-9fe0-4f9cf52cc451"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[188221, 3658, 229, 4, 76, "Section",ExpressionUUID->"0f0f1edf-ee06-49af-b1a4-834f673fb73b"],
+Cell[188453, 3664, 865, 14, 116, "Text",ExpressionUUID->"63ed89cc-84bb-4136-a1b5-59a1d89512e8"],
+Cell[CellGroupData[{
+Cell[189343, 3682, 163, 3, 79, "Subsection",ExpressionUUID->"c44e69bc-a964-443d-ad9d-681cfbfdceb3"],
+Cell[189509, 3687, 323, 5, 50, "Text",ExpressionUUID->"24543157-fb9f-4584-9fb6-7609a7283272"],
+Cell[189835, 3694, 589, 10, 44, "Input",ExpressionUUID->"a3587c78-6432-47da-be46-71ca0e4494b5"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[190461, 3709, 217, 4, 79, "Subsection",ExpressionUUID->"a12d4f2f-64bc-4571-8bdc-96579f00e9dd"],
+Cell[190681, 3715, 464, 9, 83, "Text",ExpressionUUID->"df9b1369-d985-414c-acda-724454984468"],
+Cell[191148, 3726, 592, 11, 44, "Input",ExpressionUUID->"d53d5e68-4979-46f2-acbf-4efc4194bdcf"],
+Cell[191743, 3739, 545, 10, 83, "Text",ExpressionUUID->"f88cd015-96df-4ed9-9243-7eb96d883bb9"],
+Cell[192291, 3751, 558, 13, 80, "Input",ExpressionUUID->"19efa149-4589-444d-bebb-ab90e8f4703a"],
+Cell[CellGroupData[{
+Cell[192874, 3768, 388, 11, 66, "Subsubsection",ExpressionUUID->"baabfcc2-4278-4385-958b-92b9cbb7405f"],
+Cell[193265, 3781, 899, 17, 46, "Input",ExpressionUUID->"a6954295-2e8b-4113-904c-ccf7fb1bb8a8"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[194201, 3803, 367, 11, 65, "Subsubsection",ExpressionUUID->"1db844a4-5121-4e7c-8650-66721277171b"],
+Cell[194571, 3816, 257, 6, 50, "Text",ExpressionUUID->"a60663de-1ee4-46d6-8c65-f2cc2ec2d45f"],
+Cell[194831, 3824, 759, 12, 44, "Input",ExpressionUUID->"f2dcf6fc-d5dc-464b-9706-c33afdb2adf9"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[168197, 3210, 167, 3, 99, "Section",ExpressionUUID->"0e9b1b6e-1a30-458a-b8d7-450704b5fb26"],
-Cell[168367, 3215, 574, 10, 83, "Text",ExpressionUUID->"8959856b-d3dd-4b7a-867c-109b67689108"],
-Cell[168944, 3227, 257, 4, 44, "Input",ExpressionUUID->"0ab210ee-ffda-40f7-87ec-04698e393ca3"],
+Cell[195639, 3842, 183, 3, 79, "Subsection",ExpressionUUID->"173ca9f0-cce3-41f2-9d2d-908a4d69fe60"],
+Cell[195825, 3847, 550, 10, 50, "Text",ExpressionUUID->"dfc4fb35-1796-4332-b8f1-d9be1bc65cf7"],
 Cell[CellGroupData[{
-Cell[169226, 3235, 184, 3, 79, "Subsection",ExpressionUUID->"c443c63d-5cf2-4575-b7fa-a64d50b46f5f"],
-Cell[169413, 3240, 732, 14, 74, "Input",ExpressionUUID->"2ccf8fab-11ce-436f-9fe0-4f9cf52cc451"]
+Cell[196400, 3861, 671, 11, 105, "Item",ExpressionUUID->"977d43c2-ffd4-4e4b-91e1-6ac0ce8d879a"],
+Cell[197074, 3874, 4299, 94, 411, "Input",ExpressionUUID->"a97a0bdf-4384-4a46-95c1-6de3232f1c71"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[201410, 3973, 777, 11, 65, "Subsubsection",ExpressionUUID->"e0d59e4a-ef40-4e21-94ed-b1b45ffb37e2"],
+Cell[202190, 3986, 888, 15, 50, "Text",ExpressionUUID->"d96dd6f7-59a6-49d3-915b-74e0ddcb3b63"],
+Cell[203081, 4003, 1675, 33, 76, "Input",ExpressionUUID->"2a62ddc9-a3d8-4465-adcc-4e967dbdd172"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[170194, 3260, 229, 4, 99, "Section",ExpressionUUID->"0f0f1edf-ee06-49af-b1a4-834f673fb73b"],
-Cell[170426, 3266, 865, 14, 116, "Text",ExpressionUUID->"63ed89cc-84bb-4136-a1b5-59a1d89512e8"],
-Cell[CellGroupData[{
-Cell[171316, 3284, 163, 3, 79, "Subsection",ExpressionUUID->"c44e69bc-a964-443d-ad9d-681cfbfdceb3"],
-Cell[171482, 3289, 323, 5, 50, "Text",ExpressionUUID->"24543157-fb9f-4584-9fb6-7609a7283272"],
-Cell[171808, 3296, 589, 10, 44, "Input",ExpressionUUID->"a3587c78-6432-47da-be46-71ca0e4494b5"]
+Cell[204805, 4042, 277, 5, 79, "Subsection",ExpressionUUID->"40886e31-8e1f-4e1e-8dd8-73c40cb518d8"],
+Cell[205085, 4049, 714, 14, 83, "Text",ExpressionUUID->"49e7b513-12ad-4fbc-97a2-9cde888e33a9"],
+Cell[205802, 4065, 1084, 34, 55, "Text",ExpressionUUID->"9bb71c1f-fd78-4603-9882-f1b6b48f05cd"],
+Cell[206889, 4101, 3134, 68, 272, "Input",ExpressionUUID->"a97d993d-ca59-4d7d-8f5d-b29ec92ea51b"],
+Cell[210026, 4171, 603, 12, 83, "Text",ExpressionUUID->"0638e097-dd25-4ddf-b486-5639868fb775"],
+Cell[210632, 4185, 1740, 33, 135, "Input",ExpressionUUID->"d4e1c1fb-1bca-413c-adf5-ce8258bd58f0"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[172434, 3311, 217, 4, 79, "Subsection",ExpressionUUID->"a12d4f2f-64bc-4571-8bdc-96579f00e9dd"],
-Cell[172654, 3317, 464, 9, 50, "Text",ExpressionUUID->"df9b1369-d985-414c-acda-724454984468"],
-Cell[173121, 3328, 592, 11, 44, "Input",ExpressionUUID->"d53d5e68-4979-46f2-acbf-4efc4194bdcf"],
-Cell[173716, 3341, 545, 10, 50, "Text",ExpressionUUID->"f88cd015-96df-4ed9-9243-7eb96d883bb9"],
-Cell[174264, 3353, 558, 13, 80, "Input",ExpressionUUID->"19efa149-4589-444d-bebb-ab90e8f4703a"],
-Cell[CellGroupData[{
-Cell[174847, 3370, 388, 11, 66, "Subsubsection",ExpressionUUID->"baabfcc2-4278-4385-958b-92b9cbb7405f"],
-Cell[175238, 3383, 899, 17, 46, "Input",ExpressionUUID->"a6954295-2e8b-4113-904c-ccf7fb1bb8a8"]
+Cell[212409, 4223, 164, 3, 79, "Subsection",ExpressionUUID->"05ecdead-b02c-44ca-a913-369a6ab86557"],
+Cell[212576, 4228, 1165, 20, 44, "Input",ExpressionUUID->"64124acb-cb54-4812-acfd-0b8821bfd351"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[176174, 3405, 367, 11, 65, "Subsubsection",ExpressionUUID->"1db844a4-5121-4e7c-8650-66721277171b"],
-Cell[176544, 3418, 257, 6, 50, "Text",ExpressionUUID->"a60663de-1ee4-46d6-8c65-f2cc2ec2d45f"],
-Cell[176804, 3426, 759, 12, 44, "Input",ExpressionUUID->"f2dcf6fc-d5dc-464b-9706-c33afdb2adf9"]
+Cell[213778, 4253, 158, 3, 79, "Subsection",ExpressionUUID->"a3ca74f0-80dc-4bd2-b87e-49b15f9ce007"],
+Cell[213939, 4258, 970, 15, 44, "Input",ExpressionUUID->"54aa3a61-e315-4364-a368-607261929c27"],
+Cell[214912, 4275, 161, 3, 50, "Text",ExpressionUUID->"580603d6-8727-4ac5-af5c-90b20c433dd5"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[215110, 4283, 173, 3, 79, "Subsection",ExpressionUUID->"22221719-06c2-45c5-989e-9733cee9e3b2"],
+Cell[215286, 4288, 229, 6, 50, "Text",ExpressionUUID->"6ffbf2bb-7cbf-415a-90c6-5ad57dc617c0"],
+Cell[215518, 4296, 382, 7, 44, "Input",ExpressionUUID->"13f1bd74-fcfa-4afa-a656-5c95f9babb97"]
 }, Open  ]]
-}, Open  ]],
+}, Closed]],
 Cell[CellGroupData[{
-Cell[177612, 3444, 183, 3, 79, "Subsection",ExpressionUUID->"173ca9f0-cce3-41f2-9d2d-908a4d69fe60"],
-Cell[177798, 3449, 550, 10, 50, "Text",ExpressionUUID->"dfc4fb35-1796-4332-b8f1-d9be1bc65cf7"],
+Cell[215949, 4309, 157, 3, 76, "Section",ExpressionUUID->"44078a61-e046-484d-88fb-bf9ffa1a9329"],
+Cell[216109, 4314, 1047, 17, 83, "Text",ExpressionUUID->"91f99b6b-76ab-413f-9680-25c503bb53ef"],
+Cell[217159, 4333, 757, 13, 83, "Text",ExpressionUUID->"71ba8cde-2587-4aa5-9544-f6c03900f4cb"],
+Cell[217919, 4348, 700, 12, 83, "Text",ExpressionUUID->"97fc24d9-d092-4af1-b6a4-6561d2f04830"],
+Cell[218622, 4362, 522, 9, 83, "Text",ExpressionUUID->"039ac630-bf12-4daf-b4a0-b77305a6d970"],
+Cell[219147, 4373, 488, 9, 50, "Text",ExpressionUUID->"3b2f6cbb-b544-400c-b240-c4cf66e1c725"]
+}, Closed]],
 Cell[CellGroupData[{
-Cell[178373, 3463, 671, 11, 105, "Item",ExpressionUUID->"977d43c2-ffd4-4e4b-91e1-6ac0ce8d879a"],
-Cell[179047, 3476, 4299, 94, 411, "Input",ExpressionUUID->"a97a0bdf-4384-4a46-95c1-6de3232f1c71"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[183383, 3575, 777, 11, 65, "Subsubsection",ExpressionUUID->"e0d59e4a-ef40-4e21-94ed-b1b45ffb37e2"],
-Cell[184163, 3588, 888, 15, 50, "Text",ExpressionUUID->"d96dd6f7-59a6-49d3-915b-74e0ddcb3b63"],
-Cell[185054, 3605, 1675, 33, 76, "Input",ExpressionUUID->"2a62ddc9-a3d8-4465-adcc-4e967dbdd172"]
-}, Open  ]]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[186778, 3644, 277, 5, 79, "Subsection",ExpressionUUID->"40886e31-8e1f-4e1e-8dd8-73c40cb518d8"],
-Cell[187058, 3651, 714, 14, 83, "Text",ExpressionUUID->"49e7b513-12ad-4fbc-97a2-9cde888e33a9"],
-Cell[187775, 3667, 1084, 34, 55, "Text",ExpressionUUID->"9bb71c1f-fd78-4603-9882-f1b6b48f05cd"],
-Cell[188862, 3703, 3134, 68, 272, "Input",ExpressionUUID->"a97d993d-ca59-4d7d-8f5d-b29ec92ea51b"],
-Cell[191999, 3773, 603, 12, 83, "Text",ExpressionUUID->"0638e097-dd25-4ddf-b486-5639868fb775"],
-Cell[192605, 3787, 1740, 33, 135, "Input",ExpressionUUID->"d4e1c1fb-1bca-413c-adf5-ce8258bd58f0"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[194382, 3825, 164, 3, 79, "Subsection",ExpressionUUID->"05ecdead-b02c-44ca-a913-369a6ab86557"],
-Cell[194549, 3830, 1165, 20, 44, "Input",ExpressionUUID->"64124acb-cb54-4812-acfd-0b8821bfd351"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[195751, 3855, 158, 3, 79, "Subsection",ExpressionUUID->"a3ca74f0-80dc-4bd2-b87e-49b15f9ce007"],
-Cell[195912, 3860, 970, 15, 44, "Input",ExpressionUUID->"54aa3a61-e315-4364-a368-607261929c27"],
-Cell[196885, 3877, 161, 3, 50, "Text",ExpressionUUID->"580603d6-8727-4ac5-af5c-90b20c433dd5"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[197083, 3885, 173, 3, 79, "Subsection",ExpressionUUID->"22221719-06c2-45c5-989e-9733cee9e3b2"],
-Cell[197259, 3890, 229, 6, 50, "Text",ExpressionUUID->"6ffbf2bb-7cbf-415a-90c6-5ad57dc617c0"],
-Cell[197491, 3898, 382, 7, 44, "Input",ExpressionUUID->"13f1bd74-fcfa-4afa-a656-5c95f9babb97"]
-}, Open  ]]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[197922, 3911, 157, 3, 99, "Section",ExpressionUUID->"44078a61-e046-484d-88fb-bf9ffa1a9329"],
-Cell[198082, 3916, 1047, 17, 83, "Text",ExpressionUUID->"91f99b6b-76ab-413f-9680-25c503bb53ef"],
-Cell[199132, 3935, 757, 13, 83, "Text",ExpressionUUID->"71ba8cde-2587-4aa5-9544-f6c03900f4cb"],
-Cell[199892, 3950, 700, 12, 83, "Text",ExpressionUUID->"97fc24d9-d092-4af1-b6a4-6561d2f04830"],
-Cell[200595, 3964, 522, 9, 83, "Text",ExpressionUUID->"039ac630-bf12-4daf-b4a0-b77305a6d970"],
-Cell[201120, 3975, 488, 9, 50, "Text",ExpressionUUID->"3b2f6cbb-b544-400c-b240-c4cf66e1c725"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[201645, 3989, 685, 11, 99, "Section",ExpressionUUID->"d347c5b5-401c-4ef2-a2ab-e917feb8284c"],
-Cell[202333, 4002, 1558, 33, 46, "ItemNumbered",ExpressionUUID->"5a5186f3-3e56-41ad-8380-e5f7fdff11a8"],
-Cell[203894, 4037, 1634, 33, 46, "ItemNumbered",ExpressionUUID->"f5024369-fc9a-4681-a718-32f21ce11f7d"],
-Cell[205531, 4072, 1706, 35, 46, "ItemNumbered",ExpressionUUID->"4d3374f3-deee-4080-8fbc-63749ec6f55e"],
-Cell[207240, 4109, 2261, 44, 46, "ItemNumbered",ExpressionUUID->"18f5a39c-8809-44ab-b3d4-3960e547729e"],
-Cell[209504, 4155, 1368, 25, 46, "ItemNumbered",ExpressionUUID->"ff5708ee-ab41-4baf-bdae-57d698ba06de"],
-Cell[210875, 4182, 1371, 25, 46, "ItemNumbered",ExpressionUUID->"3df30547-ae4b-43ca-84c0-87b56f5a4396"],
-Cell[212249, 4209, 1267, 20, 46, "ItemNumbered",ExpressionUUID->"ed4efd47-9ea4-4e86-be23-4218728a3adf"],
-Cell[213519, 4231, 1771, 37, 46, "ItemNumbered",ExpressionUUID->"3c223a9c-2994-47d8-b3bd-4659d07cfb75"],
-Cell[215293, 4270, 1834, 37, 46, "ItemNumbered",ExpressionUUID->"28adb113-0e29-4705-adc5-10e328a8944e"],
-Cell[217130, 4309, 1477, 31, 46, "ItemNumbered",ExpressionUUID->"f225bdae-b422-4d77-a985-0a64a6ef23b1"]
+Cell[219672, 4387, 685, 11, 76, "Section",ExpressionUUID->"d347c5b5-401c-4ef2-a2ab-e917feb8284c"],
+Cell[220360, 4400, 1558, 33, 46, "ItemNumbered",ExpressionUUID->"5a5186f3-3e56-41ad-8380-e5f7fdff11a8"],
+Cell[221921, 4435, 1634, 33, 46, "ItemNumbered",ExpressionUUID->"f5024369-fc9a-4681-a718-32f21ce11f7d"],
+Cell[223558, 4470, 1706, 35, 46, "ItemNumbered",ExpressionUUID->"4d3374f3-deee-4080-8fbc-63749ec6f55e"],
+Cell[225267, 4507, 2261, 44, 46, "ItemNumbered",ExpressionUUID->"18f5a39c-8809-44ab-b3d4-3960e547729e"],
+Cell[227531, 4553, 1368, 25, 46, "ItemNumbered",ExpressionUUID->"ff5708ee-ab41-4baf-bdae-57d698ba06de"],
+Cell[228902, 4580, 1371, 25, 46, "ItemNumbered",ExpressionUUID->"3df30547-ae4b-43ca-84c0-87b56f5a4396"],
+Cell[230276, 4607, 1267, 20, 46, "ItemNumbered",ExpressionUUID->"ed4efd47-9ea4-4e86-be23-4218728a3adf"],
+Cell[231546, 4629, 1771, 37, 46, "ItemNumbered",ExpressionUUID->"3c223a9c-2994-47d8-b3bd-4659d07cfb75"],
+Cell[233320, 4668, 1834, 37, 46, "ItemNumbered",ExpressionUUID->"28adb113-0e29-4705-adc5-10e328a8944e"],
+Cell[235157, 4707, 1531, 32, 46, "ItemNumbered",ExpressionUUID->"f225bdae-b422-4d77-a985-0a64a6ef23b1"],
+Cell[236691, 4741, 1617, 32, 46, "ItemNumbered",ExpressionUUID->"fcb215d1-bd1a-41de-a921-083fb81e3e4a"],
+Cell[238311, 4775, 1230, 22, 46, "ItemNumbered",ExpressionUUID->"f3341c48-53c5-49e9-976a-15dcb73e56c4"],
+Cell[239544, 4799, 1196, 21, 46, "ItemNumbered",ExpressionUUID->"02594bf2-2c8b-41f0-95ff-50ecf041f554"]
 }, Open  ]]
 }, Open  ]]
 }
