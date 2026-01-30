@@ -155,6 +155,78 @@ Module[{gammaTerm},
   (* NOTE: Use //. metricRules for arbitrary tensors *)
   AssertEqual[gammaTerm //. metricRules, \[CapitalGamma][\[ScriptCapitalU][s], \[ScriptCapitalD][a], \[ScriptCapitalD][b]], 
     "Delta-Gamma Contraction"]];
+    
+Print["\n=== Metric Differentiation Rules ==="];
+
+(* ========================================================================= *)
+(* Metric Differentiation & Robust Contraction                               *)
+(* Verify:                                                                   *)
+(* 1. Permissive Contraction (Index alignment)                               *)
+(* 2. Metric Symmetry (g_ab = g_ba)                                          *)
+(* 3. Delta-on-Derivative Chain Rule                                         *)
+(* ========================================================================= *)
+
+(* Assuming 'metricDifferentiationRules' and 'metricRules' are defined in v1.9.0 *)
+allMetricRules = (metricRules ~Join~ metricDifferentiationRules);
+
+(* ------------------------------------------------------------------------- *)
+(* TEST 1: Permissive Contraction ("Index Flip")                             *)
+(* ------------------------------------------------------------------------- *)
+test1Expr = g[\[ScriptCapitalD][mu], \[ScriptCapitalD][lam]] * g[\[ScriptCapitalU][mu], \[ScriptCapitalU][nu]];
+test1Result = test1Expr //. allMetricRules // Simplify;
+test1Expected = \[Delta][\[ScriptCapitalU][nu], \[ScriptCapitalD][lam]];
+
+AssertEqual[test1Result, test1Expected, "Permissive Contraction"]
+
+(* ------------------------------------------------------------------------- *)
+(* TEST 2: Metric Symmetry inside Derivatives                                *)
+(* Problem: d(g_uv) - d(g_vu) should be 0.                                   *)
+(* ------------------------------------------------------------------------- *)
+test2Expr = Partials[g[\[ScriptCapitalD][mu], \[ScriptCapitalD][nu]], x[\[ScriptCapitalU][rho]]] - 
+            Partials[g[\[ScriptCapitalD][nu], \[ScriptCapitalD][mu]], x[\[ScriptCapitalU][rho]]];
+test2Result = test2Expr //. allMetricRules // Simplify;
+
+AssertEqual[test2Result, 0, "Metric Symmetry in Derivatives"]
+
+(* ------------------------------------------------------------------------- *)
+(* TEST 3: The Delta Chain Rule                                              *)
+(* Problem: delta^s_m * d/dx^s must become d/dx^m                            *)
+(* ------------------------------------------------------------------------- *)
+test3Expr = \[Delta][\[ScriptCapitalU][sig], \[ScriptCapitalD][mu]] * Partials[f[x], x[\[ScriptCapitalU][sig]]];
+test3Result = test3Expr //. allMetricRules // Simplify;
+test3Expected = Partials[f[x], x[\[ScriptCapitalU][mu]]];
+
+AssertEqual[test3Result, test3Expected, "Delta Chain Rule"]
+
+(* ------------------------------------------------------------------------- *)
+(* TEST 4: Full Metric Compatibility                                         *)
+(* Problem: CD[g] must vanish identically for Levi-Civita connection.        *)
+(* ------------------------------------------------------------------------- *)
+(* 1. Define CD of Metric *)
+rawCD = CD[g[\[ScriptCapitalD][mu], \[ScriptCapitalD][nu]], x[\[ScriptCapitalU][rho]]];
+
+compatibilityResult = ((rawCD /. ruleLeviCivita) // Expand) //. allMetricRules;
+
+AssertEqual[compatibilityResult, 0, "Metric Compatibility"]
+
+(* ------------------------------------------------------------------------- *)
+(* TEST 5: Levi-Civita Dummy Index Safety (The "Gamma Squared" Test)         *)
+(* Problem: Gamma * Gamma must generate two DISTINCT summation indices.      *)
+(* ------------------------------------------------------------------------- *)
+Module[{gammaProd, expandedProd, dummies},
+  gammaProd = \[CapitalGamma][\[ScriptCapitalU][mu], \[ScriptCapitalD][a], \[ScriptCapitalD][b]] * \[CapitalGamma][\[ScriptCapitalU][nu], \[ScriptCapitalD][c], \[ScriptCapitalD][d]];
+  
+  expandedProd = gammaProd /. ruleLeviCivita;
+  
+  (* Extract all Upper indices generated in the expansion (the summation indices) *)
+  dummies = Cases[expandedProd, g[\[ScriptCapitalU][_], \[ScriptCapitalU][s_]] :> s, Infinity];
+  
+  (* We expect 2 dummies. If Unique works, they must NOT be equal. *)
+  If[Length[dummies] == 2 && dummies[[1]] =!= dummies[[2]],
+    pass["Levi-Civita Index Safety (Unique indices generated)", dummies],
+    fail["Levi-Civita Index Safety", "Distinct Indices", dummies]
+  ];
+];
 
 (* ========================================================================= *)
 Print["\n--- SECTION 4: METRIC EQUIVALENCE (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) == \!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\)) ---"];
@@ -475,6 +547,4 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
-
-
 

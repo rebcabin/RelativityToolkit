@@ -2,14 +2,14 @@
 
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode)                                   *)
-(* Version: 1.8.0 (Riemann & Ricci Compiler                                  *)
+(* Version: 1.9.0 (Gauge Theory)                                             *)
 (* ------------------------------------------------------------------------- *)
 (* TODO: complete the removal of hard-coded \[CapitalGamma]. Currently, only torsionRules, *)
 (* CD, and SetConnection know about RelativityConnection. There are several  *)
 (* places in MakeBoxes and other display functions that hard-code \[CapitalGamma].         *)
 (* ========================================================================= *)
 
-Echo[RelativityToolkitVersion = "1.8.0", "Relativity Toolkit version :"];
+Echo[RelativityToolkitVersion = "1.9.0", "Relativity Toolkit version :"];
 
 (* CONFIGURATION: The Connection Symbol *)
 (* Default is \[CapitalGamma]; change it to A, C, etc., for Electrodynamics, Yang-Mills, etc. *)
@@ -48,8 +48,10 @@ Module[{symbols = Symbol /@ {
 	"ExpandDerivatives",
 	"ExtractCoefficient",
 	"g", (* reserved for metric tensors (will be relaxed later ) *)
+	"ruleLeviCivita",
 	"MakeIndexer",
 	"MatrixToUDRules",
+	"metricDifferentiationRules",
 	"metricRules",
 	"noValence",
 	"Partials",
@@ -348,6 +350,31 @@ torsionRules = {
    RelativityConnection[u, Sort[{a, b}][[1]], Sort[{a, b}][[2]]]
 };
 
+ruleLeviCivita=\[CapitalGamma][\[ScriptCapitalU][\[Lambda]_],\[ScriptCapitalD][a_],\[ScriptCapitalD][b_]]:>
+  Module[{\[Sigma]=Unique["\[Sigma]"]},
+    1/2 g[\[ScriptCapitalU][\[Lambda]],\[ScriptCapitalU][\[Sigma]]]*
+     (Partials[g[\[ScriptCapitalD][\[Sigma]],\[ScriptCapitalD][b]],x[\[ScriptCapitalU][a]]]+
+      Partials[g[\[ScriptCapitalD][\[Sigma]],\[ScriptCapitalD][a]],x[\[ScriptCapitalU][b]]]-
+      Partials[g[\[ScriptCapitalD][a],\[ScriptCapitalD][b]],x[\[ScriptCapitalU][\[Sigma]]]])]
+
+metricDifferentiationRules={
+(*Metric Symmetry*)
+g[\[ScriptCapitalD][a_],\[ScriptCapitalD][b_]]/;!OrderedQ[{a,b}]:>g[\[ScriptCapitalD][b],\[ScriptCapitalD][a]],
+g[\[ScriptCapitalU][a_],\[ScriptCapitalU][b_]]/;!OrderedQ[{a,b}]:>g[\[ScriptCapitalU][b],\[ScriptCapitalU][a]],
+(*Permissive Contraction (All 4 Alignments)*)
+(*First-First*)
+g[\[ScriptCapitalD][s_],\[ScriptCapitalD][a_]]*g[\[ScriptCapitalU][s_],\[ScriptCapitalU][b_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
+(*Second-Second*)
+g[\[ScriptCapitalD][a_],\[ScriptCapitalD][s_]]*g[\[ScriptCapitalU][b_],\[ScriptCapitalU][s_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
+(*First-Second (Redundant but Safe)*)
+g[\[ScriptCapitalD][s_],\[ScriptCapitalD][a_]]*g[\[ScriptCapitalU][b_],\[ScriptCapitalU][s_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
+(*Second-First*)
+g[\[ScriptCapitalD][a_],\[ScriptCapitalD][s_]]*g[\[ScriptCapitalU][s_],\[ScriptCapitalU][b_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
+(*Delta Contractions*)
+\[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[expr_,x[\[ScriptCapitalU][bound_]]]:>Partials[expr,x[\[ScriptCapitalU][free]]],
+\[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[g[\[ScriptCapitalD][bound_],\[ScriptCapitalD][other_]],v_]:>Partials[g[\[ScriptCapitalD][free],\[ScriptCapitalD][other]],v],
+\[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[g[\[ScriptCapitalD][other_],\[ScriptCapitalD][bound_]],v_]:>Partials[g[\[ScriptCapitalD][other],\[ScriptCapitalD][free]],v]};
+
 (* ========================================================================= *)
 (* 6. DIFFERENTIATION ENGINE                                                 *)
 (* ========================================================================= *)
@@ -425,6 +452,21 @@ CD[expr_, x[\[ScriptCapitalU][nu_]]] :=
     
   partialTerm + upCorrections - downCorrections ];
   
+CD[expr_,var_,q_,A_]:=
+  Module[{gravitationalPart,gaugeCorrection,idx},
+    (*Calculate the coordinate Covariant Derivative via existing CD overloads.*)
+    (*Handle \[PartialD] + Christoffels (if expr is a tensor)*)
+    (*If expr is a scalar, just return \[PartialD].*)
+    gravitationalPart=CD[expr,var];
+    (*Extract the index from the differentiation variable.*)
+    (*var is some x[\[ScriptCapitalU][\[Mu]]]; we need \[Mu]*)
+    idx=var[[1,1]];
+    (*Construct the Gauge Correction, e.g., -i q Subscript[A, \[Mu]] * expr*)
+    (*Note: This A has a DOWN (Covariant) index matching the derivative*)
+    gaugeCorrection=-I*q*A[\[ScriptCapitalD][idx]]*expr;
+    (*Combine*)
+    gravitationalPart+gaugeCorrection];
+  
 (* ========================================================================= *)
 (* 8. RIEMANN CURVATURE TENSOR FROM METRIC                                   *)
 (* ========================================================================= *)
@@ -454,8 +496,6 @@ ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_]/;(gDD =!= gUU) :=
       (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
        Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
        Partials[gDD[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Lambda]]]])];
-
-
 (* Riemann *)
 
 (* Send in \[CapitalGamma]Get so as not to recompute it on every call. *)
@@ -554,8 +594,6 @@ Contract[expr_, coords_List] :=
           
       (* Restore Partials from PD for downstream UD evaluation. *)
       result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
-
-
 (* ContractAll: Contract on all bound indices (repeated up-down in a term) *)
 ContractAll[expr_, coords_List] := Module[{
     canonicalExpr, recursiveScanner, result, PD},
@@ -588,8 +626,6 @@ ContractAll[expr_, coords_List] := Module[{
   (* PHASE C: Restoration *)
   (* Convert internal PD back to Partials for UD. *)
   result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
-
-
 EvaluateUDPartials[expr_] := expr /. 
   With[{killBogusChainRule = {(\[ScriptCapitalU]|\[ScriptCapitalD])'[idx_] -> 0}},
     { 
@@ -617,6 +653,4 @@ MakeIndexer[table_List, coords_List] :=
     (* double-delayed; single-delay evaluates `Lookup` too early *)
     table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
   
-
-
 
