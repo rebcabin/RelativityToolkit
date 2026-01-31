@@ -655,6 +655,3 @@ MakeIndexer[table_List, coords_List] :=
     table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
   
 
-
-
-

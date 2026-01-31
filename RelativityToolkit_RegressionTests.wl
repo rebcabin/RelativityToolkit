@@ -603,6 +603,30 @@ Module[{geometricW, mixedGaugeRules, gW, \[CapitalLambda], W, Z, transformedW, e
 ];
 
 (* ========================================================================= *)
+Print["\n--- SECTION 12: RIEMANN CURVATURE DERIVATION ---"];
+(* ========================================================================= *)
+
+Module[{comm, term1, term2, A, calculatedRiemann, expectedRiemann, formalS, \[Lambda]},
+
+  term1 = CD[CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]], x[\[ScriptCapitalU][\[Rho]]]];
+  term2 = CD[CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Rho]]]], x[\[ScriptCapitalU][\[Nu]]]];
+  comm = term1 - term2;
+
+  calculatedRiemann = (comm // ExpandDerivatives // Expand // CanonicalizeIndices) //. torsionRules;
+   
+  calculatedRiemann   = ExtractCoefficient[calculatedRiemann, A];
+
+  expectedRiemann = 
+   ( ( Partials[\[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[FormalS]]], x[\[ScriptCapitalU][\[Rho]]]]     - 
+     Partials[\[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Rho]], \[ScriptCapitalD][\[FormalS]]], x[\[ScriptCapitalU][\[Nu]]]]     + 
+    \[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Rho]], \[ScriptCapitalD][\[Lambda]]] * \[CapitalGamma][\[ScriptCapitalU][\[Lambda]], \[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[FormalS]]]     - 
+     \[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[Lambda]]] * \[CapitalGamma][\[ScriptCapitalU][\[Lambda]], \[ScriptCapitalD][\[Rho]], \[ScriptCapitalD][\[FormalS]]] ) //. torsionRules );
+
+  AssertEqual[calculatedRiemann, expectedRiemann, 
+    "Riemann Derivation matches Textbook"];
+];
+
+(* ========================================================================= *)
 (* SUMMARY                                                                   *)
 (* ========================================================================= *)
 
@@ -614,7 +638,4 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
-
-
-
 
