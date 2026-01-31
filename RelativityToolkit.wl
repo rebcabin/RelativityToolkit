@@ -355,25 +355,25 @@ ruleLeviCivita=\[CapitalGamma][\[ScriptCapitalU][\[Lambda]_],\[ScriptCapitalD][a
     1/2 g[\[ScriptCapitalU][\[Lambda]],\[ScriptCapitalU][\[Sigma]]]*
      (Partials[g[\[ScriptCapitalD][\[Sigma]],\[ScriptCapitalD][b]],x[\[ScriptCapitalU][a]]]+
       Partials[g[\[ScriptCapitalD][\[Sigma]],\[ScriptCapitalD][a]],x[\[ScriptCapitalU][b]]]-
-      Partials[g[\[ScriptCapitalD][a],\[ScriptCapitalD][b]],x[\[ScriptCapitalU][\[Sigma]]]])]
+      Partials[g[\[ScriptCapitalD][a],\[ScriptCapitalD][b]],x[\[ScriptCapitalU][\[Sigma]]]])];
 
 metricDifferentiationRules={
-(*Metric Symmetry*)
-g[\[ScriptCapitalD][a_],\[ScriptCapitalD][b_]]/;!OrderedQ[{a,b}]:>g[\[ScriptCapitalD][b],\[ScriptCapitalD][a]],
-g[\[ScriptCapitalU][a_],\[ScriptCapitalU][b_]]/;!OrderedQ[{a,b}]:>g[\[ScriptCapitalU][b],\[ScriptCapitalU][a]],
-(*Permissive Contraction (All 4 Alignments)*)
-(*First-First*)
-g[\[ScriptCapitalD][s_],\[ScriptCapitalD][a_]]*g[\[ScriptCapitalU][s_],\[ScriptCapitalU][b_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
-(*Second-Second*)
-g[\[ScriptCapitalD][a_],\[ScriptCapitalD][s_]]*g[\[ScriptCapitalU][b_],\[ScriptCapitalU][s_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
-(*First-Second (Redundant but Safe)*)
-g[\[ScriptCapitalD][s_],\[ScriptCapitalD][a_]]*g[\[ScriptCapitalU][b_],\[ScriptCapitalU][s_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
-(*Second-First*)
-g[\[ScriptCapitalD][a_],\[ScriptCapitalD][s_]]*g[\[ScriptCapitalU][s_],\[ScriptCapitalU][b_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
-(*Delta Contractions*)
-\[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[expr_,x[\[ScriptCapitalU][bound_]]]:>Partials[expr,x[\[ScriptCapitalU][free]]],
-\[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[g[\[ScriptCapitalD][bound_],\[ScriptCapitalD][other_]],v_]:>Partials[g[\[ScriptCapitalD][free],\[ScriptCapitalD][other]],v],
-\[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[g[\[ScriptCapitalD][other_],\[ScriptCapitalD][bound_]],v_]:>Partials[g[\[ScriptCapitalD][other],\[ScriptCapitalD][free]],v]};
+  (*Metric Symmetry*)
+  g[\[ScriptCapitalD][a_],\[ScriptCapitalD][b_]]/;!OrderedQ[{a,b}]:>g[\[ScriptCapitalD][b],\[ScriptCapitalD][a]],
+  g[\[ScriptCapitalU][a_],\[ScriptCapitalU][b_]]/;!OrderedQ[{a,b}]:>g[\[ScriptCapitalU][b],\[ScriptCapitalU][a]],
+  (*Permissive Contraction (All 4 Alignments)*)
+  (*First-First*)
+  g[\[ScriptCapitalD][s_],\[ScriptCapitalD][a_]]*g[\[ScriptCapitalU][s_],\[ScriptCapitalU][b_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
+  (*Second-Second*)
+  g[\[ScriptCapitalD][a_],\[ScriptCapitalD][s_]]*g[\[ScriptCapitalU][b_],\[ScriptCapitalU][s_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
+  (*First-Second (Redundant but Safe)*)
+  g[\[ScriptCapitalD][s_],\[ScriptCapitalD][a_]]*g[\[ScriptCapitalU][b_],\[ScriptCapitalU][s_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
+  (*Second-First*)
+  g[\[ScriptCapitalD][a_],\[ScriptCapitalD][s_]]*g[\[ScriptCapitalU][s_],\[ScriptCapitalU][b_]]:>\[Delta][\[ScriptCapitalU][b],\[ScriptCapitalD][a]],
+  (*Delta Contractions*)
+  \[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[expr_,x[\[ScriptCapitalU][bound_]]]:>Partials[expr,x[\[ScriptCapitalU][free]]],
+  \[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[g[\[ScriptCapitalD][bound_],\[ScriptCapitalD][other_]],v_]:>Partials[g[\[ScriptCapitalD][free],\[ScriptCapitalD][other]],v],
+  \[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[g[\[ScriptCapitalD][other_],\[ScriptCapitalD][bound_]],v_]:>Partials[g[\[ScriptCapitalD][other],\[ScriptCapitalD][free]],v]};
 
 (* ========================================================================= *)
 (* 6. DIFFERENTIATION ENGINE                                                 *)
@@ -382,6 +382,8 @@ g[\[ScriptCapitalD][a_],\[ScriptCapitalD][s_]]*g[\[ScriptCapitalU][s_],\[ScriptC
 differentiationRules = {
   Partials[a_*b_, var_] :> Partials[a, var]*b + a*Partials[b, var], 
   Partials[a_ + b_, var_] :> Partials[a, var] + Partials[b, var], 
+  Partials[Exp[arg_], var_] :> Exp[arg] * Partials[arg, var],
+  Partials[n_, _] /; (NumericQ[n]) :> 0,
   Partials[expr_, x[\[ScriptCapitalU][idx_]]] /; StringContainsQ[ToString[idx], "'"] :> 
     Module[{fresh = Unique["\[Sigma]"]}, 
      Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][idx]]]*
@@ -451,22 +453,14 @@ CD[expr_, x[\[ScriptCapitalU][nu_]]] :=
     ], {idx, down}];
     
   partialTerm + upCorrections - downCorrections ];
+
+(* Rule 4: Mixed Geometric & Gauge Derivative *)
+(* Usage: CD[field, coord, coupling, gaugeField] *)
+(* Returns: GeometricCD - i * coupling * gaugeField_mu * field *)
+CD[field_, var_, coupling_, gaugeBoson_Symbol] :=
+  CD[field, var] - I * coupling * gaugeBoson[\[ScriptCapitalD][var[[1,1]]]] * field;
   
-CD[expr_,var_,q_,A_]:=
-  Module[{gravitationalPart,gaugeCorrection,idx},
-    (*Calculate the coordinate Covariant Derivative via existing CD overloads.*)
-    (*Handle \[PartialD] + Christoffels (if expr is a tensor)*)
-    (*If expr is a scalar, just return \[PartialD].*)
-    gravitationalPart=CD[expr,var];
-    (*Extract the index from the differentiation variable.*)
-    (*var is some x[\[ScriptCapitalU][\[Mu]]]; we need \[Mu]*)
-    idx=var[[1,1]];
-    (*Construct the Gauge Correction, e.g., -i q Subscript[A, \[Mu]] * expr*)
-    (*Note: This A has a DOWN (Covariant) index matching the derivative*)
-    gaugeCorrection=-I*q*A[\[ScriptCapitalD][idx]]*expr;
-    (*Combine*)
-    gravitationalPart+gaugeCorrection];
-  
+      
 (* ========================================================================= *)
 (* 8. RIEMANN CURVATURE TENSOR FROM METRIC                                   *)
 (* ========================================================================= *)
@@ -594,6 +588,8 @@ Contract[expr_, coords_List] :=
           
       (* Restore Partials from PD for downstream UD evaluation. *)
       result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
+      
+      
 (* ContractAll: Contract on all bound indices (repeated up-down in a term) *)
 ContractAll[expr_, coords_List] := Module[{
     canonicalExpr, recursiveScanner, result, PD},
@@ -626,6 +622,10 @@ ContractAll[expr_, coords_List] := Module[{
   (* PHASE C: Restoration *)
   (* Convert internal PD back to Partials for UD. *)
   result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
+  
+  
+(* Compile UD partials into Wolfram D expressions. *)
+  
 EvaluateUDPartials[expr_] := expr /. 
   With[{killBogusChainRule = {(\[ScriptCapitalU]|\[ScriptCapitalD])'[idx_] -> 0}},
     { 
@@ -636,7 +636,8 @@ EvaluateUDPartials[expr_] := expr /.
       Subscript[f_, {idx_}] :> (D[f, idx] /. killBogusChainRule),
       
       (* CASE: Derivatives of Numerical Partials *)
-      Partials[n_, x[(\[ScriptCapitalU]|\[ScriptCapitalD])[_]]] /; NumberQ[n] :> 0
+      Partials[n_, x[(\[ScriptCapitalU]|\[ScriptCapitalD])[_]]] /; NumberQ[n] :> 0,
+      Partials[(E | I | \[Pi]), x[(\[ScriptCapitalU]|\[ScriptCapitalD])[_]]] :> 0
    }];
 
 (* Use Case: Make a function that can retrieve components from a Wolfram array       *)
@@ -653,4 +654,7 @@ MakeIndexer[table_List, coords_List] :=
     (* double-delayed; single-delay evaluates `Lookup` too early *)
     table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
   
+
+
+
 

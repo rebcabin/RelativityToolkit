@@ -535,6 +535,73 @@ Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial, resSingle, resDo
   ];
 ];
 
+
+(* ========================================================================= *)
+Print["\n--- SECTION 11: ELECTRODYNAMICS & GAUGE INVARIANCE ---"];
+(* ========================================================================= *)
+
+Module[{gaugeTransforms, \[Psi], A, \[CapitalLambda], e, 
+  cde, transformedCde, expectedCde, 
+  F, transformedF},
+
+  (* --- TEST 1: Covariant Derivative is Covariant --- *)
+  (* prove: Subscript[D, \[Mu]]\[Psi]' == \[ExponentialE]^(\[ImaginaryI]\[VeryThinSpace]e\[VeryThinSpace]\[CapitalLambda]) Subscript[D, \[Mu]]\[Psi] *)
+  
+  gaugeTransforms = {
+    \[Psi] -> E^(I e \[CapitalLambda]) * \[Psi],
+    A[\[ScriptCapitalD][idx_]] :> A[\[ScriptCapitalD][idx]] + Partials[\[CapitalLambda], x[\[ScriptCapitalU][idx]]]};
+  
+  cde = CD[\[Psi], x[\[ScriptCapitalU][\[Mu]]], e, A];
+  
+  transformedCde = cde /. gaugeTransforms //. differentiationRules /. {Partials[e, _] :> 0} // Expand;
+     
+  expectedCde = E^(I e \[CapitalLambda]) * cde // Expand;
+  
+  AssertEqual[transformedCde, expectedCde, 
+    "U(1) Gauge Covariance (\!\(\*SubscriptBox[\(D\), \(\[Mu]\)]\)\[Psi]' == \!\(\*SuperscriptBox[\(\[ExponentialE]\), \(\[ImaginaryI]\[VeryThinSpace]e\[VeryThinSpace]\[CapitalLambda]\)]\) \!\(\*SubscriptBox[\(D\), \(\[Mu]\)]\)\[Psi])"];
+
+  (* --- TEST 2: Gauge Invariance of Field Strength Subscript[F, \[Mu]\[Nu]] --- *)
+  (* prove: Subscript[F', \[Mu]\[Nu]] == Subscript[F, \[Mu]\[Nu]] *)
+
+  (* The Field Strength Tensor Subscript[F, \[Mu]\[Nu]] = \!\(
+\*SubscriptBox[\(\[PartialD]\), \(\[Mu]\)]
+\*SubscriptBox[\(A\), \(\[Nu]\)]\) - \!\(
+\*SubscriptBox[\(\[PartialD]\), \(\[Nu]\)]
+\*SubscriptBox[\(A\), \(\[Mu]\)]\) *)
+  F = Partials[A[\[ScriptCapitalD][n]], x[\[ScriptCapitalU][m]]] - Partials[A[\[ScriptCapitalD][m]], x[\[ScriptCapitalU][n]]];
+  
+  (* Transform and Expand *)
+  transformedF = F /. gaugeTransforms // ExpandDerivatives // Expand;
+  
+  AssertEqual[transformedF, F, 
+    "Field Strength Invariance (F' == F)"];
+];
+
+Module[{geometricW, mixedGaugeRules, gW, \[CapitalLambda], W, Z, transformedW, expectedW},
+  (* --- TEST 3: Weinberg-Salam Mixed Covariance (Vector Field W^\[Alpha]) --- *)
+  (* Prove that CD handles Spacetime AND Gauge indices simultaneously. *)
+  (* prove: Subscript[D, \[Mu]] W'^\[Alpha] == \[ExponentialE]^(\[ImaginaryI]\[ThinSpace]gW\[VeryThinSpace]\[CapitalLambda]) * Subscript[D, \[Mu]] W^\[Alpha] *)
+    
+  (* Charged Vector Boson W^\[Alpha] *)
+  (* With spacetime index \[Alpha]; CD generates \[CapitalGamma] terms *)
+  geometricW = CD[W[\[ScriptCapitalU][\[Alpha]]], x[\[ScriptCapitalU][\[Mu]]], gW, Z];
+  
+  (* Transformation Rules *)
+  (* W rotates by phase \[CapitalLambda]. Z shifts by \[PartialD]\[CapitalLambda]. \[CapitalGamma] is inert to gauge choice. *)
+  mixedGaugeRules = {
+    W[\[Mu]_] :> E^(I\[ThinSpace]gW \[CapitalLambda]) * W[\[Mu]],
+    Z[\[ScriptCapitalD][\[Mu]_]] :> Z[\[ScriptCapitalD][\[Mu]]] + Partials[\[CapitalLambda], x[\[ScriptCapitalU][\[Mu]]]]};
+
+  transformedW = geometricW /. mixedGaugeRules //. differentiationRules /. {Partials[gW, _] :> 0} // Expand;
+  
+  (* Expectation *)
+  (* The original mixed object, just phase-rotated *)
+  expectedW = E^(I\[ThinSpace]gW \[CapitalLambda]) * geometricW // Expand;
+  
+  AssertEqual[transformedW, expectedW, 
+    "Weinberg-Salam Mixed Covariance (Geometric + Gauge)"];
+];
+
 (* ========================================================================= *)
 (* SUMMARY                                                                   *)
 (* ========================================================================= *)
@@ -547,4 +614,7 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
+
+
+
 
