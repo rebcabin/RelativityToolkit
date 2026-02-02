@@ -3,7 +3,7 @@
 **A Symbolic Tensor Domain-Specific Language Embedded in Wolfram.**
 with emphasis on general relativity
 
-> Current Version: v1.8.0
+> Current Version: v1.9.0
 
 > License: MIT
 
@@ -84,7 +84,9 @@ All these notebooks have corresponding PDFs in the PDFS folder for those who do 
 
 ## Roadmap
 
-- **v1.8.0 (Current):** Stable prototype, Script mode, Global namespace.
+- **v1.8.0:** Stable prototype, Script mode, Global namespace.
+
+- **v1.9.0 (Current):** Add Non-Quantum Gauge Theory.
     
 - **v2.0.0 (Planned):** Full Wolfram Package (`BeginPackage["RelativityToolkit`"]`), namespace sanitation, sparse array support.
     
