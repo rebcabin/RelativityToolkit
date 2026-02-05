@@ -35,6 +35,7 @@ Protect[MakeBoxes];
 Module[{symbols = Symbol /@ {
 	"CalculateRicciComponent",
 	"CalculateRiemannComponent",
+	"CalculateGammaComponent",
 	"CanonicalizeIndices",
 	"CanonicalizeTerm",
 	"CD",
@@ -48,6 +49,8 @@ Module[{symbols = Symbol /@ {
 	"ExpandDerivatives",
 	"ExtractCoefficient",
 	"g", (* reserved for metric tensors (will be relaxed later ) *)
+	"GradRaised",
+	"GradSquared",
 	"ruleLeviCivita",
 	"MakeIndexer",
 	"MatrixToUDRules",
@@ -58,6 +61,7 @@ Module[{symbols = Symbol /@ {
 	"RelativityConnection",
 	"RelativityToolkitVersion",
 	"robustTransformRules",
+	"ScalarLaplacian",
 	"SetConnection",
 	"TensorForm",
 	"torsionRules",
@@ -462,9 +466,18 @@ CD[field_, var_, coupling_, gaugeBoson_Symbol] :=
   
 (* Gradient *)
 
-(* \[Del]^\[VeryThinSpace]\[Mu]f\[Congruent]g^(\[VeryThinSpace]\[Mu]\[VeryThinSpace]\[Nu])Subscript[f, \[VeryThinSpace],\[VeryThinSpace]\[Nu]]
-   workhorse of Hamilton-Jacobi Theory, e.g.
-   H=1/2g^(\[VeryThinSpace]\[Mu]\[VeryThinSpace]\[Nu])Subscript[p, \[Mu]]Subscript[p, \[Nu]]    , where Subscript[p, \[Mu]]=Subscript[S, \[VeryThinSpace],\[VeryThinSpace]\[Mu]] is the derivative of the action S *)
+(* \!\(TraditionalForm\`
+\*SuperscriptBox[\(\[Del]\), \( \(\[Mu]\)\)]f \[Congruent] 
+\*SuperscriptBox[\(g\), \( \(\[Mu] \[Nu]\)\)] 
+\*SubscriptBox[\(f\), \( \(, \( \)\(\[Nu]\)\)\)]\)
+   workhorse of Hamilton-Jacobi Theory, e . g .
+\!\(TraditionalForm\`\(\ \ \ \(H = 
+\*FractionBox[\(1\), \(2\)] 
+\*SuperscriptBox[\(g\), \( \(\[Mu] \[Nu]\)\)] 
+\*SubscriptBox[\(p\), \(\[Mu]\)] 
+\*SubscriptBox[\(p\), \(\[Nu]\)]\ \ \ \ , \ where\ 
+\*SubscriptBox[\(p\), \(\[Mu]\)] = 
+\*SubscriptBox[\(S\), \( \(, \( \)\(\[Mu]\)\)\)]\ is\ the\ derivative\ of\ the\ action\ S\)\)\) *)
 
 GradRaised[func_, gInvUU_Symbol, gInvUURules_, coords_] :=
   Table[Sum[(gInvUU[\[ScriptCapitalU][\[Mu]],\[ScriptCapitalU][\[Nu]]]/. gInvUURules)D[func,\[Nu]],
