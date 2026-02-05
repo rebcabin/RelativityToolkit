@@ -534,8 +534,6 @@ Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial, resSingle, resDo
       "Coordinate Symbols Excluded from Scanner"];
   ];
 ];
-
-
 (* ========================================================================= *)
 Print["\n--- SECTION 11: ELECTRODYNAMICS & GAUGE INVARIANCE ---"];
 (* ========================================================================= *)
@@ -627,6 +625,72 @@ Module[{comm, term1, term2, A, calculatedRiemann, expectedRiemann, formalS, \[La
 ];
 
 (* ========================================================================= *)
+Print["\n--- SECTION 13: GEOMETRY OPERATORS (Gradient, Laplacian) ---"];
+(* ========================================================================= *)
+
+Block[{coords, flatMetric, flatRules, flatInvRules, sqrtDetFlat, 
+       t, r, \[Theta], \[Phi], gDD, gUU, \[ScriptCapitalD], \[ScriptCapitalU]},
+
+  (* 1. DEFINE THE TEST ENVIRONMENT: Flat Space in Spherical Coords *)
+  (* ds^2 = -dt^2 + dr^2 + r^2 dtheta^2 + r^2 sin^2(theta) dphi^2 *)
+  coords = {t, r, \[Theta], \[Phi]};
+  
+  (* Diagonal Metric *)
+  flatMetric = DiagonalMatrix[{-1, 1, r^2, r^2 Sin[\[Theta]]^2}];
+  
+  (* Generate Rules using the toolkit's own MatrixToUDRules *)
+  flatRules = MatrixToUDRules[flatMetric, gDD, \[ScriptCapitalD], coords];
+  flatRules = Join[flatRules, {gDD[__] -> 0}];
+  
+  flatInvRules = MatrixToUDRules[Inverse[flatMetric], gUU, \[ScriptCapitalU], coords];
+  flatInvRules = Join[flatInvRules, {gUU[__] -> 0}];
+  
+  (* Determinant Factor (sqrt[-g] = r^2 sin(theta)) *)
+  sqrtDetFlat = r^2 Sin[\[Theta]];
+
+  (* TEST 1: CalculateGammaComponent (The Factory Wrapper) *)
+  (* Expected: Gamma^r_thetatheta = -r *)
+  AssertEqual[
+    CalculateGammaComponent[r, \[Theta], \[Theta], gDD, flatRules, gUU, flatInvRules, coords],
+    -r,
+    "Gamma Factory (Spherical \!\(\*SubscriptBox[\(\[CapitalGamma]\), \(r\ \[Theta]\ \[Theta]\)]\))"
+  ];
+
+  (* TEST 2: GradRaised (Contravariant Derivative) *)
+  (* Function f(r) = r^2. Gradient_mu = {0, 2r, 0, 0}. *)
+  (* g^rr = 1, so Gradient^r = 1 * 2r = 2r. *)
+  AssertEqual[
+    GradRaised[r^2, gUU, flatInvRules, coords],
+    {0, 2*r, 0, 0},
+    "GradRaised (Radial Function \!\(\*SuperscriptBox[\(r\), \(2\)]\))"
+  ];
+
+  (* TEST 3: GradSquared (Norm of Gradient) *)
+  (* Function f(t, r) = t + r. *)
+  (* Norm = g^tt(1)^2 + g^rr(1)^2 = -1 + 1 = 0 (Null Vector). *)
+  AssertEqual[
+    GradSquared[t + r, gUU, flatInvRules, coords],
+    0,
+    "GradSquared (Null Vector Norm)"
+  ];
+
+  (* TEST 4: ScalarLaplacian (Harmonic Function Check) *)
+  (* In 3D Flat Space, 1/r is harmonic everywhere except origin. *)
+  AssertEqual[
+    ScalarLaplacian[1/r, gUU, flatInvRules, sqrtDetFlat, coords],
+    0,
+    "ScalarLaplacian (Harmonic 1/r)"
+  ];
+
+  (* TEST 5: ScalarLaplacian (Polynomial Check) *)
+  (* f(r) = r^2. Laplacian = 1/r^2 d_r(r^2 d_r r^2) = 1/r^2 d_r(2r^3) = 6. *)
+  AssertEqual[
+    ScalarLaplacian[r^2, gUU, flatInvRules, sqrtDetFlat, coords],
+    6,
+    "ScalarLaplacian (Polynomial \!\(\*SuperscriptBox[\(r\), \(2\)]\))"
+  ];
+];
+(* ========================================================================= *)
 (* SUMMARY                                                                   *)
 (* ========================================================================= *)
 
@@ -638,4 +702,7 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
+
+
+
 

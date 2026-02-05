@@ -2,14 +2,14 @@
 
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode)                                   *)
-(* Version: 1.9.0 (Gauge Theory)                                             *)
+(* Version: 1.10.0 (Kerr Metric)                                             *)
 (* ------------------------------------------------------------------------- *)
 (* TODO: complete the removal of hard-coded \[CapitalGamma]. Currently, only torsionRules, *)
 (* CD, and SetConnection know about RelativityConnection. There are several  *)
 (* places in MakeBoxes and other display functions that hard-code \[CapitalGamma].         *)
 (* ========================================================================= *)
 
-Echo[RelativityToolkitVersion = "1.9.0", "Relativity Toolkit version :"];
+Echo[RelativityToolkitVersion = "1.10.0", "Relativity Toolkit version :"];
 
 (* CONFIGURATION: The Connection Symbol *)
 (* Default is \[CapitalGamma]; change it to A, C, etc., for Electrodynamics, Yang-Mills, etc. *)
@@ -460,6 +460,34 @@ CD[expr_, x[\[ScriptCapitalU][nu_]]] :=
 CD[field_, var_, coupling_, gaugeBoson_Symbol] :=
   CD[field, var] - I * coupling * gaugeBoson[\[ScriptCapitalD][var[[1,1]]]] * field;
   
+(* Gradient *)
+
+(* \[Del]^\[VeryThinSpace]\[Mu]f\[Congruent]g^(\[VeryThinSpace]\[Mu]\[VeryThinSpace]\[Nu])Subscript[f, \[VeryThinSpace],\[VeryThinSpace]\[Nu]]
+   workhorse of Hamilton-Jacobi Theory, e.g.
+   H=1/2g^(\[VeryThinSpace]\[Mu]\[VeryThinSpace]\[Nu])Subscript[p, \[Mu]]Subscript[p, \[Nu]]    , where Subscript[p, \[Mu]]=Subscript[S, \[VeryThinSpace],\[VeryThinSpace]\[Mu]] is the derivative of the action S *)
+
+GradRaised[func_, gInvUU_Symbol, gInvUURules_, coords_] :=
+  Table[Sum[(gInvUU[\[ScriptCapitalU][\[Mu]],\[ScriptCapitalU][\[Nu]]]/. gInvUURules)D[func,\[Nu]],
+    {\[Nu],coords}],{\[Mu],coords}];
+    
+(* Gradient Squared *)
+
+(* (\[Del]f)^2\[Congruent]\!\(
+\*SubscriptBox[\(\[Del]\), \(\[Mu]\)]f\)\[Del]^\[VeryThinSpace]\[Mu]f\[Congruent]g^(\[VeryThinSpace]\[Mu]\[VeryThinSpace]\[Nu])Subscript[f, \[VeryThinSpace],\[VeryThinSpace]\[Mu]]Subscript[f, \[VeryThinSpace],\[VeryThinSpace]\[Nu]]\[Congruent]\[Del]f\[VeryThinSpace]\[FilledSmallCircle]\[VeryThinSpace]\[Del]f *)
+\!\(TraditionalForm\`\(\n\(GradSquared[func_, \ gInvUU_Symbol, \ gInvUURules_, \ coords_]\  := \n\ \ With[{grad\  = \ MakeIndexer[GradRaised[func, gInvUU, gInvUURules, coords], coords]}, \[IndentingNewLine]\ \ \ Simplify[\[IndentingNewLine]\ \ \ \ Sum[D[func, \[Mu]] grad[\[Mu]], {\[Mu], coords}]]];\)\)\)
+
+(* Scalar Laplacian *)
+
+(* \[Del]^2f\[Congruent]1/Sqrt[|g|]\!\(
+\*SubscriptBox[\(\[PartialD]\), \(\[Mu]\)]\((
+\*SqrtBox[\( | \(g\)\(|\)\)]
+\*SuperscriptBox[\(g\), \(\[VeryThinSpace]\(\[Mu]\[VeryThinSpace]\[Nu]\)\)]
+\*SubscriptBox[\(\[PartialD]\), \(\[Nu]\)]f)\)\)   Note carefully this is not (\[Del]f)^2. *)
+
+ScalarLaplacian[func_,gInvUU_Symbol,gInvUURules_,sqrtDetg_,coords_]:=
+  With[{grad=MakeIndexer[GradRaised[func,gInvUU,gInvUURules,coords],coords]},
+    Simplify[
+      Sum[D[sqrtDetg *grad[\[Mu]],\[Mu]],{\[Mu],coords}]/sqrtDetg]];
       
 (* ========================================================================= *)
 (* 8. RIEMANN CURVATURE TENSOR FROM METRIC                                   *)
@@ -490,6 +518,20 @@ ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_]/;(gDD =!= gUU) :=
       (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
        Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
        Partials[gDD[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Lambda]]]])];
+
+(* Gamma (Christoffel) *)
+
+CalculateGammaComponent[s_,m_,n_,
+   gDD_Symbol,gDDRules_,
+   gInvUU_Symbol,gInvUURules_,
+   coords_] :=
+  (ContractAll[
+      ChristoffelsFromMetric[gDD,gInvUU,s,m,n],
+      coords]/.
+     gDDRules/.
+    gInvUURules)//
+   EvaluateUDPartials;
+
 (* Riemann *)
 
 (* Send in \[CapitalGamma]Get so as not to recompute it on every call. *)
@@ -654,4 +696,7 @@ MakeIndexer[table_List, coords_List] :=
     (* double-delayed; single-delay evaluates `Lookup` too early *)
     table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
   
+
+
+
 
