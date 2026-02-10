@@ -387,6 +387,7 @@ differentiationRules = {
   Partials[a_*b_, var_] :> Partials[a, var]*b + a*Partials[b, var], 
   Partials[a_ + b_, var_] :> Partials[a, var] + Partials[b, var], 
   Partials[Exp[arg_], var_] :> Exp[arg] * Partials[arg, var],
+  Partials[a_^n_,var_]/;(NumericQ[n]) :> n a^(n-1) * Partials[a,var],
   Partials[n_, _] /; (NumericQ[n]) :> 0,
   Partials[expr_, x[\[ScriptCapitalU][idx_]]] /; StringContainsQ[ToString[idx], "'"] :> 
     Module[{fresh = Unique["\[Sigma]"]}, 
@@ -487,7 +488,10 @@ GradRaised[func_, gInvUU_Symbol, gInvUURules_, coords_] :=
 
 (* (\[Del]f)^2\[Congruent]\!\(
 \*SubscriptBox[\(\[Del]\), \(\[Mu]\)]f\)\[Del]^\[VeryThinSpace]\[Mu]f\[Congruent]g^(\[VeryThinSpace]\[Mu]\[VeryThinSpace]\[Nu])Subscript[f, \[VeryThinSpace],\[VeryThinSpace]\[Mu]]Subscript[f, \[VeryThinSpace],\[VeryThinSpace]\[Nu]]\[Congruent]\[Del]f\[VeryThinSpace]\[FilledSmallCircle]\[VeryThinSpace]\[Del]f *)
-\!\(TraditionalForm\`\(\n\(GradSquared[func_, \ gInvUU_Symbol, \ gInvUURules_, \ coords_]\  := \n\ \ With[{grad\  = \ MakeIndexer[GradRaised[func, gInvUU, gInvUURules, coords], coords]}, \[IndentingNewLine]\ \ \ Simplify[\[IndentingNewLine]\ \ \ \ Sum[D[func, \[Mu]] grad[\[Mu]], {\[Mu], coords}]]];\)\)\)
+GradSquared[func_, gInvUU_Symbol, gInvUURules_, coords_] := 
+With[{grad = MakeIndexer[GradRaised[func, gInvUU, gInvUURules, coords], coords]}, 
+  Simplify[
+    Sum[D[func, \[Mu]] grad[\[Mu]], {\[Mu], coords}]]];
 
 (* Scalar Laplacian *)
 
@@ -709,7 +713,5 @@ MakeIndexer[table_List, coords_List] :=
     (* double-delayed; single-delay evaluates `Lookup` too early *)
     table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
   
-
-
 
 

@@ -281,7 +281,7 @@ Module[{boxStructure, hasFraction, hasSquaredSym},
 Print["\n--- SECTION 6: CALCULUS ENGINE ---"];
 (* ========================================================================= *)
 
-Module[{testProduct, testCD, testLinearity},
+Module[{testProduct, a, testCD, testLinearity},
 
 (* Leibniz Product Rule *)
 (* Input: d(f*g)/dx *)
@@ -297,6 +297,11 @@ testCD = CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]];
 (* LOGIC: It must be a Sum. One part is Partials. The other part MUST contain Gamma. *)
 AssertTrue[MatchQ[testCD, Plus[Partials[_, _], _]] && !FreeQ[testCD, \[CapitalGamma]],
   "Covariant Derivative Expansion"];
+  
+(* Power Rule *)
+AssertEqual[ExpandDerivatives[Partials[a[\[ScriptCapitalU][\[Mu]]]^2, x[\[ScriptCapitalU][\[Nu]]]]], 
+            2 a[\[ScriptCapitalU][\[Mu]]] * Partials[a[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]],
+            "Power Rule" ];
 
 (* Chain Rule (Linearity) *)
 (* Input: d(A+B)/dx *)
@@ -702,7 +707,5 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
-
-
 
 
