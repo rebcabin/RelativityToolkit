@@ -89,8 +89,9 @@ upQ[{{__}, {}}] := True; upQ[___] := False;
 downQ[{{}, {__}}] := True; downQ[___] := False;
 
 contractValence[{u_List, d_List}] := 
-  Module[{common}, common = Intersection[u, d];
-   {DeleteElements[u, common], DeleteElements[d, common]}];
+  With[{common = Intersection[u, d]},
+   {DeleteElements[u, common], 
+    DeleteElements[d, common]}];
 
 noValence := {{}, {}}; (* := (set delayed) means fresh instance each time *)
 
@@ -106,8 +107,7 @@ valence[g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Nu]_]]] := {{\[Mu], \[N
 valence[\[Delta][\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalD][\[Nu]_]]] := {{\[Mu]}, {\[Nu]}};
 
 valence[Partials[num_, den_]] := 
-  Module[{vn, vd, vdFlipped}, vn = valence[num];
-   vd = valence[den];
+  Module[{vn = valence[num], vd = valence[den], vdFlipped}, 
    vdFlipped = {vd[[2]], vd[[1]]};
    {Join[vn[[1]], vdFlipped[[1]]], Join[vn[[2]], vdFlipped[[2]]]}];
 
@@ -117,7 +117,9 @@ valence[CD[num_, den_]] := valence[Partials[num, den]];
 valence[\[CapitalGamma][\[ScriptCapitalU][a_], \[ScriptCapitalD][b_], \[ScriptCapitalD][c_]]] := {{a}, {b, c}};
 
 valence[Derivative[1][f_][arg_]] := 
-  Module[{u, d}, {u, d} = valence[arg]; {d, u}];
+  Module[{u, d}, 
+    {u, d} = valence[arg]; 
+    {d, u}];
 
 valence[Derivative[_][_][f_] /; (valence[f] =!= noValence)] := 
   valence[f];
@@ -129,10 +131,10 @@ valence[prod_Times] :=
    Fold[Join[#1, valence[#2], 2] &, noValence, List @@ prod]];
 
 valence[sum_Plus] := 
-  Module[{vs}, vs = valence /@ (List @@ sum); 
+  Module[{vs = valence /@ (List @@ sum)}, 
    If[Apply[SameQ, vs], 
-   First[vs], 
-   Print["Valence Mismatch"]; noValence]];
+     First[vs], 
+     Print["Valence Mismatch"]; noValence]];
    
 valence[Power[b_, _]] := valence[b];
 
@@ -204,11 +206,13 @@ MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]], StandardFo
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], 
    MakeBoxes[up, StandardForm]];
 
-MakeBoxes[h_[indices__], StandardForm] /; (h =!= \[Delta]) && 
-(h =!= Partials) && 
-(h =!= CD) && 
-(h =!= \[CapitalGamma]) && (* TODO: Potential replacement by RelativityConnection *)
-MatchQ[{indices}, {(_[\[ScriptCapitalU]] | _[\[ScriptCapitalD]] | \[ScriptCapitalU][_] | \[ScriptCapitalD][_]) ..}] := 
+MakeBoxes[h_[indices__], StandardForm] /; 
+    (h =!= \[Delta]) && 
+    (h =!= Partials) && 
+    (h =!= CD) && 
+    (h =!= \[CapitalGamma]) && 
+    (* TODO: Potential replacement by RelativityConnection *)
+    MatchQ[{indices}, {(_[\[ScriptCapitalU]] | _[\[ScriptCapitalD]] | \[ScriptCapitalU][_] | \[ScriptCapitalD][_]) ..}] := 
  Module[{formattedScripts}, 
   formattedScripts = {indices} /. {\[ScriptCapitalU][i_] :> 
       SuperscriptBox["", 
@@ -243,10 +247,10 @@ CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 robustTransformRules = {
   A_[\[ScriptCapitalU][primed_]] :> 
     Module[{fresh = Unique["\[Mu]"]}, 
-     Partials[x[\[ScriptCapitalU][primed]], x[\[ScriptCapitalU][fresh]]]*A[\[ScriptCapitalU][fresh]]], 
+     Partials[x[\[ScriptCapitalU][primed]], x[\[ScriptCapitalU][fresh]]] * A[\[ScriptCapitalU][fresh]]], 
   p_[\[ScriptCapitalD][primed_]] :> 
     Module[{fresh = Unique["\[Nu]"]}, 
-     Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][primed]]]*p[\[ScriptCapitalD][fresh]]]};
+     Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][primed]]] * p[\[ScriptCapitalD][fresh]]]};
 
 (* DYNAMIC TENSOR FORM *)
 TensorForm[expr_] := 
@@ -257,7 +261,7 @@ TensorForm[expr_] :=
    canonExpr = CanonicalizeIndices[expr];
 
    (* 2. Define Formal Pattern: Any symbol starting with \[FormalA]...\[FormalZ] *)
-   (* This covers \[FormalS], \[FormalI]1, \[FormalI]2, etc. *)
+   (* covering \[FormalS], \[FormalI]1, \[FormalI]2, etc. *)
    formalPattern = CharacterRange["\[FormalA]", "\[FormalZ]"];
 
    (* 3. Identify ALL Formal Indices *)
@@ -268,7 +272,7 @@ TensorForm[expr_] :=
    (* 4a. Identify symbols ALREADY in the expression *)
    usedSymbols = DeleteDuplicates @ Cases[canonExpr, _Symbol, Infinity];
    
-   (* 4b. Define our preferred Greek pool *)
+   (* 4b. Define preferred Greek pool *)
    greekPool = {\[Lambda], \[Kappa], \[Rho], \[Sigma], \[Mu], \[Nu], \[Tau], \[Eta], \[Chi], \[Psi], \[Alpha], \[Beta], \[Gamma]};
 
    (* 5. Filter the pool: Remove symbols that are already used *)
@@ -292,12 +296,12 @@ ExtractCoefficient[expr_, field_Symbol] :=
     (* 1. Canonicalize locally *)
     canonTerm = CanonicalizeIndices[term];
     
-    (* 2. Find the index attached to the field *)
+    (* 2. Find index attached to the field *)
     dummyIndex = Cases[canonTerm, field[_[idx_]] :> idx, Infinity];
     If[dummyIndex === {}, Return[0]];
     
-    (* 3. NORMALIZE: Swap the vector's index to a Reserved Symbol (FormalS) *)
-    (* This prevents it from colliding with internal dummies (i1, i2) in other terms *)
+    (* 3. NORMALIZE: Swap the field's index to a Reserved Symbol (FormalS) *)
+    (* preventing collision with internal dummies (i1, i2) in other terms *)
     targetIdx = First[dummyIndex];
     normalizedTerm = canonTerm /. targetIdx -> Symbol["\[FormalS]"];
     
@@ -348,7 +352,7 @@ metricRules = {
   };
   
 (* Torsion-Free Geometry (General Relativity) *)
-(* User must apply this manually: expr //. torsionRules *)
+(* User must apply manually: expr //. torsionRules *)
 torsionRules = {
   RelativityConnection[u_, a_, b_] :> 
    RelativityConnection[u, Sort[{a, b}][[1]], Sort[{a, b}][[2]]]
@@ -384,10 +388,10 @@ metricDifferentiationRules={
 (* ========================================================================= *)
 
 differentiationRules = {
-  Partials[a_*b_, var_] :> Partials[a, var]*b + a*Partials[b, var], 
+  Partials[a_ * b_, var_] :> Partials[a, var]*b + a*Partials[b, var], 
   Partials[a_ + b_, var_] :> Partials[a, var] + Partials[b, var], 
+  Partials[a_^n_, var_] /; (NumericQ[n]) :> n a^(n-1) * Partials[a, var],
   Partials[Exp[arg_], var_] :> Exp[arg] * Partials[arg, var],
-  Partials[a_^n_,var_]/;(NumericQ[n]) :> n a^(n-1) * Partials[a,var],
   Partials[n_, _] /; (NumericQ[n]) :> 0,
   Partials[expr_, x[\[ScriptCapitalU][idx_]]] /; StringContainsQ[ToString[idx], "'"] :> 
     Module[{fresh = Unique["\[Sigma]"]}, 
@@ -399,7 +403,7 @@ ExpandDerivatives[expr_] := expr //. differentiationRules;
 (* Schwarz's Theorem (Sort Partial Derivatives) *)
 (* If variables are out of canonical order, swap them *)
 Partials[Partials[f_, x[\[ScriptCapitalU][a_]]], x[\[ScriptCapitalU][b_]]] /; 
-  !OrderedQ[{a, b}] := 
+    !OrderedQ[{a, b}] := 
   Partials[Partials[f, x[\[ScriptCapitalU][b]]], x[\[ScriptCapitalU][a]]];
 
 (* ========================================================================= *)
@@ -411,9 +415,9 @@ SetConnection[sym_Symbol] := (
    Print["Relativity Engine: Connection set to ", sym]
 );
 
-(* Rule 0: Connection-Binding (The "Gamma Glue") *)
-(* DYNAMIC: Checks if prod contains the CURRENT RelativityConnection symbol *)
-(* This treats 'Gamma * A' as a single atom to enforce correct scope *)
+(* Rule 0: Connection-Binding ("Gamma Glue") *)
+(* DYNAMIC: Check if prod contains the CURRENT RelativityConnection symbol *)
+(* treating '\[CapitalGamma] * A' as a single atom *)
 CD[prod_Times /; !FreeQ[prod, RelativityConnection], var_] := 
   Module[{up, down, partialTerm, upCorrections, downCorrections},
    
@@ -433,13 +437,13 @@ CD[prod_Times /; !FreeQ[prod, RelativityConnection], var_] :=
      
    partialTerm + upCorrections - downCorrections ];
 
-(* Rule 1: Linearity *)
+(* Linearity *)
 CD[a_ + b_, var_] := CD[a, var] + CD[b, var];
 
-(* Rule 2: Product Rule *)
+(* Product Rule *)
 CD[a_ * b_, var_] := CD[a, var] * b + a * CD[b, var];
 
-(* Rule 3: The General Tensor Rule (Master Rule) *)
+(* The General Tensor Rule *)
 CD[expr_, x[\[ScriptCapitalU][nu_]]] := 
  Module[{up, down, partialTerm, upCorrections, downCorrections},
   
@@ -459,49 +463,25 @@ CD[expr_, x[\[ScriptCapitalU][nu_]]] :=
     
   partialTerm + upCorrections - downCorrections ];
 
-(* Rule 4: Mixed Geometric & Gauge Derivative *)
+(* Mixed Geometric & Gauge Derivative *)
 (* Usage: CD[field, coord, coupling, gaugeField] *)
 (* Returns: GeometricCD - i * coupling * gaugeField_mu * field *)
 CD[field_, var_, coupling_, gaugeBoson_Symbol] :=
   CD[field, var] - I * coupling * gaugeBoson[\[ScriptCapitalD][var[[1,1]]]] * field;
   
 (* Gradient *)
-
-(* \!\(TraditionalForm\`
-\*SuperscriptBox[\(\[Del]\), \( \(\[Mu]\)\)]f \[Congruent] 
-\*SuperscriptBox[\(g\), \( \(\[Mu] \[Nu]\)\)] 
-\*SubscriptBox[\(f\), \( \(, \( \)\(\[Nu]\)\)\)]\)
-   workhorse of Hamilton-Jacobi Theory, e . g .
-\!\(TraditionalForm\`\(\ \ \ \(H = 
-\*FractionBox[\(1\), \(2\)] 
-\*SuperscriptBox[\(g\), \( \(\[Mu] \[Nu]\)\)] 
-\*SubscriptBox[\(p\), \(\[Mu]\)] 
-\*SubscriptBox[\(p\), \(\[Nu]\)]\ \ \ \ , \ where\ 
-\*SubscriptBox[\(p\), \(\[Mu]\)] = 
-\*SubscriptBox[\(S\), \( \(, \( \)\(\[Mu]\)\)\)]\ is\ the\ derivative\ of\ the\ action\ S\)\)\) *)
-
 GradRaised[func_, gInvUU_Symbol, gInvUURules_, coords_] :=
   Table[Sum[(gInvUU[\[ScriptCapitalU][\[Mu]],\[ScriptCapitalU][\[Nu]]]/. gInvUURules)D[func,\[Nu]],
     {\[Nu],coords}],{\[Mu],coords}];
     
 (* Gradient Squared *)
-
-(* (\[Del]f)^2\[Congruent]\!\(
-\*SubscriptBox[\(\[Del]\), \(\[Mu]\)]f\)\[Del]^\[VeryThinSpace]\[Mu]f\[Congruent]g^(\[VeryThinSpace]\[Mu]\[VeryThinSpace]\[Nu])Subscript[f, \[VeryThinSpace],\[VeryThinSpace]\[Mu]]Subscript[f, \[VeryThinSpace],\[VeryThinSpace]\[Nu]]\[Congruent]\[Del]f\[VeryThinSpace]\[FilledSmallCircle]\[VeryThinSpace]\[Del]f *)
 GradSquared[func_, gInvUU_Symbol, gInvUURules_, coords_] := 
 With[{grad = MakeIndexer[GradRaised[func, gInvUU, gInvUURules, coords], coords]}, 
   Simplify[
     Sum[D[func, \[Mu]] grad[\[Mu]], {\[Mu], coords}]]];
 
 (* Scalar Laplacian *)
-
-(* \[Del]^2f\[Congruent]1/Sqrt[|g|]\!\(
-\*SubscriptBox[\(\[PartialD]\), \(\[Mu]\)]\((
-\*SqrtBox[\( | \(g\)\(|\)\)]
-\*SuperscriptBox[\(g\), \(\[VeryThinSpace]\(\[Mu]\[VeryThinSpace]\[Nu]\)\)]
-\*SubscriptBox[\(\[PartialD]\), \(\[Nu]\)]f)\)\)   Note carefully this is not (\[Del]f)^2. *)
-
-ScalarLaplacian[func_,gInvUU_Symbol,gInvUURules_,sqrtDetg_,coords_]:=
+ScalarLaplacian[func_, gInvUU_Symbol, gInvUURules_, sqrtDetg_, coords_]:=
   With[{grad=MakeIndexer[GradRaised[func,gInvUU,gInvUURules,coords],coords]},
     Simplify[
       Sum[D[sqrtDetg *grad[\[Mu]],\[Mu]],{\[Mu],coords}]/sqrtDetg]];
@@ -513,30 +493,16 @@ ScalarLaplacian[func_,gInvUU_Symbol,gInvUURules_,sqrtDetg_,coords_]:=
 (* Christoffel (\[CapitalGamma]) *)
 
 (* Reminder: this is not a general connection, but one for torsion-free,   *)
-(* symmetrics metrics, such as for relativistic gravitation.               *)
+(* symmetric metrics, such as for relativistic gravitation.                *)
 (* Send in metric and its inverse so as not to recompute inverse.          *)
 (* The symbol for covariant gDD must not equal that for contravariant gUU. *)
-(* \!\(
-\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Mu] \[Nu]\), \(\[Sigma]\)] \[Equal] \(
-\*FractionBox[\(1\), \(2\)]\ \((g
-\*SuperscriptBox[\(\), \(\[Sigma]\)]
-\*SuperscriptBox[\(\), \(\[Lambda]\)])\)\ \((
-\*SubscriptBox[\(g
-\*SubscriptBox[\(\), \(\[Lambda]\)]
-\*SubscriptBox[\(\), \(\[Mu]\)]\), \(, \(\[Nu]\)\)]\  + \ 
-\*SubscriptBox[
-SubscriptBox[
-SubscriptBox[\(g\), \(\[Lambda]\)], \(\[Nu]\)], \(, \(\[Mu]\)\)]\  - \ 
-\*SubscriptBox[
-SubscriptBox[\(g\), \(\[VeryThinSpace]\(\[Mu]\[VeryThinSpace]\[Nu]\)\)], \(, \(\[Lambda]\)\)])\)\)\) *)
+
 ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_]/;(gDD =!= gUU) := 
   Module[{\[Lambda] = Unique["\[Lambda]"]},
     (1/2) gUU[\[ScriptCapitalU][\[Sigma]],\[ScriptCapitalU][\[Lambda]]] 
       (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
        Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
        Partials[gDD[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Lambda]]]])];
-
-(* Gamma (Christoffel) *)
 
 CalculateGammaComponent[s_,m_,n_,
    gDD_Symbol,gDDRules_,
@@ -553,34 +519,22 @@ CalculateGammaComponent[s_,m_,n_,
 
 (* Send in \[CapitalGamma]Get so as not to recompute it on every call. *)
 (* e.g., \[CapitalGamma]Get=MakeIndexer[Schw\[CapitalGamma], {t, r, \[Theta], \[Phi]}] *)
-(* Subscript[R^\[Mu], \[Lambda] \[Nu] \[Rho]] = Subscript[Subsuperscript[\[CapitalGamma], \[Lambda]\[Nu], \[Mu]], ,\[Rho]] - Subscript[Subsuperscript[\[CapitalGamma], \[Lambda]\[Rho], \[Mu]], ,\[Nu]] + \!\(
-\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Lambda] \[Nu]\), \(\[Kappa]\)]\ 
-\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Kappa] \[Rho]\), \(\[Mu]\)]\) - \!\(
-\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Lambda] \[Rho]\), \(\[Kappa]\)]\(\ \)
-\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Kappa] \[Nu]\), \(\[Mu]\)]\(\ \)\)*)
+
 CalculateRiemannComponent[\[Mu]Up_, \[Lambda]Dn_, \[Nu]Dn_, \[Rho]Dn_, \[CapitalGamma]get_, coords_List] := 
   Module[{d\[CapitalGamma]1, d\[CapitalGamma]2, interact1, interact2},
-  (* Derivative Terms: Subscript[\[CapitalGamma]^\[Mu], \[Lambda] \[Nu],\[Rho]]-Subscript[\[CapitalGamma]^\[Mu], \[Lambda] \[Rho],\[Nu]] *)
-  d\[CapitalGamma]1 = D[\[CapitalGamma]get[\[Mu]Up, \[Lambda]Dn, \[Nu]Dn], \[Rho]Dn];
-  d\[CapitalGamma]2 = D[\[CapitalGamma]get[\[Mu]Up, \[Lambda]Dn, \[Rho]Dn], \[Nu]Dn];
-  
-  (* Interaction Terms: \!\(
-\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Lambda] \[Nu]\), \(\[Kappa]\)]\ 
-\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Kappa] \[Rho]\), \(\[Mu]\)]\) - \!\(
-\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Lambda] \[Rho]\), \(\[Kappa]\)]\ 
-\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Kappa] \[Nu]\), \(\[Mu]\)]\) *)
-  Module[{\[Kappa]},
-    interact1 = Sum[\[CapitalGamma]get[\[Kappa], \[Lambda]Dn, \[Nu]Dn] * \[CapitalGamma]get[\[Mu]Up, \[Kappa], \[Rho]Dn], {\[Kappa], coords}];
-    interact2 = Sum[\[CapitalGamma]get[\[Kappa], \[Lambda]Dn, \[Rho]Dn] * \[CapitalGamma]get[\[Mu]Up, \[Kappa], \[Nu]Dn], {\[Kappa], coords}]];
-  
-  Simplify[d\[CapitalGamma]1 - d\[CapitalGamma]2 + interact1 - interact2]
-];
+    (* Derivative Terms *)
+    d\[CapitalGamma]1 = D[\[CapitalGamma]get[\[Mu]Up, \[Lambda]Dn, \[Nu]Dn], \[Rho]Dn];
+    d\[CapitalGamma]2 = D[\[CapitalGamma]get[\[Mu]Up, \[Lambda]Dn, \[Rho]Dn], \[Nu]Dn];
+    (* Interaction Terms:  *)
+    Module[{\[Kappa]},
+      interact1 = Sum[\[CapitalGamma]get[\[Kappa], \[Lambda]Dn, \[Nu]Dn] * \[CapitalGamma]get[\[Mu]Up, \[Kappa], \[Rho]Dn], {\[Kappa], coords}];
+      interact2 = Sum[\[CapitalGamma]get[\[Kappa], \[Lambda]Dn, \[Rho]Dn] * \[CapitalGamma]get[\[Mu]Up, \[Kappa], \[Nu]Dn], {\[Kappa], coords}]];
+      Simplify[d\[CapitalGamma]1 - d\[CapitalGamma]2 + interact1 - interact2]];
 
 (* Ricci *)
 
 (* Send in RGet so as not to recompute it each time *)
 (* e.g., RGet = MakeIndexer[SchwRiemann, {t, r, \[Theta], \[Phi]}]; *)
-(* Subscript[R,  \[Lambda] \[Rho]] = Subscript[R^ \[Kappa],  \[Lambda] \[Kappa] \[Rho] ]*)
 CalculateRicciComponent[\[Lambda]_, \[Rho]_, RGet_, coords_]:=
   Module[{\[Kappa]},
     Sum[RGet[\[Mu], \[Lambda], \[Mu], \[Rho]], {\[Mu], coords}] // Simplify];
@@ -614,6 +568,7 @@ MatrixToUDRules[mat_, g_Symbol, UorD_ /; (UorD === \[ScriptCapitalU] || UorD ===
 (* contraction functions that Total a list of terms with bound     *)
 (* indices (repeated up-down indices in a term) where the bound    *)
 (* indices are replaced by all the coords, in order.               *)
+
 (* Contract performs contraction on the first detected bound       *)
 (* index and ContractAll performs contraction on all bound indices *)
 
@@ -707,11 +662,14 @@ EvaluateUDPartials[expr_] := expr /.
 (*                components of a tensor-like object such as \[CapitalGamma], g, or R.             *)
 (*        `coords` is a list of coordinate symbols, such as {t, r, \[Theta], \[Phi]}.            *)
 (*        The Length of coords must match the dimension of the array (unchecked).    *)
-(* Returns: a function that looks up components in the array by coord symbols.       *)
+(* Return: a function that looks up components in the array by coord symbols.        *)
+
 MakeIndexer[table_List, coords_List] :=
   Module[{dispatcher = Dispatch[MapIndexed[(#1 -> #2[[1]])&, coords]]},
     (* double-delayed; single-delay evaluates `Lookup` too early *)
     table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
   
+
+
 
 

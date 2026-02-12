@@ -30,35 +30,50 @@ AssertValence[expr_, expected_, label_] :=
     fail[label, expected, v]]];
 
 AssertEqual[actual_, expected_, label_] :=
-  Module[{canAct = CanonicalizeIndices[actual], canExp = CanonicalizeIndices[expected]},
+  Module[{
+    canAct = CanonicalizeIndices[actual], 
+    canExp = CanonicalizeIndices[expected]},
    If[canAct === canExp,
     pass[label, canAct],
     fail[label, canExp, canAct]]];
     
-AssertTrue[expr_, label_] :=
+AssertTrue[expr_, label_:""] :=
   If[expr, pass[label, True], fail[label, True, False]];
+
+AssertFalse[expr_, label_:""] := AssertTrue[!expr, label];
+
+SetAttributes[AssertMatchQ,HoldAll];
+AssertMatchQ[expr_,pattern_,label_String]:=
+	Module[{result=expr},
+		If[MatchQ[result,pattern],
+		    pass[label, True],
+		    fail[label, HoldForm[pattern], result]];
+		result];
 
 (* ========================================================================= *)
 Print["--- SECTION 1: TYPE CHECKING (VALENCE) ---"];
 (* ========================================================================= *)
 
 (* 1. Atoms *)
-AssertValence[x[\[ScriptCapitalU][\[Mu]]], {{\[Mu]}, {}}, "Vector \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\)"];
-AssertValence[p[\[ScriptCapitalD][\[Nu]]], {{}, {\[Nu]}}, "Covector \!\(\*SubscriptBox[\(p\), \(\[Nu]\)]\)"];
-AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]], {{\[Mu]}, {\[Nu]}}, "Mixed Tensor \!\(\*SubscriptBox[SuperscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\)"];
-AssertValence[T[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], {{}, {\[Mu], \[Nu]}}, "Mixed Tensor \!\(\*SubscriptBox[\(T\), \(\[Mu]\[Nu]\)]\)"];
-AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]], {{\[Mu], \[Nu]}, {}}, "Mixed Tensor \!\(\*SuperscriptBox[\(T\), \(\[Mu]\[Nu]\)]\)"];
-AssertValence[T[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalU][\[Nu]]], {{\[Nu]}, {\[Mu]}}, "Mixed Tensor \!\(\*SuperscriptBox[SubscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\)"];
+AssertValence[x[\[ScriptCapitalU][\[Mu]]], {{\[Mu]}, {}}, "Vector (\!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\))"];
+AssertValence[p[\[ScriptCapitalD][\[Nu]]], {{}, {\[Nu]}}, "Covector (\!\(\*SubscriptBox[\(p\), \(\[Nu]\)]\))"];
+AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]], {{\[Mu]}, {\[Nu]}}, "Mixed Tensor (\!\(\*SubscriptBox[SuperscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\))"];
+AssertValence[T[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], {{}, {\[Mu], \[Nu]}}, "Mixed Tensor (\!\(\*SubscriptBox[\(T\), \(\[Mu]\[Nu]\)]\))"];
+AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]], {{\[Mu], \[Nu]}, {}}, "Mixed Tensor (\!\(\*SuperscriptBox[\(T\), \(\[Mu]\[Nu]\)]\))"];
+AssertValence[T[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalU][\[Nu]]], {{\[Nu]}, {\[Mu]}}, "Mixed Tensor (\!\(\*SubsuperscriptBox[\(T\), \(\[Mu]\), \(\[Nu]\)]\))"];
+AssertValence[T, noValence, "Bare Symbol T"];
+AssertValence[T[], noValence, "Bare Call T[]"];
+AssertValence[Null, noValence, "Trap (Null)"];
 
-(* 2. Contractions *)
-AssertValence[x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]], {{}, {}}, "Scalar Contraction \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(p\), \(\[Mu]\)]\)"];
-AssertValence[p[\[ScriptCapitalD][\[Mu]]]*x[\[ScriptCapitalU][\[Mu]]], {{}, {}}, "Scalar Contraction \!\(\*SubscriptBox[\(p\), \(\[Mu]\)]\) \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\)"];
-AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]] * x[\[ScriptCapitalU][\[Nu]]], {{\[Mu]}, {}}, "Tensor-Vector \!\(\*SubscriptBox[SuperscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(x\), \(\[Nu]\)]\) -> \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\)"];
-AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]] * x[\[ScriptCapitalD][\[Mu]]], {{}, {\[Nu]}}, "Tensor-Vector \!\(\*SubscriptBox[SuperscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\) -> \!\(\*SubscriptBox[\(x\), \(\[Nu]\)]\)"];
+(* 2. Contractions (tests contractValence) *)
+AssertValence[x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]], {{}, {}}, "Scalar Contraction (\!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(p\), \(\[Mu]\)]\))"];
+AssertValence[p[\[ScriptCapitalD][\[Mu]]]*x[\[ScriptCapitalU][\[Mu]]], {{}, {}}, "Scalar Contraction (\!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(p\), \(\[Mu]\)]\))"];
+AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]] * x[\[ScriptCapitalU][\[Nu]]], {{\[Mu]}, {}}, "Tensor-Vector (\!\(\*SuperscriptBox[\(x\), \(\[Nu]\)]\) \!\(\*SubscriptBox[SuperscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\) \[Rule] \!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\))"];
+AssertValence[T[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]] * x[\[ScriptCapitalD][\[Mu]]], {{}, {\[Nu]}}, "Tensor-Vector (\!\(\*SuperscriptBox[\(x\), \(\[Mu]\)]\) \!\(\*SubscriptBox[SuperscriptBox[\(T\), \(\[Mu]\)], \(\[Nu]\)]\) \[Rule] \!\(\*SubscriptBox[\(x\), \(\[Nu]\)]\))"];
 
 (* 3. Arithmetic *)
-AssertValence[(x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]])^2, {{}, {}}, "Power of Scalar"];
-AssertValence[5*x[\[ScriptCapitalU][\[Mu]]], {{\[Mu]}, {}}, "Scalar Multiplication"];
+AssertValence[(x[\[ScriptCapitalU][\[Mu]]] * p[\[ScriptCapitalD][\[Mu]]])^2, {{}, {}}, "Power of Scalar"];
+AssertValence[5 * x[\[ScriptCapitalU][\[Mu]]], {{\[Mu]}, {}}, "Scalar Multiplication"];
 
 (* 4. Differentiation (The Gradient Test) *)
 AssertValence[Derivative[1][f][x[\[ScriptCapitalU][\[Alpha]]]], {{}, {\[Alpha]}}, "Gradient d(f)/\!\(\*SuperscriptBox[\(dx\), \(\[Alpha]\)]\) -> Down[\[Alpha]]"];
@@ -73,30 +88,29 @@ Quiet[Module[{badSum = x[\[ScriptCapitalU][\[Mu]]] + p[\[ScriptCapitalD][\[Mu]]]
 Print["\n--- SECTION 2: ALGEBRAIC CANONICALIZATION ---"];
 (* ========================================================================= *)
 
-(* 1. Simple Index Renaming *)
+(* 1. Index Renaming *)
 AssertEqual[
-  x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]],
-  x[\[ScriptCapitalU][\[Nu]]]*p[\[ScriptCapitalD][\[Nu]]],
-  "Dummy Renaming (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) == \!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Nu]\)]\))"];
+  x[\[ScriptCapitalU][\[Mu]]] * p[\[ScriptCapitalD][\[Mu]]],
+  x[\[ScriptCapitalU][\[Nu]]] * p[\[ScriptCapitalD][\[Nu]]],
+  "Dummy Renaming (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\(\\\ \)\)]\) \[Equal]\!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Nu]\)]\))"];
 
 (* 2. Commutativity *)
 AssertEqual[
-  x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]],
-  p[\[ScriptCapitalD][\[Nu]]]*x[\[ScriptCapitalU][\[Nu]]],
-  "Commutativity (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) == \!\(\*SubscriptBox[\(B\), \(\[Nu]\)]\)\!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\))"];
+  x[\[ScriptCapitalU][\[Mu]]] * p[\[ScriptCapitalD][\[Mu]]],
+  p[\[ScriptCapitalD][\[Nu]]] * x[\[ScriptCapitalU][\[Nu]]],
+  "Commutativity (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) \[Equal] \!\(\*SubscriptBox[\(B\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\))"];
 
 (* 3. Distributivity/Sums *)
 AssertEqual[
-  x[\[ScriptCapitalU][\[Mu]]]*p[\[ScriptCapitalD][\[Mu]]] + 
-   x[\[ScriptCapitalU][\[Nu]]]*p[\[ScriptCapitalD][\[Nu]]],
-  2*x[\[ScriptCapitalU][\[Rho]]]*p[\[ScriptCapitalD][\[Rho]]],
-  "Index Coalescing (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) + \!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Nu]\)]\) == 2 \!\(\*SuperscriptBox[\(A\), \(\[Rho]\)]\)\!\(\*SubscriptBox[\(B\), \(\[Rho]\)]\))"];
+  x[\[ScriptCapitalU][\[Mu]]] * p[\[ScriptCapitalD][\[Mu]]] + x[\[ScriptCapitalU][\[Nu]]] * p[\[ScriptCapitalD][\[Nu]]],
+  2 * x[\[ScriptCapitalU][\[Rho]]] * p[\[ScriptCapitalD][\[Rho]]],
+  "Index Coalescing (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) + \!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Nu]\)]\) \[Equal] 2 \!\(\*SuperscriptBox[\(A\), \(\[Rho]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Rho]\)]\))"];
 
 (* 4. Multi-Index Tensors *)
 AssertEqual[
-  P[\[ScriptCapitalU][\[Mu]]]*Q[\[ScriptCapitalD][\[Mu]]]* S[\[ScriptCapitalU][\[Nu]]]*T[\[ScriptCapitalD][\[Nu]]],
-  S[\[ScriptCapitalU][\[Alpha]]]*T[\[ScriptCapitalD][\[Alpha]]]* P[\[ScriptCapitalU][\[Beta]]]*Q[\[ScriptCapitalD][\[Beta]]],
-  "Double Dummy Pairs (\!\(\*SuperscriptBox[\(P\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(Q\), \(\[Mu]\)]\) \!\(\*SuperscriptBox[\(S\), \(\[Nu]\)]\) \!\(\*SubscriptBox[\(T\), \(\[Nu]\)]\))"];
+  P[\[ScriptCapitalU][\[Mu]]] * Q[\[ScriptCapitalD][\[Mu]]] * S[\[ScriptCapitalU][\[Nu]]] * T[\[ScriptCapitalD][\[Nu]]],
+  S[\[ScriptCapitalU][\[Alpha]]] * T[\[ScriptCapitalD][\[Alpha]]] * P[\[ScriptCapitalU][\[Beta]]] * Q[\[ScriptCapitalD][\[Beta]]],
+  "Double Dummy Pairs (\!\(\*SuperscriptBox[\(P\), \(\[Mu]\)]\) \!\(\*SuperscriptBox[\(S\), \(\[Nu]\)]\) \!\(\*SubscriptBox[\(Q\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(T\), \(\[Nu]\)]\))"];
 
 (* 5. Negative Test *)
 Module[{
@@ -112,47 +126,42 @@ Print["\n--- SECTION 3: PHYSICS, METRIC & TRANSFORMATIONS ---"];
 
 (* 1. Raising & Lowering *)
 AssertEqual[
-  (g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]]*A[\[ScriptCapitalU][\[Nu]]]) /. metricRules,
+  (g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]] * A[\[ScriptCapitalU][\[Nu]]]) /. metricRules,
   A[\[ScriptCapitalD][\[Mu]]],
-  "Lowering Index (\!\(\*SubscriptBox[\(g\), \(\[Mu]\[Nu]\)]\) \!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\) \[Rule] \!\(\*SubscriptBox[\(A\), \(\[Mu]\)]\))"];
+  "Lowering Index (\!\(\*SuperscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SubscriptBox[\(g\), \(\[Mu]\[Nu]\)]\) \[Rule] \!\(\*SubscriptBox[\(A\), \(\[Mu]\)]\))"];
 
 AssertEqual[
-  (g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]]*p[\[ScriptCapitalD][\[Nu]]]) /. metricRules,
+  (g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Nu]]] * p[\[ScriptCapitalD][\[Nu]]]) /. metricRules,
   p[\[ScriptCapitalU][\[Mu]]],
   "Raising Index (\!\(\*SuperscriptBox[\(g\), \(\[Mu]\[Nu]\)]\) \!\(\*SubscriptBox[\(p\), \(\[Nu]\)]\) \[Rule] \!\(\*SuperscriptBox[\(p\), \(\[Mu]\)]\))"];
 
 (* 2. Inverse Identity *)
 AssertEqual[
-  (g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Alpha]]]*g[\[ScriptCapitalD][\[Alpha]], \[ScriptCapitalD][\[Nu]]]) /. metricRules,
+  (g[\[ScriptCapitalU][\[Mu]], \[ScriptCapitalU][\[Alpha]]] * g[\[ScriptCapitalD][\[Alpha]], \[ScriptCapitalD][\[Nu]]]) /. metricRules,
   \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
   "Inverse Metric (\!\(\*SuperscriptBox[\(g\), \(\[Mu]\[Alpha]\)]\) \!\(\*SubscriptBox[\(g\), \(\[Alpha]\[Nu]\)]\) \[Rule] \!\(\*SubsuperscriptBox[\(\[Delta]\), \(\[Nu]\), \(\[Mu]\)]\))"];
 
 (* 3. Alpha-Conversion (Collision Safety) *)
 Module[{t1, t2, res, dummies, unique},
-  t1 = A[\[ScriptCapitalU][Superscript["a", "\[Prime]"]]];
-  t2 = B[\[ScriptCapitalU][Superscript["b", "\[Prime]"]]];
+    t1 = A[\[ScriptCapitalU][Superscript["a", "\[Prime]"]]];
+    t2 = B[\[ScriptCapitalU][Superscript["b", "\[Prime]"]]];
   res = (t1*t2) /. robustTransformRules;
-  dummies = 
-   Cases[res, (\[ScriptCapitalU] | \[ScriptCapitalD])[i_Symbol] :> i, 
-    Infinity];
+  dummies = Cases[res, (\[ScriptCapitalU] | \[ScriptCapitalD])[i_Symbol] :> i, Infinity];
   unique = DeleteDuplicates[dummies];
   If[Length[unique] == 2,
     pass["Alpha-Conversion: distinct indices)", unique],
     fail["Alpha-Conversion: collision", 2, Length[unique]]]];
     
-(* TEST: Associativity of Contraction (Triple Metric Sandwich) *)
-(* Subscript[g, \[Mu]\[Alpha]] g^\[Alpha]\[Beta] Subscript[g, \[Beta]\[Nu]] \[LongRightArrow] Subscript[g, \[Mu]\[Nu]] *)
+(* 4. Associativity of Contraction (Triple Metric Sandwich) *)
+(*  g_\[Mu]\[Alpha] g^\[Alpha]\[Beta] g_\[Beta]\[Nu] \[LongRightArrow] g_\[Mu]\[Nu] *)
 Module[{termSandwich},
   termSandwich = g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Alpha]]] * g[\[ScriptCapitalU][\[Alpha]], \[ScriptCapitalU][\[Beta]]] * g[\[ScriptCapitalD][\[Beta]], \[ScriptCapitalD][\[Nu]]];
-                 
   AssertEqual[termSandwich //. metricRules, g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], 
     "Triple Metric Sandwich (g.g.g -> g)"]];
 
-(* TEST: Delta Contracting on Gamma *)
-(* \[CapitalGamma]^r * Subscript[\[Delta]^s, r] \[LongRightArrow] \[CapitalGamma]^s *)
-Module[{gammaTerm},
-  gammaTerm = \[CapitalGamma][\[ScriptCapitalU][r], \[ScriptCapitalD][a], \[ScriptCapitalD][b]] * \[Delta][\[ScriptCapitalU][s], \[ScriptCapitalD][r]];
-  (* NOTE: Use //. metricRules for arbitrary tensors *)
+(* 5. Delta Contracting on Gamma *)
+(* \[CapitalGamma]^r_ab \[Delta]^s_r] \[LongRightArrow] \[CapitalGamma]^s_ab *)
+Module[{gammaTerm = \[CapitalGamma][\[ScriptCapitalU][r], \[ScriptCapitalD][a], \[ScriptCapitalD][b]] * \[Delta][\[ScriptCapitalU][s], \[ScriptCapitalD][r]]},
   AssertEqual[gammaTerm //. metricRules, \[CapitalGamma][\[ScriptCapitalU][s], \[ScriptCapitalD][a], \[ScriptCapitalD][b]], 
     "Delta-Gamma Contraction"]];
     
@@ -166,12 +175,10 @@ Print["\n=== Metric Differentiation Rules ==="];
 (* 3. Delta-on-Derivative Chain Rule                                         *)
 (* ========================================================================= *)
 
-(* Assuming 'metricDifferentiationRules' and 'metricRules' are defined in v1.9.0 *)
 allMetricRules = (metricRules ~Join~ metricDifferentiationRules);
 
 (* ------------------------------------------------------------------------- *)
-(* TEST 1: Permissive Contraction ("Index Flip")                             *)
-(* ------------------------------------------------------------------------- *)
+(* 1. Permissive Contraction ("Index Flip")                                  *)
 test1Expr = g[\[ScriptCapitalD][mu], \[ScriptCapitalD][lam]] * g[\[ScriptCapitalU][mu], \[ScriptCapitalU][nu]];
 test1Result = test1Expr //. allMetricRules // Simplify;
 test1Expected = \[Delta][\[ScriptCapitalU][nu], \[ScriptCapitalD][lam]];
@@ -179,80 +186,76 @@ test1Expected = \[Delta][\[ScriptCapitalU][nu], \[ScriptCapitalD][lam]];
 AssertEqual[test1Result, test1Expected, "Permissive Contraction"]
 
 (* ------------------------------------------------------------------------- *)
-(* TEST 2: Metric Symmetry inside Derivatives                                *)
+(* 2. Metric Symmetry inside Derivatives                                     *)
 (* Problem: d(g_uv) - d(g_vu) should be 0.                                   *)
-(* ------------------------------------------------------------------------- *)
-test2Expr = Partials[g[\[ScriptCapitalD][mu], \[ScriptCapitalD][nu]], x[\[ScriptCapitalU][rho]]] - 
-            Partials[g[\[ScriptCapitalD][nu], \[ScriptCapitalD][mu]], x[\[ScriptCapitalU][rho]]];
+test2Expr = Partials[g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Rho]]]] - 
+            Partials[g[\[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Rho]]]];
 test2Result = test2Expr //. allMetricRules // Simplify;
 
 AssertEqual[test2Result, 0, "Metric Symmetry in Derivatives"]
 
 (* ------------------------------------------------------------------------- *)
-(* TEST 3: The Delta Chain Rule                                              *)
+(* 3. Delta Chain Rule                                                       *)
 (* Problem: delta^s_m * d/dx^s must become d/dx^m                            *)
-(* ------------------------------------------------------------------------- *)
-test3Expr = \[Delta][\[ScriptCapitalU][sig], \[ScriptCapitalD][mu]] * Partials[f[x], x[\[ScriptCapitalU][sig]]];
+test3Expr = \[Delta][\[ScriptCapitalU][\[Sigma]], \[ScriptCapitalD][\[Mu]]] * Partials[f[x], x[\[ScriptCapitalU][\[Sigma]]]];
 test3Result = test3Expr //. allMetricRules // Simplify;
-test3Expected = Partials[f[x], x[\[ScriptCapitalU][mu]]];
+test3Expected = Partials[f[x], x[\[ScriptCapitalU][\[Mu]]]];
 
 AssertEqual[test3Result, test3Expected, "Delta Chain Rule"]
 
 (* ------------------------------------------------------------------------- *)
-(* TEST 4: Full Metric Compatibility                                         *)
+(* 4, Full Metric Compatibility                                              *)
 (* Problem: CD[g] must vanish identically for Levi-Civita connection.        *)
-(* ------------------------------------------------------------------------- *)
-(* 1. Define CD of Metric *)
-rawCD = CD[g[\[ScriptCapitalD][mu], \[ScriptCapitalD][nu]], x[\[ScriptCapitalU][rho]]];
-
+rawCD = CD[g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Rho]]]];
 compatibilityResult = ((rawCD /. ruleLeviCivita) // Expand) //. allMetricRules;
 
 AssertEqual[compatibilityResult, 0, "Metric Compatibility"]
 
 (* ------------------------------------------------------------------------- *)
-(* TEST 5: Levi-Civita Dummy Index Safety (The "Gamma Squared" Test)         *)
+(* 5. Levi-Civita Dummy Index Safety (The "Gamma Squared" Test)              *)
 (* Problem: Gamma * Gamma must generate two DISTINCT summation indices.      *)
-(* ------------------------------------------------------------------------- *)
 Module[{gammaProd, expandedProd, dummies},
   gammaProd = \[CapitalGamma][\[ScriptCapitalU][mu], \[ScriptCapitalD][a], \[ScriptCapitalD][b]] * \[CapitalGamma][\[ScriptCapitalU][nu], \[ScriptCapitalD][c], \[ScriptCapitalD][d]];
   
   expandedProd = gammaProd /. ruleLeviCivita;
   
-  (* Extract all Upper indices generated in the expansion (the summation indices) *)
+  (* Extract all summation indices generated in the expansion *)
   dummies = Cases[expandedProd, g[\[ScriptCapitalU][_], \[ScriptCapitalU][s_]] :> s, Infinity];
   
-  (* We expect 2 dummies. If Unique works, they must NOT be equal. *)
+  (* Expect 2 dummies. If Unique works, they must NOT be equal. *)
   If[Length[dummies] == 2 && dummies[[1]] =!= dummies[[2]],
     pass["Levi-Civita Index Safety (Unique indices generated)", dummies],
-    fail["Levi-Civita Index Safety", "Distinct Indices", dummies]
-  ];
-];
+    fail["Levi-Civita Index Safety", "Distinct Indices", dummies]  ];  ];
 
 (* ========================================================================= *)
-Print["\n--- SECTION 4: METRIC EQUIVALENCE (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) == \!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\)) ---"];
+Print["\n--- SECTION 4: METRIC EQUIVALENCE (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) \[Equal] \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\) \!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\)) ---"];
 (* ========================================================================= *)
 
 Module[{termUp, termDown},
-  termUp = A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalD][\[Mu]]]; 
-  termDown = A[\[ScriptCapitalD][\[Nu]]] * B[\[ScriptCapitalU][\[Nu]]];
+  termUp = A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalD][\[Mu]]]; (* A^\[Mu] Subscript[B, \[Mu]] *)
+  termDown = A[\[ScriptCapitalD][\[Nu]]] * B[\[ScriptCapitalU][\[Nu]]]; (* Subscript[A, \[Nu]] B^\[Nu] *)
 
   Module[{
-     is1 = CanonicalizeIndices[termUp], 
-     is2 = CanonicalizeIndices[termDown]},
+      is1 = CanonicalizeIndices[termUp], 
+      is2 = CanonicalizeIndices[termDown]},
     If[is1 =!= is2,
-      pass["Structural Distinction \!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) != \!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\) initially", {is1, is2}],
+      pass["Structural Distinction (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) \[NotEqual] \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\) \!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\)) initially", {is1, is2}],
       fail["Structural Distinction Failed", is1, is2]]];
 
   Module[{expandRule, termDownExpanded, termDownReduced, termFinal},
+    (* Subscript[A, \[Mu]] \[Rule] Subscript[g,  \[Mu] foo] A^foo *)
     expandRule = A[\[ScriptCapitalD][idx_]] :>
        Module[{fresh = Unique["\[Alpha]"]},
         g[\[ScriptCapitalD][idx], \[ScriptCapitalD][fresh]] * Hold[A[\[ScriptCapitalU][fresh]]]];
 
-    Print[Style["\[ScriptCapitalU]\[ScriptCapitalD] will rearrange terms", Gray]];
+    (* Subscript[A, \[Nu]] B^\[Nu] \[Rule] Subscript[g,  \[Nu] foo] A^foo B^\[Nu] *)
     termDownExpanded = termDown /. expandRule;
+    (* A^foo Subscript[B, foo] *)
     termDownReduced = termDownExpanded /. metricRules;
+    (* A^foo Subscript[B, foo] *)
     termFinal = ReleaseHold[termDownReduced];
 
+   (* A^foo Subscript[B, foo] == A^\[Mu] Subscript[B, \[Mu]]*)
     AssertEqual[termFinal, termUp, 
       "Metric Equivalence (\!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\) reduces to \!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\))"]]];
   
@@ -263,7 +266,7 @@ Print["\n--- SECTION 5: SECOND DERIVATIVE Box Structure ---"];
 Module[{boxStructure, hasFraction, hasSquaredSym},
 
   (* 1. EXECUTE (Direct Injection) *)
-  (* Pass the structure DIRECTLY to MakeBoxes to bypass variable evaluation issues *)
+  (* Pass the structure DIRECTLY to MakeBoxes to bypass evaluation issues *)
   boxStructure = MakeBoxes[Partials[Partials[f, x], y], StandardForm];
 
   (* 2. VALIDATION *)
@@ -283,37 +286,37 @@ Print["\n--- SECTION 6: CALCULUS ENGINE ---"];
 
 Module[{testProduct, a, testCD, testLinearity},
 
-(* Leibniz Product Rule *)
-(* Input: d(f*g)/dx *)
-(* Expected: (df/dx)g + f(dg/dx) *)
-testProduct = ExpandDerivatives[Partials[f * g, x[\[ScriptCapitalU][\[Mu]]]]];
-expectedProduct = Partials[f, x[\[ScriptCapitalU][\[Mu]]]] * g + f * Partials[g, x[\[ScriptCapitalU][\[Mu]]]];
-AssertEqual[testProduct, expectedProduct, "Leibniz Product Rule"];
+	(* Leibniz Product Rule *)
+	(* Input: d(f*g)/dx *)
+	(* Expected: (df/dx)g + f(dg/dx) *)
+	testProduct = ExpandDerivatives[Partials[f * g, x[\[ScriptCapitalU][\[Mu]]]]];
+	expectedProduct = Partials[f, x[\[ScriptCapitalU][\[Mu]]]] * g + f * Partials[g, x[\[ScriptCapitalU][\[Mu]]]];
+	AssertEqual[testProduct, expectedProduct, "Leibniz Product Rule"];
 
-(* Covariant Derivative Expansion *)
-(* Input: CD[ A^u, x^v ] *)
-(* Expected: Partial[A^u, x^v] + (Something containing Gamma) *)
-testCD = CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]];
-(* LOGIC: It must be a Sum. One part is Partials. The other part MUST contain Gamma. *)
-AssertTrue[MatchQ[testCD, Plus[Partials[_, _], _]] && !FreeQ[testCD, \[CapitalGamma]],
-  "Covariant Derivative Expansion"];
-  
-(* Power Rule *)
-AssertEqual[ExpandDerivatives[Partials[a[\[ScriptCapitalU][\[Mu]]]^2, x[\[ScriptCapitalU][\[Nu]]]]], 
-            2 a[\[ScriptCapitalU][\[Mu]]] * Partials[a[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]],
-            "Power Rule" ];
-
-(* Chain Rule (Linearity) *)
-(* Input: d(A+B)/dx *)
-testLinearity = ExpandDerivatives[Partials[A + B, x[\[ScriptCapitalU][\[Mu]]]]];
-AssertTrue[MatchQ[testLinearity, Plus[Partials[A, _], Partials[B, _]]],
-  "Differentiation Linearity"];
+	(* Covariant Derivative Expansion *)
+	(* Input: CD[ A^u, x^v ] *)
+	(* Expected: Partial[A^u, x^v] + (Something containing Gamma) *)
+	testCD = CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]];
+	(* LOGIC: It must be a Sum. One part is Partials. The other part MUST contain Gamma. *)
+	AssertTrue[MatchQ[testCD, Plus[Partials[_, _], _]] && !FreeQ[testCD, \[CapitalGamma]],
+	  "Covariant Derivative Expansion"];
+	  
+	(* Power Rule *)
+	AssertEqual[ExpandDerivatives[Partials[a[\[ScriptCapitalU][\[Mu]]]^2, x[\[ScriptCapitalU][\[Nu]]]]], 
+	            2 a[\[ScriptCapitalU][\[Mu]]] * Partials[a[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]],
+	            "Power Rule" ];
+	
+	(* Chain Rule (Linearity) *)
+	(* Input: d(A+B)/dx *)
+	testLinearity = ExpandDerivatives[Partials[A + B, x[\[ScriptCapitalU][\[Mu]]]]];
+	AssertTrue[MatchQ[testLinearity, Plus[Partials[A, _], Partials[B, _]]],
+	  "Differentiation Linearity"];
   
 ];
 
-(* TEST: Covariant Derivative of a Scalar *)
+(* Covariant Derivative of a Scalar *)
 Module[{phi, scalarCD},
-  valence[phi] = {{}, {}}; (* Define as scalar *)
+  valence[phi] = noValence; (* Define as scalar *)
   scalarCD = CD[phi, x[\[ScriptCapitalU][\[Mu]]]];
   
   AssertEqual[scalarCD, Partials[phi, x[\[ScriptCapitalU][\[Mu]]]], 
@@ -323,7 +326,7 @@ Module[{phi, scalarCD},
     "Scalar CD contains no Connection Coefficients"];
 ];
 
-(* TEST: Nested Covariant Derivatives (Stress Test for Alpha-Conversion) *)
+(* Nested Covariant Derivatives (Stress Test for Alpha-Conversion) *)
 Module[{nestedCD, allIndices, generatedDummies},
   
   nestedCD = CD[CD[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]], x[\[ScriptCapitalU][\[Rho]]]];
@@ -347,35 +350,35 @@ Print["\n--- SECTION 7: QUOTIENT THEOREM (Extraction) ---"];
 
 Module[{expr1, expected1, expr2, expected2, formalS},
 
-(* Define the reserved symbol the engine now uses *)
-formalS = Symbol["\[FormalS]"];
-  
-(* Test 1: Simple Extraction *)
-(* T_u * A^u -> T_u *)
-expr1 = T[\[ScriptCapitalD][\[Mu]]] * A[\[ScriptCapitalU][\[Mu]]];
-
-(* Expect the formal index (i1) generated by the engine *)
-expected1 = T[\[ScriptCapitalD][formalS]]; 
-
-AssertEqual[ExtractCoefficient[expr1, A], expected1, 
-  "Quotient Extraction (Simple)"];
-
-(* Test 2: Distributed Terms (The Riemann Case) *)
-expr2 = R[\[ScriptCapitalD][\[Mu]]] * A[\[ScriptCapitalU][\[Mu]]] + 
-        S[\[ScriptCapitalD][\[Nu]]] * A[\[ScriptCapitalU][\[Nu]]];
-
-(* FIX: Expect Formal Indices (i1) because ExtractCoefficient resets counters per term *)
-(* Explicitly construct the expected result using the formal symbol i1 *)
-formalIndex = Symbol["\[FormalI]1"];
-expected2 = R[\[ScriptCapitalD][formalS]] + S[\[ScriptCapitalD][formalS]];
-
-AssertEqual[ExtractCoefficient[expr2, A], expected2, 
-  "Quotient Extraction (Distributed Dummies)"];
-  
-(* Test 3: Zero Case *)
-(* If A is not present, return 0 *)
-AssertEqual[ExtractCoefficient[B[\[ScriptCapitalU][\[Mu]]], A], 0, 
-  "Quotient Extraction (Zero Case)"];
+	(* Define the reserved symbol the engine now uses *)
+	formalS = Symbol["\[FormalS]"];
+	  
+	(* Test 1: Simple Extraction *)
+	(* T_u * A^u -> T_u *)
+	expr1 = T[\[ScriptCapitalD][\[Mu]]] * A[\[ScriptCapitalU][\[Mu]]];
+	
+	(* Expect the formal index (i1) generated by the engine *)
+	expected1 = T[\[ScriptCapitalD][formalS]]; 
+	
+	AssertEqual[ExtractCoefficient[expr1, A], expected1, 
+	  "Quotient Extraction (Simple)"];
+	
+	(* Test 2: Distributed Terms (The Riemann Case) *)
+	expr2 = R[\[ScriptCapitalD][\[Mu]]] * A[\[ScriptCapitalU][\[Mu]]] + 
+	        S[\[ScriptCapitalD][\[Nu]]] * A[\[ScriptCapitalU][\[Nu]]];
+	
+	(* Expect Formal Indices (i1) because ExtractCoefficient resets counters per term *)
+	(* Explicitly construct the expected result using the formal symbol i1 *)
+	formalIndex = Symbol["\[FormalI]1"];
+	expected2 = R[\[ScriptCapitalD][formalS]] + S[\[ScriptCapitalD][formalS]];
+	
+	AssertEqual[ExtractCoefficient[expr2, A], expected2, 
+	  "Quotient Extraction (Distributed Dummies)"];
+	  
+	(* Test 3: Zero Case *)
+	(* If A is not present, return 0 *)
+	AssertEqual[ExtractCoefficient[B[\[ScriptCapitalU][\[Mu]]], A], 0, 
+	  "Quotient Extraction (Zero Case)"];
   
 ];
 
@@ -407,24 +410,26 @@ Print["\n--- SECTION 9: COMMA NOTATION DISPLAY LOGIC ---"];
 
 Module[{checkDisplay, box, hasParens, isSubscript},
 
-  (* Helper to inspect the raw boxes generated by the FrontEnd *)
-  checkDisplay[label_, expr_, shouldHaveParens_] := (
-    box = MakeBoxes[expr, StandardForm];
-    
-    (* 1. It must be a SubscriptBox (Comma notation) *)
-    isSubscript = MatchQ[box, SubscriptBox[_, _]];
-    
-    (* 2. Check for explicit parentheses in the first argument *)
-    (* We look for RowBox[{"(", ... }] inside the box structure *)
-    hasParens = !FreeQ[box, "("];
-    
-    If[isSubscript && (hasParens === shouldHaveParens),
-      pass[label, DisplayForm@box],
-      fail[label, 
-        If[shouldHaveParens, "Subscript w/ Parens", "Subscript w/o Parens"], 
-        DisplayForm@box]
-    ];
-  );
+    (* Helper to inspect the raw boxes generated by the FrontEnd *)
+    checkDisplay[label_, expr_, shouldHaveParens_] := (
+	    box = MakeBoxes[expr, StandardForm];
+	    
+	    (* 1. It must be a SubscriptBox (Comma notation) *)
+	    isSubscript = MatchQ[box, SubscriptBox[_, _]];
+	    
+	    (* 2. Check for explicit parentheses in the first argument *)
+	    (* look for RowBox[{"(", ... }] inside the box structure *)
+	    hasParens = !FreeQ[box, "("];
+	    
+	    If[isSubscript && (hasParens === shouldHaveParens),
+	      pass[label, DisplayForm@box],
+	      fail[label, 
+	        If[shouldHaveParens, 
+	          "Subscript w/ Parens", 
+	          "Subscript w/o Parens"], 
+	        DisplayForm@box]
+	    ];
+    );
 
   (* TEST 1: The "Happy Path" (Simple Tensor) *)
   (* A^u_,v -> No Parens *)
@@ -461,13 +466,15 @@ Module[{checkDisplay, box, hasParens, isSubscript},
   checkDisplay["Nested Math (A*(B+C))", 
     Partials[A * (B + C), x[\[ScriptCapitalU][\[Nu]]]], 
     True];
+    
 ];
 
 (* ========================================================================= *)
 Print["\n--- SECTION 10: EINSTEIN SUMMATION (Contract & ContractAll) ---"];
 (* ========================================================================= *)
 
-Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial, resSingle, resDouble, resPartial},
+Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial, 
+     resSingle, resDouble, resPartial},
   
   (* Define dummy coordinates for deterministic summation *)
   coords = {1, 2};
@@ -483,7 +490,8 @@ Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial, resSingle, resDo
 
   (* TEST 2: Recursive vs One-Shot (The Double Contraction) *)
   (* A^u B_u C^v D_v *)
-  exprDouble = A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalD][\[Mu]]] * C[\[ScriptCapitalU][\[Nu]]] * D[\[ScriptCapitalD][\[Nu]]];
+  (* don't use C and D, they're reserved. use double-struck characters *)
+  exprDouble = A[\[ScriptCapitalU][\[Mu]]] * B[\[ScriptCapitalD][\[Mu]]] * \[DoubleStruckCapitalC][\[ScriptCapitalU][\[Nu]]] * \[DoubleStruckCapitalD][\[ScriptCapitalD][\[Nu]]];
   
   (* Contract (One-Shot): Should only expand ONE pair (e.g., Mu), leaving Nu symbolic *)
   Module[{resOneShot, hasMu, hasNu},
@@ -518,7 +526,8 @@ Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial, resSingle, resDo
   (* TEST 4: Mixed Sum/Product *)
   (* A^u B_u + C^v D_v *)
   (* ContractAll should handle distribution over Plus *)
-  exprMixed = A[\[ScriptCapitalU][\[Mu]]]*B[\[ScriptCapitalD][\[Mu]]] + C[\[ScriptCapitalU][\[Nu]]]*D[\[ScriptCapitalD][\[Nu]]];
+  exprMixed = \[DoubleStruckCapitalA][\[ScriptCapitalU][\[Mu]]] * \[DoubleStruckCapitalB][\[ScriptCapitalD][\[Mu]]]  +  \[DoubleStruckCapitalC][\[ScriptCapitalU][\[Nu]]] * \[DoubleStruckCapitalD][\[ScriptCapitalD][\[Nu]]];
+  (* _Symbol pattern excludes the numerical indices used in this test *) 
   AssertTrue[FreeQ[ContractAll[exprMixed, coords], \[ScriptCapitalU][_Symbol]], 
     "Distribution over Sum (A^u B_u + C^v D_v)"];
 
@@ -529,14 +538,14 @@ Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial, resSingle, resDo
     "Free Indices Protected (No Contraction)"];
 
   (* TEST 6: Coordinate Exclusion *)
-  (* Ensure the symbols in 'coords' themselves are not treated as indices if they appear in the expression *)
+  (* Ensure the 'coords' themselves are not treated as summation indices if they appear in the expression *)
   (* e.g. if coords={t,r}, don't try to contract 't' in A^t *)
   Module[{badExpr},
     badExpr = A[\[ScriptCapitalU][1]]; (* 1 is a coord *)
     AssertEqual[
       ContractAll[badExpr, coords], 
       badExpr, 
-      "Coordinate Symbols Excluded from Scanner"];
+      "Coordinates Excluded from Scanner"];
   ];
 ];
 (* ========================================================================= *)
@@ -554,27 +563,27 @@ Module[{gaugeTransforms, \[Psi], A, \[CapitalLambda], e,
     \[Psi] -> E^(I e \[CapitalLambda]) * \[Psi],
     A[\[ScriptCapitalD][idx_]] :> A[\[ScriptCapitalD][idx]] + Partials[\[CapitalLambda], x[\[ScriptCapitalU][idx]]]};
   
+  (* invoke gauge-theory CD with const charge 'e' and gauge connection 'A' *) 
   cde = CD[\[Psi], x[\[ScriptCapitalU][\[Mu]]], e, A];
   
-  transformedCde = cde /. gaugeTransforms //. differentiationRules /. {Partials[e, _] :> 0} // Expand;
+  transformedCde = (cde /. 
+        gaugeTransforms //. 
+      differentiationRules /. 
+    {Partials[e, _] :> 0}) // Expand;
      
   expectedCde = E^(I e \[CapitalLambda]) * cde // Expand;
   
   AssertEqual[transformedCde, expectedCde, 
-    "U(1) Gauge Covariance (\!\(\*SubscriptBox[\(D\), \(\[Mu]\)]\)\[Psi]' == \!\(\*SuperscriptBox[\(\[ExponentialE]\), \(\[ImaginaryI]\[VeryThinSpace]e\[VeryThinSpace]\[CapitalLambda]\)]\) \!\(\*SubscriptBox[\(D\), \(\[Mu]\)]\)\[Psi])"];
+    "U(1) Gauge Covariance ((\[Psi] \!\(\*SubscriptBox[\(D\), \(\[Mu]\)]\)\!\(\*SuperscriptBox[\()\), \(\[Prime]\),\nMultilineFunction->None]\)\[Equal]\!\(\*SuperscriptBox[\(\[ExponentialE]\), \(\[ImaginaryI]e\[CapitalLambda]\)]\) \[Psi] \!\(\*SubscriptBox[\(D\), \(\[Mu]\)]\))"];
 
   (* --- TEST 2: Gauge Invariance of Field Strength Subscript[F, \[Mu]\[Nu]] --- *)
   (* prove: Subscript[F', \[Mu]\[Nu]] == Subscript[F, \[Mu]\[Nu]] *)
 
-  (* The Field Strength Tensor Subscript[F, \[Mu]\[Nu]] = \!\(
-\*SubscriptBox[\(\[PartialD]\), \(\[Mu]\)]
-\*SubscriptBox[\(A\), \(\[Nu]\)]\) - \!\(
-\*SubscriptBox[\(\[PartialD]\), \(\[Nu]\)]
-\*SubscriptBox[\(A\), \(\[Mu]\)]\) *)
+  (* The Field Strength Tensor *)
   F = Partials[A[\[ScriptCapitalD][n]], x[\[ScriptCapitalU][m]]] - Partials[A[\[ScriptCapitalD][m]], x[\[ScriptCapitalU][n]]];
   
   (* Transform and Expand *)
-  transformedF = F /. gaugeTransforms // ExpandDerivatives // Expand;
+  transformedF = (F /. gaugeTransforms // ExpandDerivatives) // Expand;
   
   AssertEqual[transformedF, F, 
     "Field Strength Invariance (F' == F)"];
@@ -595,7 +604,10 @@ Module[{geometricW, mixedGaugeRules, gW, \[CapitalLambda], W, Z, transformedW, e
     W[\[Mu]_] :> E^(I\[ThinSpace]gW \[CapitalLambda]) * W[\[Mu]],
     Z[\[ScriptCapitalD][\[Mu]_]] :> Z[\[ScriptCapitalD][\[Mu]]] + Partials[\[CapitalLambda], x[\[ScriptCapitalU][\[Mu]]]]};
 
-  transformedW = geometricW /. mixedGaugeRules //. differentiationRules /. {Partials[gW, _] :> 0} // Expand;
+  transformedW = (geometricW /. 
+        mixedGaugeRules //. 
+      differentiationRules /. 
+    {Partials[gW, _] :> 0}) // Expand;
   
   (* Expectation *)
   (* The original mixed object, just phase-rotated *)
@@ -621,9 +633,9 @@ Module[{comm, term1, term2, A, calculatedRiemann, expectedRiemann, formalS, \[La
 
   expectedRiemann = 
    ( ( Partials[\[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[FormalS]]], x[\[ScriptCapitalU][\[Rho]]]]     - 
-     Partials[\[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Rho]], \[ScriptCapitalD][\[FormalS]]], x[\[ScriptCapitalU][\[Nu]]]]     + 
-    \[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Rho]], \[ScriptCapitalD][\[Lambda]]] * \[CapitalGamma][\[ScriptCapitalU][\[Lambda]], \[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[FormalS]]]     - 
-     \[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[Lambda]]] * \[CapitalGamma][\[ScriptCapitalU][\[Lambda]], \[ScriptCapitalD][\[Rho]], \[ScriptCapitalD][\[FormalS]]] ) //. torsionRules );
+       Partials[\[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Rho]], \[ScriptCapitalD][\[FormalS]]], x[\[ScriptCapitalU][\[Nu]]]]     + 
+       \[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Rho]], \[ScriptCapitalD][\[Lambda]]] * \[CapitalGamma][\[ScriptCapitalU][\[Lambda]], \[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[FormalS]]]     - 
+       \[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]], \[ScriptCapitalD][\[Lambda]]] * \[CapitalGamma][\[ScriptCapitalU][\[Lambda]], \[ScriptCapitalD][\[Rho]], \[ScriptCapitalD][\[FormalS]]] ) //. torsionRules );
 
   AssertEqual[calculatedRiemann, expectedRiemann, 
     "Riemann Derivation matches Textbook"];
@@ -707,5 +719,7 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
+
+
 
 
