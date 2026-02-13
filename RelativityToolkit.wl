@@ -805,6 +805,3 @@ Module[{valid},
 			Return[$Failed])];
 	CreateExtendedFormal[sym_Symbol]:=
 	CreateExtendedFormal[SymbolName[sym]]; ];
-
-
-

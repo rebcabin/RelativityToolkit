@@ -1,5 +1,9 @@
 (* ::Package:: *)
 
+(* ::Title:: *)
+(*Relativity Toolkit Regression Suite*)
+
+
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT: REGRESSION SUITE                                      *)
 (* ========================================================================= *)
@@ -8,6 +12,12 @@ Print["\n================================================================"];
 Print["RUNNING REGRESSION SUITE v" <> RelativityToolkitVersion];
 Print["================================================================\n"];
 
+
+
+(* ::Chapter:: *)
+(*Test Harness*)
+
+
 (* --- TEST HELPERS ------------------------------------------------------- *)
 ClearAll[AssertValence, AssertEqual, PassCount, FailCount, pass, fail];
 PassCount = 0;
@@ -15,11 +25,15 @@ FailCount = 0;
 
 pass[label_, v_]:=
   (PassCount++;
-   Print["[", Style["PASS", Green], "] ", label, " \[LongRightArrow] ", v]);
+   Print["[", Style["PASS", Green], "] ",
+     NumberForm[PassCount+FailCount, 4, NumberPadding->{" ",""}], ": ",
+     label, " \[LongRightArrow] ", v]);
    
 fail[label_, expected_, actual_]:=
   (FailCount++;
-   Print["[", Style["FAIL", Red], "] ", label, 
+   Print["[", Style["FAIL", Red], "] ", 
+     NumberForm[PassCount+FailCount, 4, NumberPadding->{" ",""}], ": ",
+     label, 
      "\n\tExpected ", expected,
      "\n\tGot ", actual]);
 
@@ -63,6 +77,11 @@ AssertProtected[e_, label_String:""] :=
   AssertMatchQ[Attributes @@ {e}, {___, Protected, ___}, label];
 
 
+
+(* ::Chapter:: *)
+(*Type Checking*)
+
+
 (* ========================================================================= *)
 Print["--- SECTION 1: TYPE CHECKING (VALENCE) ---"];
 (* ========================================================================= *)
@@ -96,6 +115,12 @@ Quiet[Module[{badSum = x[\[ScriptCapitalU][\[Mu]]] + p[\[ScriptCapitalD][\[Mu]]]
    If[Echo[valence[badSum], "expect error message above"] === {{}, {}}, 
     pass["Mismatch Handled Gracefully", {{}, {}}],
     fail["Mismatch Detection failed", {{}, {}}, valence[badSum]]]]];
+
+
+
+(* ::Chapter:: *)
+(*Canonicalization*)
+
 
 (* ========================================================================= *)
 Print["\n--- SECTION 2: ALGEBRAIC CANONICALIZATION ---"];
@@ -132,6 +157,12 @@ Module[{
   If[is1 =!= is2,
     pass["Free Indices Preserved", {is1, is2}],
     fail["Free Indices Incorrectly Merged", is1, is2]]];
+
+
+
+(* ::Chapter:: *)
+(*Physics with the Metric*)
+
 
 (* ========================================================================= *)
 Print["\n--- SECTION 3: PHYSICS, METRIC & TRANSFORMATIONS ---"];
@@ -240,6 +271,12 @@ Module[{gammaProd, expandedProd, dummies},
     pass["Levi-Civita Index Safety (Unique indices generated)", dummies],
     fail["Levi-Civita Index Safety", "Distinct Indices", dummies]  ];  ];
 
+
+
+(* ::Chapter:: *)
+(*Metric Equivalence*)
+
+
 (* ========================================================================= *)
 Print["\n--- SECTION 4: METRIC EQUIVALENCE (\!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\) \[Equal] \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\) \!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\)) ---"];
 (* ========================================================================= *)
@@ -272,8 +309,14 @@ Module[{termUp, termDown},
     AssertEqual[termFinal, termUp, 
       "Metric Equivalence (\!\(\*SubscriptBox[\(A\), \(\[Nu]\)]\) \!\(\*SuperscriptBox[\(B\), \(\[Nu]\)]\) reduces to \!\(\*SuperscriptBox[\(A\), \(\[Mu]\)]\) \!\(\*SubscriptBox[\(B\), \(\[Mu]\)]\))"]]];
   
+
+
+(* ::Chapter:: *)
+(*Boxes for Second Derivative*)
+
+
 (* ========================================================================= *)
-Print["\n--- SECTION 5: SECOND DERIVATIVE Box Structure ---"];
+Print["\n--- SECTION 5: SECOND DERIVATIVE BOX STRUCTURE ---"];
 (* ========================================================================= *)
 
 Module[{boxStructure, hasFraction, hasSquaredSym},
@@ -292,6 +335,12 @@ Module[{boxStructure, hasFraction, hasSquaredSym},
   If[hasFraction && hasSquaredSym,
     pass["Found FractionBox + ^2", True],
     fail["formatting rule NOT detected", True, False]]];
+
+
+
+(* ::Chapter:: *)
+(*Calculus Engine*)
+
 
 (* ========================================================================= *)
 Print["\n--- SECTION 6: CALCULUS ENGINE ---"];
@@ -357,6 +406,12 @@ Module[{nestedCD, allIndices, generatedDummies},
     "Nested CD Alpha-Conversion (Unique Indices Generated)"];
 ];
   
+
+
+(* ::Chapter:: *)
+(*Quotient Theorem*)
+
+
 (* ========================================================================= *)
 Print["\n--- SECTION 7: QUOTIENT THEOREM (Extraction) ---"];
 (* ========================================================================= *)
@@ -395,6 +450,12 @@ Module[{expr1, expected1, expr2, expected2, formalS},
   
 ];
 
+
+
+(* ::Chapter:: *)
+(*Tensor Form*)
+
+
 (* ========================================================================= *)
 Print["\n--- SECTION 8: TENSOR FORM ROBUSTNESS ---"];
 (* ========================================================================= *)
@@ -416,6 +477,12 @@ Module[{weirdTerm, formatted, formalPattern, isClean},
   AssertTrue[isClean, "TensorForm maps arbitrary formals (Q, Z, I99) to Greek"];
 
 ];
+
+
+
+(* ::Chapter:: *)
+(*Comma Notation Display Logic*)
+
 
 (* ========================================================================= *)
 Print["\n--- SECTION 9: COMMA NOTATION DISPLAY LOGIC ---"];
@@ -481,6 +548,12 @@ Module[{checkDisplay, box, hasParens, isSubscript},
     True];
     
 ];
+
+
+
+(* ::Chapter:: *)
+(*Einstein Summation (Contract & ContractAll)*)
+
 
 (* ========================================================================= *)
 Print["\n--- SECTION 10: EINSTEIN SUMMATION (Contract & ContractAll) ---"];
@@ -561,6 +634,13 @@ Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial,
       "Coordinates Excluded from Scanner"];
   ];
 ];
+
+
+
+(* ::Chapter:: *)
+(*Electrodynamics and Gauge Invariance*)
+
+
 (* ========================================================================= *)
 Print["\n--- SECTION 11: ELECTRODYNAMICS & GAUGE INVARIANCE ---"];
 (* ========================================================================= *)
@@ -630,6 +710,12 @@ Module[{geometricW, mixedGaugeRules, gW, \[CapitalLambda], W, Z, transformedW, e
     "Weinberg-Salam Mixed Covariance (Geometric + Gauge)"];
 ];
 
+
+
+(* ::Chapter:: *)
+(*Riemann Curvature Derivation*)
+
+
 (* ========================================================================= *)
 Print["\n--- SECTION 12: RIEMANN CURVATURE DERIVATION ---"];
 (* ========================================================================= *)
@@ -653,6 +739,12 @@ Module[{comm, term1, term2, A, calculatedRiemann, expectedRiemann, formalS, \[La
   AssertEqual[calculatedRiemann, expectedRiemann, 
     "Riemann Derivation matches Textbook"];
 ];
+
+
+
+(* ::Chapter:: *)
+(*Geometry Operators: Gradient, Laplacian*)
+
 
 (* ========================================================================= *)
 Print["\n--- SECTION 13: GEOMETRY OPERATORS (Gradient, Laplacian) ---"];
@@ -720,6 +812,135 @@ Block[{coords, flatMetric, flatRules, flatInvRules, sqrtDetFlat,
     "ScalarLaplacian (Polynomial \!\(\*SuperscriptBox[\(r\), \(2\)]\))"
   ];
 ];
+
+
+
+(* ::Chapter:: *)
+(*Formal Symbols*)
+
+
+(* ========================================================================= *)
+Print["\n--- SECTION 14: FORMAL SYMBOLS ---"];
+(* ========================================================================= *)
+
+(*SETUP*)
+Protect[\[FormalI]123];
+protectedDummy=CreateExtendedFormal["\[FormalJ]888"];
+CreateExtendedFormal[\[FormalI]999];
+
+Print["--- (1) Identity & Built-in Protection ---"];
+
+(*Case 0: low-level checks*)
+AssertEqual[checkFormalIdentity[\[FormalI]],"Pure","input: formal symbol literal"];
+AssertEqual[checkFormalIdentity["\[FormalI]"],"Pure","input: formal symbol string"];
+AssertEqual[checkFormalIdentity[\[FormalJ]1234],"Extended","input: extended symbol literal"];
+AssertEqual[checkFormalIdentity["\[FormalJ]2345"],"Extended","input: extended symbol string"];
+AssertEqual[checkFormalIdentity[foo],"Neither","non-formal symbol literal"];
+AssertEqual[checkFormalIdentity["foo"],"Neither","non-formal string"];
+AssertEqual[checkFormalIdentity[""],"Neither","non-formal empty string"];
+AssertEqual[checkFormalIdentity[],$Failed,"empty string"];
+AssertEqual[checkFormalIdentity[42],$Failed,"integer"];
+
+(*Case 1: System Protection*)
+AssertProtected[\[FormalI],"Identity: Built-in \[FormalI] is Protected"];
+
+(*Case 2: Latin Identification*)
+AssertTrue[FormalSymbolQ[\[FormalI]],"Identity: Latin Pure Formal recognized"];
+
+(*Case 3: Greek Identification*)
+AssertTrue[FormalSymbolQ[\[FormalAlpha]],"Identity: Greek Pure Formal recognized"];
+
+Print["--- (2) Pointer & Construction Logic ---"];
+
+(*Case 4: Pointer Resolution (MUST EVALUATE THE POINTER)*)
+AssertTrue[FormalSymbolExtendedQ[Evaluate@protectedDummy],
+"Pointer: Variable holding symbol recognized"];
+
+(*Case 5: Target is Protected*)
+AssertProtected[protectedDummy,"Pointer: Target symbol \[FormalJ]888 is Protected"];
+
+(*Case 6: Negative Constructor Check*)
+AssertMatchQ[Quiet[CreateExtendedFormal[""]],$Failed,
+"Constructor: Rejects empty string"];
+
+Print["--- (3) Structural Variety & Boundaries ---"];
+
+(*Case 7: Numbered Dummies (Protected it in Setup)*)
+AssertTrue[FormalSymbolExtendedQ[\[FormalI]123],"Structure: Numbered dummy recognized"];
+
+(*Case 8: Reject Prefixed Formal Symbols*)
+AssertFalse[FormalSymbolExtendedQ[Partial\[FormalX]],"Structure: Prefixed symbol rejected"];
+
+(*Case 9: Pure System is NOT Extended*)
+AssertFalse[FormalSymbolExtendedQ[\[FormalI]],"Boundary: Pure is NOT Extended"];
+
+(*Case 10: Extended is NOT Pure System*)
+AssertFalse[FormalSymbolQ[\[FormalI]123],"Boundary: Extended is NOT Pure"];
+
+AssertFalse[FormalSymbolQ[foo], "Boundary: Ordinary Symbol is not Pure System formal"];
+AssertFalse[FormalSymbolQ["foo"], "Boundary: String is not Pure System formal symbol"];
+AssertFalse[FormalSymbolQ[42], "Boundary: Number is not Pure System formal symbol"];
+
+AssertFalse[FormalSymbolExtendedQ[foo], "Boundary: Ordinary Symbol is not Extended formal"];
+AssertFalse[FormalSymbolExtendedQ["foo"], "Boundary: String is not Extended formal symbol"];
+AssertFalse[FormalSymbolExtendedQ[42], "Boundary: Number is not Extended formal symbol"];
+
+Print["--- (4) Scoping Integrity (The 'Hold' Check) ---"];
+
+Block[{x=10,\[FormalI]=5,\[FormalI]123=7},
+
+(*Case 11: System Symbol Value-Shielding*)
+AssertTrue[FormalSymbolQ[\[FormalI]],
+"Scoping: Built-in identity persists despite value 5"];
+
+(*Case 12: Extended Symbol (non-System) is not protected *)
+AssertFalse[FormalSymbolExtendedQ[\[FormalI]123],
+"Non-system symbol not protected, thus not extended."];
+
+Protect[\[FormalI]123];
+AssertTrue[FormalSymbolExtendedQ[\[FormalI]123],
+"Scoping: Extended identity after explicit protection"]
+];
+
+Print["--- (5) Constructor Validation ---"];
+
+AssertMatchQ[Quiet[CreateExtendedFormal["\[FormalK]\[FormalJ]888"]],$Failed,
+"Safety: Reject double formal prefix"];
+
+AssertMatchQ[Quiet[CreateExtendedFormal["plainVar"]],$Failed,
+"Safety: Reject plain string"];
+
+AssertTrue[Head[CreateExtendedFormal["\[FormalK]888"]]===Symbol,
+"Structure: Accept single formal prefix"];
+
+Print["--- (6) Start-Character Enforcement ---"];
+
+AssertFalse[FormalSymbolExtendedQ["var\[FormalI]123"],
+"Strictness: Reject buried formal (ExtendedQ -> False)"];
+
+AssertFalse[FormalSymbolQ["var\[FormalI]123"],
+"Strictness: Reject buried formal (PureQ -> False)"];
+
+AssertFalse[FormalSymbolExtendedQ["x\[FormalI]"],
+"Strictness: Reject suffix formal (ExtendedQ -> False)"];
+
+AssertFalse[FormalSymbolQ["x\[FormalI]"],
+"Strictness: Reject suffix formal (PureQ -> False)"];
+
+Print["--- (6) Polymorphism ---"]
+
+AssertTrue[FormalSymbolQ["\[FormalI]"],
+"Polymorphism: String \"\[FormalI]\" is a Pure symbol"];
+
+AssertTrue[FormalSymbolExtendedQ["\[FormalI]999"],
+"Polymorphism: String \"\[FormalI]999\" is an Extended symbol"];
+
+
+
+(* ::Chapter:: *)
+(*Summary*)
+
+
 (* ========================================================================= *)
 (* SUMMARY                                                                   *)
 (* ========================================================================= *)
