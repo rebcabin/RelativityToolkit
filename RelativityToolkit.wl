@@ -1,20 +1,30 @@
 (* ::Package:: *)
 
+(* ::Title:: *)
+(*Relativity Toolkit v1.11.0*)
+
+
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode)                                   *)
-(* Version: 1.10.0 (Kerr Metric)                                             *)
+(* Version: 1.11.0 (Disciplined Formal Symbols)                                             *)
 (* ------------------------------------------------------------------------- *)
 (* TODO: complete the removal of hard-coded \[CapitalGamma]. Currently, only torsionRules, *)
 (* CD, and SetConnection know about RelativityConnection. There are several  *)
 (* places in MakeBoxes and other display functions that hard-code \[CapitalGamma].         *)
 (* ========================================================================= *)
 
-Echo[RelativityToolkitVersion = "1.10.0", "Relativity Toolkit version :"];
+Echo[RelativityToolkitVersion = "1.11.0", "Relativity Toolkit version :"];
 
 (* CONFIGURATION: The Connection Symbol *)
 (* Default is \[CapitalGamma]; change it to A, C, etc., for Electrodynamics, Yang-Mills, etc. *)
 
 Echo[RelativityConnection = \[CapitalGamma], "Relativity Connection Symbol :"];
+
+
+
+(* ::Chapter:: *)
+(*Clean Slate*)
+
 
 (* ========================================================================= *)
 (* 1. CLEAN SLATE ---------------------------------------------------------- *)
@@ -39,15 +49,20 @@ Module[{symbols = Symbol /@ {
 	"CanonicalizeIndices",
 	"CanonicalizeTerm",
 	"CD",
+	"checkFormalIdentity",
 	"ChristoffelsFromMetric",
 	"Contract",
 	"ContractAll",
 	"contractValence",
+	"CreateExtendedFormal",
 	"differentiationRules",
 	"downQ",
 	"EvaluateUDPartials",
 	"ExpandDerivatives",
 	"ExtractCoefficient",
+	"formalCharCodeQ",
+	"FormalSymbolQ",
+	"FormalSymbolExtendedQ",
 	"g", (* reserved for metric tensors (will be relaxed later ) *)
 	"GradRaised",
 	"GradSquared",
@@ -63,6 +78,8 @@ Module[{symbols = Symbol /@ {
 	"robustTransformRules",
 	"ScalarLaplacian",
 	"SetConnection",
+	"showCodes",
+	"SymbolInspector",
 	"TensorForm",
 	"torsionRules",
 	"upQ",
@@ -78,6 +95,12 @@ ClearAll[
   \[Lambda], \[Kappa], \[Rho], \[Sigma], \[Mu], \[Nu], \[Tau], \[Eta], \[Chi], \[Psi],
   x, p, g, u, A, B, T, 
   P, Q, S]];
+
+
+
+(* ::Chapter:: *)
+(*Valence and Type Checker*)
+
 
 (* ========================================================================= *)
 (* 2. VALENCE LOGIC (The Type Checker)                                       *)
@@ -142,6 +165,12 @@ valence[h_[a_, b_, rest___]] :=
   Join[valence[h[a]], valence[h[b, rest]], 2];
   
 valence[___] := noValence;
+
+
+
+(* ::Chapter:: *)
+(*Display Rules*)
+
 
 (* ========================================================================= *)
 (* 3. DISPLAY RULES                                                          *)
@@ -221,6 +250,12 @@ MakeBoxes[h_[indices__], StandardForm] /;
   RowBox[Prepend[formattedScripts, MakeBoxes[h, StandardForm]]]]
 
 Protect[MakeBoxes];
+
+
+
+(* ::Chapter:: *)
+(*Tensor-Algebra Rules*)
+
 
 (* ========================================================================= *)
 (* 4. ALGEBRAIC SIMPLIFICATION                                               *)
@@ -311,6 +346,12 @@ ExtractCoefficient[expr_, field_Symbol] :=
 
   Total[processTerm /@ termList]];
 
+
+
+(* ::Chapter:: *)
+(*Application-Specific Rules*)
+
+
 (* ========================================================================= *)
 (* 5. APPLICATION-SPECIFIC RULES                                             *)
 (*    User must explicitly apply these when wanted                           *)
@@ -383,6 +424,12 @@ metricDifferentiationRules={
   \[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[g[\[ScriptCapitalD][bound_],\[ScriptCapitalD][other_]],v_]:>Partials[g[\[ScriptCapitalD][free],\[ScriptCapitalD][other]],v],
   \[Delta][\[ScriptCapitalU][bound_],\[ScriptCapitalD][free_]]*Partials[g[\[ScriptCapitalD][other_],\[ScriptCapitalD][bound_]],v_]:>Partials[g[\[ScriptCapitalD][other],\[ScriptCapitalD][free]],v]};
 
+
+
+(* ::Chapter:: *)
+(*Differentiation Engine*)
+
+
 (* ========================================================================= *)
 (* 6. DIFFERENTIATION ENGINE                                                 *)
 (* ========================================================================= *)
@@ -405,6 +452,12 @@ ExpandDerivatives[expr_] := expr //. differentiationRules;
 Partials[Partials[f_, x[\[ScriptCapitalU][a_]]], x[\[ScriptCapitalU][b_]]] /; 
     !OrderedQ[{a, b}] := 
   Partials[Partials[f, x[\[ScriptCapitalU][b]]], x[\[ScriptCapitalU][a]]];
+
+
+
+(* ::Chapter:: *)
+(*Covariant Derivative*)
+
 
 (* ========================================================================= *)
 (* 7. COVARIANT DERIVATIVE                                                   *)
@@ -486,6 +539,12 @@ ScalarLaplacian[func_, gInvUU_Symbol, gInvUURules_, sqrtDetg_, coords_]:=
     Simplify[
       Sum[D[sqrtDetg *grad[\[Mu]],\[Mu]],{\[Mu],coords}]/sqrtDetg]];
       
+
+
+(* ::Chapter:: *)
+(*Gamma, Riemann, Ricci*)
+
+
 (* ========================================================================= *)
 (* 8. RIEMANN CURVATURE TENSOR FROM METRIC                                   *)
 (* ========================================================================= *)
@@ -539,6 +598,12 @@ CalculateRicciComponent[\[Lambda]_, \[Rho]_, RGet_, coords_]:=
   Module[{\[Kappa]},
     Sum[RGet[\[Mu], \[Lambda], \[Mu], \[Rho]], {\[Mu], coords}] // Simplify];
                                           
+
+
+(* ::Chapter:: *)
+(*Compiler*)
+
+
 (* ========================================================================= *)
 (* 9. COMPILER AND SUPPORT FUNCTIONS                                         *)
 (* ========================================================================= *)
@@ -669,7 +734,77 @@ MakeIndexer[table_List, coords_List] :=
     (* double-delayed; single-delay evaluates `Lookup` too early *)
     table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
   
+  
 
+
+(* ::Chapter:: *)
+(*Formal Symbols*)
+
+
+(* FORMAL SYMBOLS *)
+  
+  
+formalCharCodeQ[code_Integer]:=(
+	(63488<=code<=63556)||(*Latin and primary math*)
+	(63558<=code<=63564)||(*Remaining math symbols after arrow*)
+	(63572<=code<=63596)||(*Lowercase Greek*)
+	(63604<=code<=63605)||(*Mathematical variants*)
+	(63608<=code<=63609)||(*Greek variants*)
+	(63613<=code<=63615)    (*Final Greek variants*));
+  
+  
+showCodes[]:=Module[{codes=Range[63488,63615]},
+	Grid[Partition[MapIndexed[Column[{
+		  Item[Style[Symbol@FromCharacterCode@#1,20,Bold],
+		    Background->If[formalCharCodeQ[#1],
+		      Darker[StandardGreen],
+		      Darker[StandardRed]]],
+		  Style[#2[[1]]+63487,10,GrayLevel[0.90]]},
+		Alignment->Center]&,codes],16],
+	Frame->All,
+	ItemSize->{2.5,2.5},
+	Background->{None,None,{}}]];
+	
+
+SetAttributes[checkFormalIdentity,HoldFirst];
+checkFormalIdentity[s:(_Symbol|_String)]:=
+	Module[{name,codes},
+		name=Which[
+			Head[Unevaluated[s]]===Symbol,SymbolName[Unevaluated[s]],
+			(* if input is a literal string, not a symbol *)
+			StringQ[Unevaluated[s]],s,
+			True,Return[$Failed]];
+		codes=ToCharacterCode[name];
+		Which[
+			(Length[codes]==1&&formalCharCodeQ[First[codes]]), "Pure",
+			(Length[codes]>0&&formalCharCodeQ[First[codes]]),"Extended",
+			True,"Neither"
+	]];
+checkFormalIdentity[___]:=$Failed;
+
+
+SetAttributes[{FormalSymbolQ},HoldAll];
+FormalSymbolQ[s_]:="Pure"===checkFormalIdentity[s];
+
+
+SetAttributes[{FormalSymbolExtendedQ},HoldAll];
+FormalSymbolExtendedQ[s_]:=
+	checkFormalIdentity[s]==="Extended"&&MemberQ[Attributes[s],Protected];
+	
+	
+CreateExtendedFormal::invalidStructure="The name '`1`' is invalid. Extended formals must start with exactly one formal character followed by non-formal characters.";
+Module[{valid},
+	valid[codes_]:=Length[codes]>0&&
+		formalCharCodeQ[First[codes]]&&
+		!AnyTrue[Rest[codes],formalCharCodeQ];
+	CreateExtendedFormal[name_String]:=
+		If[valid[ToCharacterCode[name]],
+			With[{s=Symbol[name]},
+				Protect[s];s],
+			(Message[CreateExtendedFormal::invalidStructure,name];
+			Return[$Failed])];
+	CreateExtendedFormal[sym_Symbol]:=
+	CreateExtendedFormal[SymbolName[sym]]; ];
 
 
 

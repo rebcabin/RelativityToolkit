@@ -464,7 +464,7 @@ constantRules = {Partials[q,x[\[ScriptCapitalU][\[Mu]_]]] :> 0}
 transformedCde=cde /. gaugeTransforms //. differentiationRules/.constantRules//Expand//Simplify
 
 
-transformedCde===E^(I q \[CapitalLambda]) cde
+Echo[transformedCde===E^(I q \[CapitalLambda]) cde,"Covariance of the derivative"];
 
 
 (* ::Text:: *)
@@ -502,6 +502,9 @@ F[\[Mu],\[Nu]]/. gaugeTransforms
 
 
 F[\[Mu],\[Nu]]/. gaugeTransforms // ExpandDerivatives 
+
+
+Echo[F[\[Mu],\[Nu]]===F[\[Mu],\[Nu]]/. gaugeTransforms // ExpandDerivatives ,"F[\[Mu],\[Nu]] invariance"];
 
 
 (* ::Text:: *)
@@ -574,7 +577,7 @@ transformedWsd=wsd/.mixedGaugeTransforms//.differentiationRules/.{Partials[gW, _
 expectedWsd=wsd*E^(I gW \[CapitalLambda])//Expand//TensorForm
 
 
-transformedWsd===expectedWsd
+Echo[transformedWsd===expectedWsd,"Charged Vector Boson Invariance"];
 
 
 (* ::Text:: *)
@@ -704,7 +707,7 @@ CD[T[\[ScriptCapitalU][\[Mu]],\[ScriptCapitalD][\[Nu]]],x[\[ScriptCapitalU][\[Rh
 
 
 (* ::Item:: *)
-(*metric contraction to the Kronecker delta: Subscript[g,  \[Lambda] \[Nu]] g^( \[Lambda] \[Mu])=\!\(\*SubsuperscriptBox[\(\[Delta]\), \(\[VeryThinSpace]\(\[Nu]\)\), \(\[VeryThinSpace]\(\[Mu]\)\)]\)*)
+(*metric contraction to the Kronecker delta: Subscript[g,  \[Lambda] \[Nu]] g^( \[Lambda] \[Mu])=\!\(\*SubsuperscriptBox[\(\[Delta]\), \( \(\[Nu]\)\), \( \(\[Mu]\)\)]\)*)
 
 
 (* ::Item:: *)
@@ -746,7 +749,7 @@ CD[T[\[ScriptCapitalU][\[Mu]],\[ScriptCapitalD][\[Nu]]],x[\[ScriptCapitalU][\[Rh
 (*The result is immediate upon application of both the old metric rules and the new metric rules:*)
 
 
-0===(cdgWithLeviCivitaConnection//.(metricRules~Join~metricDifferentiationRules))
+Echo[0===(cdgWithLeviCivitaConnection//.(metricRules~Join~metricDifferentiationRules)),"Metric Compatibility"];
 
 
 (* ::Text:: *)
@@ -795,7 +798,7 @@ Partials[\[CapitalGamma][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Rho]], \[
 expectedRiemann=(rawTextbook//.torsionRules)//TensorForm
 
 
-calculatedRiemann===expectedRiemann
+Echo[calculatedRiemann===expectedRiemann,"Riemann Revisited"];
 
 
 (* ::Text:: *)
@@ -847,7 +850,7 @@ calculatedRiemann===expectedRiemann
 
 
 (* ::ItemParagraph:: *)
-(*detailing how spin connection \!\(\*SubsuperscriptBox[\(\[Omega]\), \(\[Mu]\), \(\[VeryThinSpace]\(a\[VeryThinSpace]b\)\)]\), arising from non-coordinate basis sets, acts as the gauge field for local Lorentz transformations. Carroll also explains that in standard GR the torsion tensor Subscript[T^ \[Lambda],  \[Mu] \[Nu]] is zero, locking the Levi-Civita connection (Christoffel symbols) to the metric and forcing the energy-momentum tensor to be symmetric, absorbing spin effects via symmetrization.*)
+(*detailing how spin connection \!\(\*SubsuperscriptBox[\(\[Omega]\), \(\[Mu]\), \( \(a b\)\)]\), arising from non-coordinate basis sets, acts as the gauge field for local Lorentz transformations. Carroll also explains that in standard GR the torsion tensor Subscript[T^ \[Lambda],  \[Mu] \[Nu]] is zero, locking the Levi-Civita connection (Christoffel symbols) to the metric and forcing the energy-momentum tensor to be symmetric, absorbing spin effects via symmetrization.*)
 
 
 (* ::Subitem:: *)
@@ -1268,6 +1271,3 @@ calculatedRiemann===expectedRiemann
 
 (* ::ItemNumbered:: *)
 (*Sciama, D. W., On the analogy between charge and spin in general relativity. In: Recent Developments in General Relativity, p. 415. Pergamon, New York, 1962.*)
-
-
-
