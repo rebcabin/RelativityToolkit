@@ -506,7 +506,7 @@ differentiationRules = {
   Partials[a_^n_, var_] :> n a^(n-1) * Partials[a, var],
   Partials[n_, _] /; (NumericQ[n]) :> 0,
   Partials[expr_, x[\[ScriptCapitalU][idx_]]] /; StringContainsQ[ToString[idx], "'"] :> 
-    Module[{fresh = Unique["\[Sigma]"]}, 
+    Module[{fresh = CreateExtendedFormal@Unique["\[FormalSigma]"]}, 
      Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][idx]]]*
       Partials[expr, x[\[ScriptCapitalU][fresh]]]]};
 
