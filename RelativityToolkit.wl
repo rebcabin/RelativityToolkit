@@ -267,7 +267,7 @@ CanonicalizeTerm[term_] :=
    counts = Tally[indices];
    dummies = Select[counts, Last[#] == 2 &][[All, 1]];
    replacementRules = MapIndexed[
-     #1 -> Symbol["\[FormalI]" <> ToString[First[#2]]] &, 
+     #1 -> CreateExtendedFormal["\[FormalI]" <> ToString[First[#2]]] &, 
      dummies];
    term /. replacementRules];
 
