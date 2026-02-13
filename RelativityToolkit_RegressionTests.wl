@@ -631,7 +631,7 @@ Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial,
   (* TEST 3: Variance Handling in Partials *)
   (* d(A^u)/dx^u -> Treated as A^u and D_u *)
   (* This validates the canonicalization pipeline: Partials[..., x[U]] -> PD[..., D] *)
-  exprPartial = Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Mu]]]]; 
+  exprPartial = Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Mu]]]];
   resPartial = ContractAll[exprPartial, coords];
   
   AssertEqual[resPartial, 
