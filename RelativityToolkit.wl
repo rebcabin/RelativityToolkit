@@ -289,21 +289,16 @@ robustTransformRules = {
 
 (* DYNAMIC TENSOR FORM *)
 TensorForm[expr_] := 
-  Module[{canonExpr, formalPattern,formalIndices, 
+  Module[{canonExpr, formalIndices, 
           usedSymbols, greekPool, availableGreek, indexMap},
    
    (* 1. Canonicalize first *)
    canonExpr = CanonicalizeIndices[expr];
 
-   (* 2. Define Formal Pattern: Any symbol starting with \[FormalA]...\[FormalZ] *)
-   (* covering \[FormalS], \[FormalI]1, \[FormalI]2, etc. *)
-   formalPattern = CharacterRange["\[FormalA]", "\[FormalZ]"];
-
    (* 3. Identify ALL Formal Indices *)
    formalIndices = Sort @ DeleteDuplicates @ Cases[canonExpr, 
-     s_Symbol /; StringStartsQ[SymbolName[s], formalPattern], 
-     Infinity];
-
+      s_Symbol /; (FormalSymbolQ[s] || FormalSymbolExtendedQ[s]), Infinity];
+      
    (* 4a. Identify symbols ALREADY in the expression *)
    usedSymbols = DeleteDuplicates @ Cases[canonExpr, _Symbol, Infinity];
    

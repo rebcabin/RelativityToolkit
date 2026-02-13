@@ -492,7 +492,7 @@ Print["\n--- SECTION 8: TENSOR FORM ROBUSTNESS ---"];
 Module[{weirdTerm, formatted, formalPattern, isClean},
 
   (* Stress Test: Create a term with arbitrary formal indices *)
-  weirdTerm = Symbol["\[FormalQ]"] * Symbol["\[FormalZ]"] * Symbol["\[FormalI]99"];
+  weirdTerm = CreateExtendedFormal["\[FormalQ]"] * CreateExtendedFormal["\[FormalZ]"] * CreateExtendedFormal["\[FormalI]99"];
   
   (* Apply TensorForm *)
   formatted = TensorForm[weirdTerm];
