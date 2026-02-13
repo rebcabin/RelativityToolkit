@@ -465,7 +465,7 @@ torsionRules = {
 };
 
 ruleLeviCivita=\[CapitalGamma][\[ScriptCapitalU][\[Lambda]_],\[ScriptCapitalD][a_],\[ScriptCapitalD][b_]]:>
-  Module[{\[Sigma]=Unique["\[Sigma]"]},
+  Module[{\[Sigma] = CreateExtendedFormal@Unique["\[FormalSigma]"]},
     1/2 g[\[ScriptCapitalU][\[Lambda]],\[ScriptCapitalU][\[Sigma]]]*
      (Partials[g[\[ScriptCapitalD][\[Sigma]],\[ScriptCapitalD][b]],x[\[ScriptCapitalU][a]]]+
       Partials[g[\[ScriptCapitalD][\[Sigma]],\[ScriptCapitalD][a]],x[\[ScriptCapitalU][b]]]-
