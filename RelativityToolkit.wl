@@ -99,6 +99,76 @@ ClearAll[
 
 
 (* ::Chapter:: *)
+(*Formal Symbols*)
+
+
+(* FORMAL SYMBOLS *)
+  
+  
+formalCharCodeQ[code_Integer]:=(
+	(63488<=code<=63556)||(*Latin and primary math*)
+	(63558<=code<=63564)||(*Remaining math symbols after arrow*)
+	(63572<=code<=63596)||(*Lowercase Greek*)
+	(63604<=code<=63605)||(*Mathematical variants*)
+	(63608<=code<=63609)||(*Greek variants*)
+	(63613<=code<=63615)    (*Final Greek variants*));
+  
+  
+showCodes[]:=Module[{codes=Range[63488,63615]},
+	Grid[Partition[MapIndexed[Column[{
+		  Item[Style[Symbol@FromCharacterCode@#1,20,Bold],
+		    Background->If[formalCharCodeQ[#1],
+		      Darker[StandardGreen],
+		      Darker[StandardRed]]],
+		  Style[#2[[1]]+63487,10,GrayLevel[0.90]]},
+		Alignment->Center]&,codes],16],
+	Frame->All,
+	ItemSize->{2.5,2.5},
+	Background->{None,None,{}}]];
+	
+
+SetAttributes[checkFormalIdentity,HoldFirst];
+checkFormalIdentity[s:(_Symbol|_String)]:=
+	Module[{name,codes},
+		name=Which[
+			Head[Unevaluated[s]]===Symbol,SymbolName[Unevaluated[s]],
+			(* if input is a literal string, not a symbol *)
+			StringQ[Unevaluated[s]],s,
+			True,Return[$Failed]];
+		codes=ToCharacterCode[name];
+		Which[
+			(Length[codes]==1&&formalCharCodeQ[First[codes]]), "Pure",
+			(Length[codes]>0&&formalCharCodeQ[First[codes]]),"Extended",
+			True,"Neither"
+	]];
+checkFormalIdentity[___]:=$Failed;
+
+
+SetAttributes[{FormalSymbolQ},HoldAll];
+FormalSymbolQ[s_]:="Pure"===checkFormalIdentity[s];
+
+
+SetAttributes[{FormalSymbolExtendedQ},HoldAll];
+FormalSymbolExtendedQ[s_]:=
+	checkFormalIdentity[s]==="Extended"&&MemberQ[Attributes[s],Protected];
+	
+	
+CreateExtendedFormal::invalidStructure="The name '`1`' is invalid. Extended formals must start with exactly one formal character followed by non-formal characters.";
+Module[{valid},
+	valid[codes_]:=Length[codes]>0&&
+		formalCharCodeQ[First[codes]]&&
+		!AnyTrue[Rest[codes],formalCharCodeQ];
+	CreateExtendedFormal[name_String]:=
+		If[valid[ToCharacterCode[name]],
+			With[{s=Symbol[name]},
+				Protect[s];s],
+			(Message[CreateExtendedFormal::invalidStructure,name];
+			Return[$Failed])];
+	CreateExtendedFormal[sym_Symbol]:=
+	     CreateExtendedFormal[SymbolName[sym]]; ];
+
+
+(* ::Chapter:: *)
 (*Valence and Type Checker*)
 
 
@@ -281,10 +351,10 @@ CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
 robustTransformRules = {
   A_[\[ScriptCapitalU][primed_]] :> 
-    Module[{fresh = Unique["\[Mu]"]}, 
+    Module[{fresh = CreateExtendedFormal@Unique["\[FormalMu]"]}, 
      Partials[x[\[ScriptCapitalU][primed]], x[\[ScriptCapitalU][fresh]]] * A[\[ScriptCapitalU][fresh]]], 
   p_[\[ScriptCapitalD][primed_]] :> 
-    Module[{fresh = Unique["\[Nu]"]}, 
+    Module[{fresh = CreateExtendedFormal@Unique["\[FormalNu]"]}, 
      Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][primed]]] * p[\[ScriptCapitalD][fresh]]]};
 
 (* DYNAMIC TENSOR FORM *)
@@ -432,8 +502,8 @@ metricDifferentiationRules={
 differentiationRules = {
   Partials[a_ * b_, var_] :> Partials[a, var]*b + a*Partials[b, var], 
   Partials[a_ + b_, var_] :> Partials[a, var] + Partials[b, var], 
-  Partials[a_^n_, var_] /; (NumericQ[n]) :> n a^(n-1) * Partials[a, var],
   Partials[Exp[arg_], var_] :> Exp[arg] * Partials[arg, var],
+  Partials[a_^n_, var_] :> n a^(n-1) * Partials[a, var],
   Partials[n_, _] /; (NumericQ[n]) :> 0,
   Partials[expr_, x[\[ScriptCapitalU][idx_]]] /; StringContainsQ[ToString[idx], "'"] :> 
     Module[{fresh = Unique["\[Sigma]"]}, 
@@ -730,73 +800,3 @@ MakeIndexer[table_List, coords_List] :=
     table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
   
   
-
-
-(* ::Chapter:: *)
-(*Formal Symbols*)
-
-
-(* FORMAL SYMBOLS *)
-  
-  
-formalCharCodeQ[code_Integer]:=(
-	(63488<=code<=63556)||(*Latin and primary math*)
-	(63558<=code<=63564)||(*Remaining math symbols after arrow*)
-	(63572<=code<=63596)||(*Lowercase Greek*)
-	(63604<=code<=63605)||(*Mathematical variants*)
-	(63608<=code<=63609)||(*Greek variants*)
-	(63613<=code<=63615)    (*Final Greek variants*));
-  
-  
-showCodes[]:=Module[{codes=Range[63488,63615]},
-	Grid[Partition[MapIndexed[Column[{
-		  Item[Style[Symbol@FromCharacterCode@#1,20,Bold],
-		    Background->If[formalCharCodeQ[#1],
-		      Darker[StandardGreen],
-		      Darker[StandardRed]]],
-		  Style[#2[[1]]+63487,10,GrayLevel[0.90]]},
-		Alignment->Center]&,codes],16],
-	Frame->All,
-	ItemSize->{2.5,2.5},
-	Background->{None,None,{}}]];
-	
-
-SetAttributes[checkFormalIdentity,HoldFirst];
-checkFormalIdentity[s:(_Symbol|_String)]:=
-	Module[{name,codes},
-		name=Which[
-			Head[Unevaluated[s]]===Symbol,SymbolName[Unevaluated[s]],
-			(* if input is a literal string, not a symbol *)
-			StringQ[Unevaluated[s]],s,
-			True,Return[$Failed]];
-		codes=ToCharacterCode[name];
-		Which[
-			(Length[codes]==1&&formalCharCodeQ[First[codes]]), "Pure",
-			(Length[codes]>0&&formalCharCodeQ[First[codes]]),"Extended",
-			True,"Neither"
-	]];
-checkFormalIdentity[___]:=$Failed;
-
-
-SetAttributes[{FormalSymbolQ},HoldAll];
-FormalSymbolQ[s_]:="Pure"===checkFormalIdentity[s];
-
-
-SetAttributes[{FormalSymbolExtendedQ},HoldAll];
-FormalSymbolExtendedQ[s_]:=
-	checkFormalIdentity[s]==="Extended"&&MemberQ[Attributes[s],Protected];
-	
-	
-CreateExtendedFormal::invalidStructure="The name '`1`' is invalid. Extended formals must start with exactly one formal character followed by non-formal characters.";
-Module[{valid},
-	valid[codes_]:=Length[codes]>0&&
-		formalCharCodeQ[First[codes]]&&
-		!AnyTrue[Rest[codes],formalCharCodeQ];
-	CreateExtendedFormal[name_String]:=
-		If[valid[ToCharacterCode[name]],
-			With[{s=Symbol[name]},
-				Protect[s];s],
-			(Message[CreateExtendedFormal::invalidStructure,name];
-			Return[$Failed])];
-	CreateExtendedFormal[sym_Symbol]:=
-	CreateExtendedFormal[SymbolName[sym]]; ];
