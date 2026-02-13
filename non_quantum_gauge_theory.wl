@@ -511,6 +511,9 @@ Echo[F[\[Mu],\[Nu]]===F[\[Mu],\[Nu]]/. gaugeTransforms // ExpandDerivatives ,"F[
 (*QED\[NonBreakingSpace]\[FilledSquare]*)
 
 
+ClearAll[F];
+
+
 (* ::Subsection:: *)
 (*Note: Charge Conservation as a Consequence*)
 
