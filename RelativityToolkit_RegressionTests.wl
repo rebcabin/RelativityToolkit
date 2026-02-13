@@ -23,13 +23,13 @@ fail[label_, expected_, actual_]:=
      "\n\tExpected ", expected,
      "\n\tGot ", actual]);
 
-AssertValence[expr_, expected_, label_] :=
+AssertValence[expr_, expected_, label_String:""] :=
   Module[{v = valence[expr]},
    If[v === expected,
     pass[label, v],
     fail[label, expected, v]]];
 
-AssertEqual[actual_, expected_, label_] :=
+AssertEqual[actual_, expected_, label_String:""] :=
   Module[{
     canAct = CanonicalizeIndices[actual], 
     canExp = CanonicalizeIndices[expected]},
@@ -37,18 +37,31 @@ AssertEqual[actual_, expected_, label_] :=
     pass[label, canAct],
     fail[label, canExp, canAct]]];
     
-AssertTrue[expr_, label_:""] :=
+AssertTrue[expr_, label_String:""] :=
   If[expr, pass[label, True], fail[label, True, False]];
 
-AssertFalse[expr_, label_:""] := AssertTrue[!expr, label];
+AssertFalse[expr_, label_String:""] := AssertTrue[!expr, label];
 
-SetAttributes[AssertMatchQ,HoldAll];
-AssertMatchQ[expr_,pattern_,label_String]:=
-	Module[{result=expr},
-		If[MatchQ[result,pattern],
+SetAttributes[AssertMatchQ, HoldAll];
+AssertMatchQ[expr_, pattern_, label_String:""]:=
+	Module[{result = expr},
+		If[MatchQ[result, pattern],
 		    pass[label, True],
 		    fail[label, HoldForm[pattern], result]];
 		result];
+		
+SetAttributes[AssertNotMatchQ, HoldAll];
+AssertNotMatchQ[expr_, pattern_, label_String:""]:=
+	Module[{result = expr},
+		If[MatchQ[result, pattern],
+		    fail[label, HoldForm[pattern], result],
+		    pass[label, True]];
+		result];
+
+SetAttributes[AssertProtected, HoldAll];
+AssertProtected[e_, label_String:""] :=
+  AssertMatchQ[Attributes @@ {e}, {___, Protected, ___}, label];
+
 
 (* ========================================================================= *)
 Print["--- SECTION 1: TYPE CHECKING (VALENCE) ---"];
