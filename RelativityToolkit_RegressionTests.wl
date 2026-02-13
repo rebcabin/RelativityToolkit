@@ -18,7 +18,7 @@ Print["================================================================\n"];
 (*Test Harness*)
 
 
-(* --- TEST HELPERS ------------------------------------------------------- *)
+(* --- TEST HARNESS ------------------------------------------------------- *)
 ClearAll[AssertValence, AssertEqual, PassCount, FailCount, pass, fail];
 PassCount = 0;
 FailCount = 0;
@@ -168,6 +168,12 @@ Module[{
 Print["\n--- SECTION 3: PHYSICS, METRIC & TRANSFORMATIONS ---"];
 (* ========================================================================= *)
 
+
+
+(* ::Section:: *)
+(*Raising and Lowering*)
+
+
 (* 1. Raising & Lowering *)
 AssertEqual[
   (g[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]] * A[\[ScriptCapitalU][\[Nu]]]) /. metricRules,
@@ -185,6 +191,12 @@ AssertEqual[
   \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
   "Inverse Metric (\!\(\*SuperscriptBox[\(g\), \(\[Mu]\[Alpha]\)]\) \!\(\*SubscriptBox[\(g\), \(\[Alpha]\[Nu]\)]\) \[Rule] \!\(\*SubsuperscriptBox[\(\[Delta]\), \(\[Nu]\), \(\[Mu]\)]\))"];
 
+
+
+(* ::Section:: *)
+(*Alpha Conversion*)
+
+
 (* 3. Alpha-Conversion (Collision Safety) *)
 Module[{t1, t2, res, dummies, unique},
     t1 = A[\[ScriptCapitalU][Superscript["a", "\[Prime]"]]];
@@ -196,6 +208,12 @@ Module[{t1, t2, res, dummies, unique},
     pass["Alpha-Conversion: distinct indices)", unique],
     fail["Alpha-Conversion: collision", 2, Length[unique]]]];
     
+
+
+(* ::Section:: *)
+(*Contraction & Associativity*)
+
+
 (* 4. Associativity of Contraction (Triple Metric Sandwich) *)
 (*  g_\[Mu]\[Alpha] g^\[Alpha]\[Beta] g_\[Beta]\[Nu] \[LongRightArrow] g_\[Mu]\[Nu] *)
 Module[{termSandwich},
@@ -209,6 +227,12 @@ Module[{gammaTerm = \[CapitalGamma][\[ScriptCapitalU][r], \[ScriptCapitalD][a], 
   AssertEqual[gammaTerm //. metricRules, \[CapitalGamma][\[ScriptCapitalU][s], \[ScriptCapitalD][a], \[ScriptCapitalD][b]], 
     "Delta-Gamma Contraction"]];
     
+
+
+(* ::Section:: *)
+(*Metric Differentiation*)
+
+
 Print["\n=== Metric Differentiation Rules ==="];
 
 (* ========================================================================= *)
@@ -246,6 +270,12 @@ test3Result = test3Expr //. allMetricRules // Simplify;
 test3Expected = Partials[f[x], x[\[ScriptCapitalU][\[Mu]]]];
 
 AssertEqual[test3Result, test3Expected, "Delta Chain Rule"]
+
+
+
+(* ::Section:: *)
+(*Metric Compatibility*)
+
 
 (* ------------------------------------------------------------------------- *)
 (* 4, Full Metric Compatibility                                              *)
@@ -373,8 +403,7 @@ Module[{testProduct, a, testCD, testLinearity},
 	testLinearity = ExpandDerivatives[Partials[A + B, x[\[ScriptCapitalU][\[Mu]]]]];
 	AssertTrue[MatchQ[testLinearity, Plus[Partials[A, _], Partials[B, _]]],
 	  "Differentiation Linearity"];
-  
-];
+  ];
 
 (* Covariant Derivative of a Scalar *)
 Module[{phi, scalarCD},
@@ -602,7 +631,7 @@ Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial,
   (* TEST 3: Variance Handling in Partials *)
   (* d(A^u)/dx^u -> Treated as A^u and D_u *)
   (* This validates the canonicalization pipeline: Partials[..., x[U]] -> PD[..., D] *)
-  exprPartial = Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Mu]]]];
+  exprPartial = Partials[A[\[ScriptCapitalU][\[Mu]]], x[\[ScriptCapitalU][\[Mu]]]]; 
   resPartial = ContractAll[exprPartial, coords];
   
   AssertEqual[resPartial, 
@@ -828,9 +857,14 @@ Protect[\[FormalI]123];
 protectedDummy=CreateExtendedFormal["\[FormalJ]888"];
 CreateExtendedFormal[\[FormalI]999];
 
+
+
+(* ::Section:: *)
+(*Identity and Built-In Protection*)
+
+
 Print["--- (1) Identity & Built-in Protection ---"];
 
-(*Case 0: low-level checks*)
 AssertEqual[checkFormalIdentity[\[FormalI]],"Pure","input: formal symbol literal"];
 AssertEqual[checkFormalIdentity["\[FormalI]"],"Pure","input: formal symbol string"];
 AssertEqual[checkFormalIdentity[\[FormalJ]1234],"Extended","input: extended symbol literal"];
@@ -841,40 +875,43 @@ AssertEqual[checkFormalIdentity[""],"Neither","non-formal empty string"];
 AssertEqual[checkFormalIdentity[],$Failed,"empty string"];
 AssertEqual[checkFormalIdentity[42],$Failed,"integer"];
 
-(*Case 1: System Protection*)
 AssertProtected[\[FormalI],"Identity: Built-in \[FormalI] is Protected"];
 
-(*Case 2: Latin Identification*)
 AssertTrue[FormalSymbolQ[\[FormalI]],"Identity: Latin Pure Formal recognized"];
 
-(*Case 3: Greek Identification*)
 AssertTrue[FormalSymbolQ[\[FormalAlpha]],"Identity: Greek Pure Formal recognized"];
+
+
+
+(* ::Section:: *)
+(*Pointer and Construction Logic*)
+
 
 Print["--- (2) Pointer & Construction Logic ---"];
 
-(*Case 4: Pointer Resolution (MUST EVALUATE THE POINTER)*)
 AssertTrue[FormalSymbolExtendedQ[Evaluate@protectedDummy],
 "Pointer: Variable holding symbol recognized"];
 
-(*Case 5: Target is Protected*)
-AssertProtected[protectedDummy,"Pointer: Target symbol \[FormalJ]888 is Protected"];
+AssertProtected[protectedDummy,
+"Pointer: Target Extended symbol \[FormalJ]888 is Protected"];
 
-(*Case 6: Negative Constructor Check*)
 AssertMatchQ[Quiet[CreateExtendedFormal[""]],$Failed,
 "Constructor: Rejects empty string"];
 
+
+
+(* ::Section:: *)
+(*Structural Variety & Boundaries*)
+
+
 Print["--- (3) Structural Variety & Boundaries ---"];
 
-(*Case 7: Numbered Dummies (Protected it in Setup)*)
 AssertTrue[FormalSymbolExtendedQ[\[FormalI]123],"Structure: Numbered dummy recognized"];
 
-(*Case 8: Reject Prefixed Formal Symbols*)
 AssertFalse[FormalSymbolExtendedQ[Partial\[FormalX]],"Structure: Prefixed symbol rejected"];
 
-(*Case 9: Pure System is NOT Extended*)
 AssertFalse[FormalSymbolExtendedQ[\[FormalI]],"Boundary: Pure is NOT Extended"];
 
-(*Case 10: Extended is NOT Pure System*)
 AssertFalse[FormalSymbolQ[\[FormalI]123],"Boundary: Extended is NOT Pure"];
 
 AssertFalse[FormalSymbolQ[foo], "Boundary: Ordinary Symbol is not Pure System formal"];
@@ -885,22 +922,32 @@ AssertFalse[FormalSymbolExtendedQ[foo], "Boundary: Ordinary Symbol is not Extend
 AssertFalse[FormalSymbolExtendedQ["foo"], "Boundary: String is not Extended formal symbol"];
 AssertFalse[FormalSymbolExtendedQ[42], "Boundary: Number is not Extended formal symbol"];
 
+
+
+(* ::Section:: *)
+(*Block-Scoping Integrity (Hold Check)*)
+
+
 Print["--- (4) Scoping Integrity (The 'Hold' Check) ---"];
 
 Block[{x=10,\[FormalI]=5,\[FormalI]123=7},
 
-(*Case 11: System Symbol Value-Shielding*)
-AssertTrue[FormalSymbolQ[\[FormalI]],
-"Scoping: Built-in identity persists despite value 5"];
-
-(*Case 12: Extended Symbol (non-System) is not protected *)
-AssertFalse[FormalSymbolExtendedQ[\[FormalI]123],
-"Non-system symbol not protected, thus not extended."];
-
-Protect[\[FormalI]123];
-AssertTrue[FormalSymbolExtendedQ[\[FormalI]123],
-"Scoping: Extended identity after explicit protection"]
+	AssertTrue[FormalSymbolQ[\[FormalI]],
+	"Scoping: Built-in identity persists despite value 5"];
+	
+	AssertFalse[FormalSymbolExtendedQ[\[FormalI]123],
+	"Non-system symbol not protected, thus not extended."];
+	
+	Protect[\[FormalI]123];
+	AssertTrue[FormalSymbolExtendedQ[\[FormalI]123],
+	"Scoping: Extended identity after explicit protection"]
 ];
+
+
+
+(* ::Section:: *)
+(*Constructor Validation*)
+
 
 Print["--- (5) Constructor Validation ---"];
 
@@ -912,6 +959,12 @@ AssertMatchQ[Quiet[CreateExtendedFormal["plainVar"]],$Failed,
 
 AssertTrue[Head[CreateExtendedFormal["\[FormalK]888"]]===Symbol,
 "Structure: Accept single formal prefix"];
+
+
+
+(* ::Section:: *)
+(*Start-Character Enforcement*)
+
 
 Print["--- (6) Start-Character Enforcement ---"];
 
