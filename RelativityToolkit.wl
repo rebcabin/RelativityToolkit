@@ -104,15 +104,15 @@ ClearAll[
 
 (* FORMAL SYMBOLS *)
   
-  
+(* from analysis of Wolfram documentation *)
 formalCharCodeQ[code_Integer]:=(
 	(63488<=code<=63556)||(*Latin and primary math*)
 	(63558<=code<=63564)||(*Remaining math symbols after arrow*)
 	(63572<=code<=63596)||(*Lowercase Greek*)
 	(63604<=code<=63605)||(*Mathematical variants*)
 	(63608<=code<=63609)||(*Greek variants*)
-	(63613<=code<=63615)    (*Final Greek variants*));
-  
+	(63613<=code<=63622) ||(code===63626)||(*Final Greek variants & oddities*)
+	(1024000<=code<=1024051));  
   
 showCodes[]:=Module[{codes=Range[63488,63615]},
 	Grid[Partition[MapIndexed[Column[{
