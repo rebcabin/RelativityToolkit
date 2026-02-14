@@ -434,10 +434,19 @@ metricRules = {
   
   g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]]*covec_[\[ScriptCapitalD][nu_]] :> covec[\[ScriptCapitalU][mu]], 
   covec_[\[ScriptCapitalD][nu_]]*g[\[ScriptCapitalU][nu_], \[ScriptCapitalU][mu_]] :> covec[\[ScriptCapitalU][mu]], 
-  
-  g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][\[Alpha]_]]*g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][nu_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
-  g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][nu_]]*g[\[ScriptCapitalU][mu_], \[ScriptCapitalU][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][mu], \[ScriptCapitalD][nu]],
-  
+  (* TODO: incorporate symmetry rules rather than brute case enumeration *)
+  g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Alpha]_]]*g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][\[Nu]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
+  g[\[ScriptCapitalU][\[Alpha]_], \[ScriptCapitalU][\[Mu]_]]*g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][\[Nu]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
+
+  g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][\[Nu]_]]*g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
+  g[\[ScriptCapitalD][\[Nu]_], \[ScriptCapitalD][\[Alpha]_]]*g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
+
+  g[\[ScriptCapitalU][\[Mu]_], \[ScriptCapitalU][\[Alpha]_]]*g[\[ScriptCapitalD][\[Nu]_], \[ScriptCapitalD][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
+  g[\[ScriptCapitalU][\[Alpha]_], \[ScriptCapitalU][\[Mu]_]]*g[\[ScriptCapitalD][\[Nu]_], \[ScriptCapitalD][\[Alpha]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
+
+  g[\[ScriptCapitalD][\[Alpha]_], \[ScriptCapitalD][\[Nu]_]]*g[\[ScriptCapitalU][\[Alpha]_], \[ScriptCapitalU][\[Mu]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
+  g[\[ScriptCapitalD][\[Nu]_], \[ScriptCapitalD][\[Alpha]_]]*g[\[ScriptCapitalU][\[Alpha]_], \[ScriptCapitalU][\[Mu]_]] :> \[Delta][\[ScriptCapitalU][\[Mu]], \[ScriptCapitalD][\[Nu]]],
+
   (* \[Delta]-Contraction Rules (For Associativity) *)
 
   (* Rule: T^\[Beta] * Subscript[\[Delta]^\[Alpha], \[Beta]] -> T^\[Alpha] *)
@@ -570,12 +579,12 @@ CD[expr_, x[\[ScriptCapitalU][nu_]]] :=
   
   (* DYNAMIC: Generate corrections using RelativityConnection *)
   upCorrections = Sum[
-    Module[{lam = Unique["\[Lambda]"]},
+    Module[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
      RelativityConnection[\[ScriptCapitalU][idx], \[ScriptCapitalD][nu], \[ScriptCapitalD][lam]] * (expr /. idx -> lam)
     ], {idx, up}];
     
   downCorrections = Sum[
-    Module[{lam = Unique["\[Lambda]"]},
+    Module[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
      RelativityConnection[\[ScriptCapitalU][lam], \[ScriptCapitalD][idx], \[ScriptCapitalD][nu]] * (expr /. idx -> lam)
     ], {idx, down}];
     

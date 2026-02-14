@@ -77,50 +77,6 @@
 
 
 (* ::Section:: *)
-(*Initialize the Relativity Toolkit*)
-
-
-(* ::Text:: *)
-(*The code is hosted on GitHub. The implementation, tests, and visualizations are not explained in this notebook. Explanations appear in an earlier notebook. But we can run them here, for assurance. *)
-
-
-(* ::Text:: *)
-(*The toolkit is currently implemented as a Script rather than as a package for development speed and for transparency. That means that all symbols will be loaded into the Global namespace, including internal variables in Module constructs. This minor inconvenience will be mitigated in a future version.*)
-
-
-(* ::Subsection:: *)
-(*Optional: Quit for a Fresh Kernel*)
-
-
-(* ::Item:: *)
-(*Note, if you call Quit in a notebook, evaluation may hang. If you want to "Evaluate Notebook," mark the following two cells "Evaluatable"  in the Cell->Property menu, call Quit and FrontEndTokenExecute once each, then comment out the cells, or mark them unevaluatable again. Alternatively, you can quit the kernel via the Evaluation menu (last item). At that point, you can "Evaluate Notebook" in a clean environment. Otherwise, you can evaluate cells in this notebook individually.*)
-
-
-(* ::Input:: *)
-(*Quit[];*)
-
-
-(* ::Input:: *)
-(*FrontEndTokenExecute["DeleteGeneratedCells"]*)
-
-
-(* ::Subsection:: *)
-(*Set Download Loci and Load Main Script*)
-
-
-RTbranch="main";
-RTbase="https://raw.githubusercontent.com/rebcabin/RelativityToolkit/"<>RTbranch<>"/";
-RTbase="/Users/brian/Documents/GitHub/RelativityToolkit/";
-RTbust="?t="<>ToString[Round[AbsoluteTime[]]];
-RTbust="";
-(*freshen download*)
-RTrules=RTbase<>"RelativityToolkit.wl"<>RTbust;
-RTtests=RTbase<>"RelativityToolkit_RegressionTests.wl"<>RTbust;
-RTviz=RTbase<>"RelativityToolkit_VisualShowcase.wl"<>RTbust;
-Get[RTrules];
-
-
-(* ::Section:: *)
 (*Need for Covariant Derivative*)
 
 

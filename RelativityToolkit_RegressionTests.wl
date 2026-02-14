@@ -427,8 +427,8 @@ Module[{nestedCD, allIndices, generatedDummies},
   
   (* Filter for symbols that look like generated Lambdas *)
   generatedDummies = Select[DeleteDuplicates[allIndices],
-    StringMatchQ[SymbolName[#], "\[Lambda]" ~~ (DigitCharacter ..) ~~ EndOfString] ||
-    StringMatchQ[SymbolName[#], "\[Lambda]$" ~~ __] &];
+    StringMatchQ[SymbolName[#], "\[FormalLambda]" ~~ (DigitCharacter ..) ~~ EndOfString] ||
+    StringMatchQ[SymbolName[#], "\[FormalLambda]$" ~~ __] &];
     
   (* We expect at least 2 distinct generated dummies (one for each CD layer) *)
   AssertTrue[Length[generatedDummies] >= 2, 
@@ -1006,6 +1006,7 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
+
 
 
 
