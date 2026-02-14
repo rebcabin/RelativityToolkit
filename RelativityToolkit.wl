@@ -631,7 +631,7 @@ ScalarLaplacian[func_, gInvUU_Symbol, gInvUURules_, sqrtDetg_, coords_]:=
 (* The symbol for covariant gDD must not equal that for contravariant gUU. *)
 
 ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_]/;(gDD =!= gUU) := 
-  Module[{\[Lambda] = Unique["\[Lambda]"]},
+  Module[{\[Lambda] = CreateExtendedFormal@Unique["\[FormalLambda]"]},
     (1/2) gUU[\[ScriptCapitalU][\[Sigma]],\[ScriptCapitalU][\[Lambda]]] 
       (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
        Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
