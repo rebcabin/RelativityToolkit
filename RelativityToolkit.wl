@@ -544,12 +544,12 @@ CD[prod_Times /; !FreeQ[prod, RelativityConnection], var_] :=
    
    (* Apply Corrections using the CURRENT Connection Symbol *)
    upCorrections = Sum[
-     Module[{lam = Unique["\[Lambda]"]},
+     Module[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
       RelativityConnection[\[ScriptCapitalU][idx], \[ScriptCapitalD][var[[1,1]]], \[ScriptCapitalD][lam]] * (prod /. idx -> lam)
      ], {idx, up}];
      
    downCorrections = Sum[
-     Module[{lam = Unique["\[Lambda]"]},
+     Module[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
       RelativityConnection[\[ScriptCapitalU][lam], \[ScriptCapitalD][idx], \[ScriptCapitalD][var[[1,1]]]] * (prod /. idx -> lam)
      ], {idx, down}];
      
