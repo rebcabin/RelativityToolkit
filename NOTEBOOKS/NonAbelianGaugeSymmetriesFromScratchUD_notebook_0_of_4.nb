@@ -1,0 +1,1826 @@
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[         0,          0]
+NotebookDataLength[     78023,       1825]
+NotebookOptionsPosition[     67822,       1658]
+NotebookOutlinePosition[     69640,       1697]
+CellTagsIndexPosition[     69597,       1694]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Non-Abelian Symmetry From Scratch in \
+\[ScriptCapitalU]\[ScriptCapitalD]", "Title",
+ CellChangeTimes->{{3.977345737052463*^9, 3.977345752398189*^9}, {
+   3.9775136521964283`*^9, 3.977513664408065*^9}, {3.9775381381170673`*^9, 
+   3.977538138292454*^9}, {3.97767222987831*^9, 3.977672236499715*^9}, {
+   3.9783428426341267`*^9, 3.978342854931329*^9}, {3.9786357543829813`*^9, 
+   3.9786357546559258`*^9}, {3.97881822565501*^9, 3.9788182420043793`*^9}, {
+   3.978992342861184*^9, 3.9789923720650663`*^9}, {3.9800939224529467`*^9, 
+   3.980093926556487*^9}, {3.980095730579309*^9, 3.9800957407359667`*^9}, 
+   3.9801065023224087`*^9},ExpressionUUID->"c689ba04-2842-43d6-aa5b-\
+126f3039c9d7"],
+
+Cell["Brian Beckman", "Author",
+ CellChangeTimes->{{3.5011898003565187`*^9, 3.5011898164415183`*^9}, {
+  3.970503905858189*^9, 3.970503938930399*^9}, {3.9705040303289137`*^9, 
+  3.970504033015139*^9}},ExpressionUUID->"47dfe6fc-42fd-425b-b8f1-\
+171f01ffece7"],
+
+Cell["Mar 2026", "Author",
+ CellChangeTimes->{{3.970503954212903*^9, 3.97050395891148*^9}, {
+  3.972479129640115*^9, 3.9724791301125593`*^9}, {3.973546918457328*^9, 
+  3.973546918968728*^9}, {3.9762809550919313`*^9, 3.976280957806756*^9}, {
+  3.97889721918757*^9, 3.978897219626444*^9}, {3.980093931170611*^9, 
+  3.980093931658099*^9}},ExpressionUUID->"f31d7393-2da6-4b45-8fa3-\
+4c2dd24714cb"],
+
+Cell["Plan", "Section",
+ CellChangeTimes->{{3.980095747145564*^9, 
+  3.980095750571753*^9}},ExpressionUUID->"913360c8-5a19-4b3c-860a-\
+ece9872b5783"],
+
+Cell[CellGroupData[{
+
+Cell["Abstract ", "Section",
+ CellChangeTimes->{{3.97889635012245*^9, 3.978896351879611*^9}, 
+   3.979349058650394*^9},ExpressionUUID->"01d70810-8ee9-4c00-848e-\
+4511290397ab"],
+
+Cell[TextData[{
+ "This notebook extends the Relativity Toolkit into Non-Abelian Gauge Theory, \
+specifically into Yang-Mills theory. Building on previous machinery for \
+Abelian ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"U", 
+    RowBox[{"(", "1", ")"}]}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "3dc32ce2-5543-49b4-93e9-c421a8fec1ad"],
+ " electrodynamics, we now tackle non-Abelian symmetries, where the order of \
+operations matters\[LongDash]where rotating by \[OpenCurlyDoubleQuote]",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "79382ad9-5b2a-49f3-9044-5b4997cd0325"],
+ " then ",
+ Cell[BoxData[
+  FormBox["B", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "06a9e9e1-3995-4b62-867b-75ed3d2ae662"],
+ "\[CloseCurlyDoubleQuote] is different from \[OpenCurlyDoubleQuote]",
+ Cell[BoxData[
+  FormBox["B", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "8cd6b401-e364-437a-98a0-84fd9862b1fa"],
+ " then ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "aad83b65-55b3-4c0f-a6d8-8ff0ea70fc74"],
+ ".\[CloseCurlyDoubleQuote] Non-commutative rotations should be familiar from \
+ordinary 3D space rotation, where the symmetry group is SO(3). "
+}], "Text",
+ CellChangeTimes->{{3.980093982951066*^9, 
+  3.9800941851238623`*^9}},ExpressionUUID->"3e91d720-51f9-4ada-b7d5-\
+5a723a2e4c70"],
+
+Cell[TextData[{
+ "In this notebook, we implement the \[ScriptCapitalU]\[ScriptCapitalD] \
+machinery for ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"SU", 
+    RowBox[{"(", "2", ")"}]}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "d76acf3e-7d52-40b6-b89f-c9454e4c6c9e"],
+ " isospin symmetry, introducing a generalized Covariant Derivative that \
+handles matrix-valued fields and non-commutative generators. This is achieved \
+via Wolfram\[CloseCurlyQuote]s NonCommutativeMultiply (**) operator, without \
+breaking existing functionality . All previous General Relativity and \
+Gauge-Theory notebooks remain valid."
+}], "Text",
+ CellChangeTimes->{{3.980093982951066*^9, 3.9800940367954273`*^9}, {
+  3.980094199364449*^9, 
+  3.9800942854859953`*^9}},ExpressionUUID->"014435af-88c8-4fd7-9159-\
+c6c6c52e94ad"],
+
+Cell["\<\
+This work is the first in a multi-part series aiming to derive the full \
+Standard Model from first principles. Along the way, we use interactive \
+Manipulate visualizations to build intuition for these abstract internal \
+spaces, and we frequently surface Noether\[CloseCurlyQuote]s Theorem as our \
+primary guide: every new symmetry we encode into \[ScriptCapitalU]\
+\[ScriptCapitalD] reveals a corresponding conservation law, serving as a \
+chain of navigational buoys across the vast ocean of the Standard Model of \
+particle physics.\
+\>", "Text",
+ CellChangeTimes->{{3.980093982951066*^9, 3.9800940367954273`*^9}, {
+  3.980094199364449*^9, 
+  3.9800943556429977`*^9}},ExpressionUUID->"ce4fa437-b070-4f11-99fe-\
+f9e50bd82ebb"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Introduction", "Section",
+ CellChangeTimes->{{3.980094562245645*^9, 
+  3.980094563916959*^9}},ExpressionUUID->"99b95f0d-6e81-4743-8c2f-\
+11b7663afbd9"],
+
+Cell["### 1. The Non-Abelian Leap", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094601300047*^9}},ExpressionUUID->"3d5535a3-5e2d-416a-a0e1-\
+084b3b753d10"],
+
+Cell["\<\
+In our previous notebook, *Non-Quantum Gauge Theory*, we discovered that \
+Electrodynamics is effectively the geometry of \[OpenCurlyDoubleQuote]local \
+phase\[CloseCurlyDoubleQuote]. We treated the vector potential  as a \
+connection\[LongDash]a \[OpenCurlyDoubleQuote]garbage collector\
+\[CloseCurlyDoubleQuote] that cancels out the artifacts of differentiating a \
+field whose phase changes from point to point. That theory was **Abelian**: \
+it didn\[CloseCurlyQuote]t matter in which order we applied phase shifts, \
+because complex numbers commute ().\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.9800946028042097`*^9}},ExpressionUUID->"fd41b3d1-862d-4b82-bcd9-\
+19427025bcce"],
+
+Cell["\<\
+Now, we take the decisive leap into **Non-Abelian** territory. We replace the \
+simple circle of phase () with more complex internal shapes, like the \
+3-sphere of  . In these spaces, rotations do *not* commute. This seemingly \
+small mathematical difference has profound physical consequences:\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094603997838*^9}},ExpressionUUID->"1862e5fe-3056-4201-81df-\
+7e1c0441fa1b"],
+
+Cell["\<\
+* **Self-Interaction:** Unlike photons, which pass through each other, the \
+\[OpenCurlyDoubleQuote]force carriers\[CloseCurlyDoubleQuote] of non-Abelian \
+theories (like gluons or W bosons) carry charge themselves. They interact \
+with *each other*.
+* **Non-Linearity:** The field strength tensor  acquires a quadratic term (), \
+making the equations of motion inherently non-linear and fascinatingly \
+complex.\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094605163763*^9}},ExpressionUUID->"1e70cc90-c160-41fa-b036-\
+081ee590f124"],
+
+Cell["### 2. The Roadmap: To the Standard Model", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.9800946062779617`*^9}},ExpressionUUID->"f33a52e4-97ab-460f-9f5b-\
+bc3511d81bbe"],
+
+Cell["\<\
+This notebook is the foundation for a complete derivation of the Standard \
+Model using the UD Calculus. Our planned trajectory is:\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.9800946072025023`*^9}},ExpressionUUID->"b45a0993-24f4-4063-a5ea-\
+a804547b76d9"],
+
+Cell["\<\
+1. **Non-Abelian Gauge Theory (This Notebook):** Establishing the `**` \
+algebra, defining the Yang-Mills field strength, and proving  covariance.
+2. **Electroweak Theory (GWS):** Unifying  and  to create the  boson and the \
+photon via the Weinberg Angle.
+3. **The Higgs Mechanism:** Breaking the symmetry spontaneously to generate \
+mass terms.
+4. **QCD and the Standard Model:** Adding the  color layer to complete the \
+picture.\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094608672147*^9}},ExpressionUUID->"1a7b9593-974b-4d73-9df5-\
+80179241e537"],
+
+Cell["### 3. Software Architecture: The \[OpenCurlyDoubleQuote]Do No Harm\
+\[CloseCurlyDoubleQuote] Principle", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094609507545*^9}},ExpressionUUID->"bd7bf4ba-582c-45a2-9ae3-\
+119ad00dd0fd"],
+
+Cell["\<\
+A major technical objective of this series is to upgrade the **Relativity \
+Toolkit** without breaking the \[OpenCurlyDoubleQuote]Gold Standard\
+\[CloseCurlyDoubleQuote] regression tests established in previous works.\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.9800946111101513`*^9}},ExpressionUUID->"d9901220-13eb-47c3-ac77-\
+d0915c5ec491"],
+
+Cell["\<\
+To achieve this, we have chosen a software architecture that is **additive**, \
+not destructive:\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094612117598*^9}},ExpressionUUID->"d4bc9cbb-e972-4bf6-ad5b-\
+df1b09ec2dc8"],
+
+Cell["\<\
+* **Separation of Algebra:** We continue to use standard multiplication \
+(`Times`, `*`) for scalars and geometric tensors. We introduce \
+`NonCommutativeMultiply` (`**`) exclusively for Lie Algebra generators (). \
+This prevents the new quantum algebra from interfering with the existing \
+General Relativity engine.
+* **Overloaded Operators:** The `CD` (Covariant Derivative) operator has been \
+upgraded to be \[OpenCurlyDoubleQuote]variadic.\[CloseCurlyDoubleQuote] It \
+can now accept a list of multiple simultaneous gauge corrections (e.g., \
+Isospin and Hypercharge) without altering its original behavior for simple \
+gravity or electromagnetism.\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.9800946139808407`*^9}},ExpressionUUID->"221458c5-60d3-41ab-a2c3-\
+b39ad3b5d298"],
+
+Cell["\<\
+* **Data, Not Code:** We reuse the powerful contraction engine \
+(`ContractAll`) by simply passing it different lists of \
+indices\[LongDash]swapping spacetime coordinates  for internal color indices \
+\[LongDash]allowing us to reuse the robust, debugged core of the toolkit.\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094617629334*^9}},ExpressionUUID->"d6bdcff9-c557-41a7-a6c0-\
+e297bd9f2366"],
+
+Cell["### 4. Noether\[CloseCurlyQuote]s Buoys", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094618663774*^9}},ExpressionUUID->"68586465-b978-4f5e-864d-\
+0387cff4bd55"],
+
+Cell["\<\
+As we venture into these abstract internal spaces, it is easy to lose sight \
+of the physics amidst the sea of indices. To keep us oriented, we will rely \
+on **Noether\[CloseCurlyQuote]s Theorem**.\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094619702149*^9}},ExpressionUUID->"bcf424ee-3731-464c-ad92-\
+dbac37c10fe3"],
+
+Cell["In every section, we will look for the \[OpenCurlyDoubleQuote]Noether \
+Buoy\[CloseCurlyDoubleQuote]:", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094620611465*^9}},ExpressionUUID->"6fbc817a-6f05-471a-bdf5-\
+50a0c3e85bf3"],
+
+Cell["\<\
+* If we construct a Lagrangian invariant under rotation in Isospin space, \
+*what is conserved*? (Isospin Current).
+* If the field strength is invariant, *what does that imply* for the dynamics \
+of the bosons?\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094621967523*^9}},ExpressionUUID->"5da9b4ac-ecce-4819-88ef-\
+1c7eede39c5e"],
+
+Cell["\<\
+We will also use `Manipulate` to visualize these symmetries. It is one thing \
+to say \[OpenCurlyDoubleQuote]invariant under  rotation\
+\[CloseCurlyDoubleQuote]; it is another to drag a slider and watch a vector \
+rotate on a sphere while its energy density remains perfectly still.\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.980094623322789*^9}},ExpressionUUID->"311f6dca-3b27-45e3-a043-\
+dcc56a13cb25"],
+
+Cell["\<\
+Let us begin by defining the algebra of our new internal space.\
+\>", "Text",
+ CellChangeTimes->{{3.980094575754602*^9, 
+  3.9800946154404287`*^9}},ExpressionUUID->"bfd265c2-2269-4836-a2ab-\
+9787b658a22f"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Initialize the Relativity Toolkit", "Section",
+ CellChangeTimes->{{3.9775137220895033`*^9, 3.977513731036991*^9}, {
+   3.9775149251253233`*^9, 3.9775149394419107`*^9}, {3.977515019357979*^9, 
+   3.9775150305786533`*^9}, {3.977515069824033*^9, 3.977515077560625*^9}, 
+   3.9775154960870533`*^9, {3.9775171395382757`*^9, 
+   3.9775171504203053`*^9}},ExpressionUUID->"e0792760-7d08-469c-bd15-\
+b84ab8afddcb"],
+
+Cell[CellGroupData[{
+
+Cell["Optional: Quit for a Fresh Kernel", "Subsection",
+ CellChangeTimes->{{3.977516486354595*^9, 3.9775164906642313`*^9}, {
+  3.977517157525331*^9, 3.977517176286113*^9}, {3.9775172141301403`*^9, 
+  3.977517225132*^9}, {3.977517520746587*^9, 3.977517523981988*^9}, {
+  3.977538215881567*^9, 
+  3.9775382663081083`*^9}},ExpressionUUID->"3b914edd-1ba5-4605-ab50-\
+f6cfd0be297b"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ StyleBox["Note, if you call ",
+  FontSlant->"Italic"],
+ StyleBox["Quit", "Input"],
+ StyleBox[" in a notebook, evaluation may hang. If you want to \
+\[OpenCurlyDoubleQuote]Evaluate Notebook,\[CloseCurlyDoubleQuote] mark the \
+following two cells \
+\[OpenCurlyDoubleQuote]Evaluatable\[CloseCurlyDoubleQuote]  in the Cell",
+  FontSlant->"Italic"],
+ Cell[BoxData[
+  FormBox["->", TraditionalForm]],ExpressionUUID->
+  "ea20fe35-b677-496a-bf21-7d93e1681fff"],
+ StyleBox["Property menu, call ",
+  FontSlant->"Italic"],
+ StyleBox["Quit", "Input"],
+ StyleBox[" and ",
+  FontSlant->"Italic"],
+ StyleBox["FrontEndTokenExecute", "Input"],
+ StyleBox[" once each, then comment out the cells, or mark them unevaluatable \
+again. Alternatively, you can quit the kernel via the Evaluation menu (last \
+item). At that point, you can \[OpenCurlyDoubleQuote]Evaluate Notebook\
+\[CloseCurlyDoubleQuote] in a clean environment, or evaluate cells \
+individually.",
+  FontSlant->"Italic"]
+}], "Item",
+ CellChangeTimes->{{3.977148448717927*^9, 3.977148601137877*^9}, {
+  3.9771487883591347`*^9, 3.977148838436544*^9}, {3.97715053773209*^9, 
+  3.977150607874874*^9}, {3.9773249732467318`*^9, 3.977324973635874*^9}, {
+  3.977325004140476*^9, 3.977325152474333*^9}, {3.977327554521559*^9, 
+  3.9773275834121027`*^9}, {3.977649691520117*^9, 3.977649743479376*^9}, {
+  3.97818795111021*^9, 3.9781880225966682`*^9}, {3.978357872471236*^9, 
+  3.978357883731669*^9}, {3.978383132160502*^9, 
+  3.9783831342035513`*^9}},ExpressionUUID->"81fdef78-2089-4910-9cec-\
+0edb66284188"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Quit", "[", "]"}], ";"}]], "Input",
+ Evaluatable->False,
+ CellChangeTimes->{{3.9775137220895033`*^9, 3.977513731036991*^9}, {
+   3.9775149251253233`*^9, 3.9775149394419107`*^9}, {3.977515019357979*^9, 
+   3.9775150305786533`*^9}, {3.977515069824033*^9, 3.977515077560625*^9}, {
+   3.977594997585329*^9, 3.977594998871601*^9}, {3.977644403029586*^9, 
+   3.9776444040906057`*^9}, {3.977649766507429*^9, 3.9776497799661713`*^9}, {
+   3.97791603441398*^9, 3.977916036805859*^9}, 3.977946305660872*^9, {
+   3.9782285739389553`*^9, 3.978228575035561*^9}, {3.9788972258407707`*^9, 
+   3.978897226880533*^9}, {3.9800974352670603`*^9, 
+   3.98009743626591*^9}},ExpressionUUID->"29fa4ac9-c1ef-4696-97eb-\
+6fb5b5e77774"],
+
+Cell[BoxData[
+ RowBox[{"FrontEndTokenExecute", "[", "\"\<DeleteGeneratedCells\>\"", 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.9775137220895033`*^9, 3.977513731036991*^9}, {
+   3.9775149251253233`*^9, 3.9775149394419107`*^9}, {3.977515019357979*^9, 
+   3.9775150305786533`*^9}, {3.977515069824033*^9, 3.977515077560625*^9}, {
+   3.977594997585329*^9, 3.977594998871601*^9}, {3.977644403029586*^9, 
+   3.9776444040906057`*^9}, {3.977649766507429*^9, 3.9776497799661713`*^9}, {
+   3.97791603441398*^9, 3.977916036805859*^9}, 3.977946305660872*^9, 
+   3.978021272664463*^9},
+ CellLabel->"In[1]:=",ExpressionUUID->"386c6876-de7a-46b4-a113-ab1aab14a3ba"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Download the Code", "Subsection",
+ CellChangeTimes->{{3.977517618928741*^9, 
+  3.977517621628845*^9}},ExpressionUUID->"f24ce5d6-daa5-46f7-bf16-\
+a5e41e79c5ad"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"getToolkit", "[", "branch_", "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"With", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"base", "=", 
+        RowBox[{"\"\<https://raw.githubusercontent.com/rebcabin/\
+RelativityToolkit/\>\"", "<>", "branch", "<>", "\"\</\>\""}]}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"bust", "=", 
+        RowBox[{"\"\<?t=\>\"", "<>", 
+         RowBox[{"ToString", "[", 
+          RowBox[{"Round", "[", 
+           RowBox[{"AbsoluteTime", "[", "]"}], "]"}], "]"}]}]}]}], "}"}], ",",
+      "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"rules", "=", 
+       RowBox[{"base", "<>", "\"\<RelativityToolkit.wl\>\"", "<>", "bust"}]}],
+       "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Get", "[", "rules", "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "getToolkit", "[", "\"\<feature/non-abelian-gauge-theory\>\"", "]"}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.977515038890398*^9, 3.9775150428942947`*^9}, {
+   3.977515073427143*^9, 3.977515074303447*^9}, {3.977515161763281*^9, 
+   3.977515279675716*^9}, {3.977515331235067*^9, 3.9775154104989843`*^9}, {
+   3.9775154514034443`*^9, 3.977515475400744*^9}, {3.977516475447763*^9, 
+   3.977516662508048*^9}, {3.977516693802258*^9, 3.977516698343639*^9}, {
+   3.977595006595559*^9, 3.977595011881465*^9}, {3.977595190950871*^9, 
+   3.97759521657874*^9}, {3.9776649720307207`*^9, 3.9776649723921757`*^9}, {
+   3.978797246011898*^9, 3.978797344015057*^9}, 3.9788757483618603`*^9, {
+   3.98007514744363*^9, 3.980075151242429*^9}, {3.980075186662034*^9, 
+   3.980075186754345*^9}, {3.980094400566163*^9, 3.980094420088005*^9}, {
+   3.980097482199211*^9, 3.9800975071401253`*^9}, {3.980106076688342*^9, 
+   3.980106365337618*^9}},
+ CellLabel->"In[2]:=",ExpressionUUID->"4785ae05-6267-48dd-b220-83eabadbfd3b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"Relativity Toolkit version :\"\>",
+   "EchoLabel"], "  ", "\<\"1.11.0\"\>"}]], "Echo",
+ CellChangeTimes->{
+  3.9801063851825438`*^9},ExpressionUUID->"285a68df-7860-4e39-94ee-\
+209cad6ec867"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"Relativity Connection Symbol :\"\>",
+   "EchoLabel"], "  ", "\[CapitalGamma]"}]], "Echo",
+ CellChangeTimes->{
+  3.980106385195321*^9},ExpressionUUID->"4be70af6-2827-4e39-bc91-\
+b834e37acb73"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Equations of Motion Via Geometry", "Section",
+ CellChangeTimes->{{3.980105371468792*^9, 
+  3.980105381484918*^9}},ExpressionUUID->"99be33e9-0642-4924-9cc2-\
+bcedb301cd5b"],
+
+Cell["\<\
+Objective : Re-derive the equations of motion for the spherical pendulum via \
+the Relativity Toolkit's covariant-derivative engine. \
+\>", "Text",
+ CellChangeTimes->{{3.9800975728042707`*^9, 3.980097572805059*^9}, {
+  3.9800976151351023`*^9, 3.9800976711092043`*^9}, {3.98010500138867*^9, 
+  3.980105024605034*^9}, {3.980106514595677*^9, 
+  3.980106568532508*^9}},ExpressionUUID->"42588a46-7961-48a2-94e4-\
+3f2fe583151f"],
+
+Cell["Source:\"Perspectives on Energy\",B.Beckman, April 2025", "Text",
+ CellChangeTimes->{{3.9800975728042707`*^9, 3.980097572805059*^9}, {
+  3.9800976151351023`*^9, 3.9800976711092043`*^9}, {3.98010500138867*^9, 
+  3.980105024605034*^9}, {3.980106514595677*^9, 
+  3.9801065723766127`*^9}},ExpressionUUID->"f63cbd32-7ed3-44a3-892f-\
+9252914121c1"],
+
+Cell[CellGroupData[{
+
+Cell["Define the Configuration Manifold", "Subsection",
+ CellChangeTimes->{{3.9800975728042707`*^9, 3.980097572805059*^9}, {
+   3.9800976151351023`*^9, 3.9800976711092043`*^9}, 3.98010500138867*^9, 
+   3.980105031647558*^9, 3.980106027121377*^9, 3.980106524798884*^9, {
+   3.980106585110712*^9, 
+   3.98010662112917*^9}},ExpressionUUID->"57598084-f20e-4dc2-97a4-\
+d6edb5799fff"],
+
+Cell["2D: pitch (\[Delta]) and cone roll (\[Eta]) angles", "Text",
+ CellChangeTimes->{{3.9800975728042707`*^9, 3.980097572805059*^9}, {
+   3.9800976151351023`*^9, 3.9800976711092043`*^9}, 3.98010500138867*^9, 
+   3.980105031647558*^9, 3.980106027121377*^9, 3.980106524798884*^9, {
+   3.980106585110712*^9, 3.980106593645542*^9}, {3.9801066339736013`*^9, 
+   3.98010664843594*^9}},ExpressionUUID->"9d0c19c8-8173-4133-a9c1-\
+6828551cb019"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"coords", "=", 
+   RowBox[{"{", 
+    RowBox[{"\[Delta]", ",", "\[Eta]"}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.9800975728042707`*^9, 3.980097572805059*^9}, {
+   3.9800976151351023`*^9, 3.9800976711092043`*^9}, 3.98010500138867*^9, 
+   3.980105031647558*^9, 3.980106027121377*^9},
+ CellLabel->"In[4]:=",ExpressionUUID->"9dd068e4-5103-4678-951d-c5068e4b7db1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Define the Metric", "Subsection",
+ CellChangeTimes->{{3.9801066599033546`*^9, 
+  3.9801066634780693`*^9}},ExpressionUUID->"06cecc59-3af2-4c52-8338-\
+fe2c75132927"],
+
+Cell["Kinetic energy", "Text",
+ CellChangeTimes->{{3.980106672279419*^9, 3.980106728306197*^9}, {
+   3.9801068195970373`*^9, 3.98010687416719*^9}, 
+   3.9801069125446167`*^9},ExpressionUUID->"b42085b6-685f-4000-8092-\
+43567914785d"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"T", "=", 
+   RowBox[{
+    FractionBox["1", "2"], "m", " ", 
+    RowBox[{
+     SuperscriptBox[
+      SubscriptBox["c", "z"], "2"], "(", 
+     RowBox[{
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"\[Delta]", "'"}], ")"}], "2"], "+", 
+      RowBox[{"cos", 
+       RowBox[{"(", "\[Delta]", ")"}], 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"\[Eta]", "'"}], ")"}], "2"]}]}], ")"}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.980106672279419*^9, 3.980106728306197*^9}, {
+  3.9801068195970373`*^9, 3.980106885765945*^9}, {3.980107719366146*^9, 
+  3.98010772017386*^9}},ExpressionUUID->"d7f7353c-4836-46dd-ba68-\
+57d2dea5e617"],
+
+Cell["\<\
+corresponds to a diagonal metric on the configuration manifold\
+\>", "Text",
+ CellChangeTimes->{{3.980106916660266*^9, 
+  3.9801069474203377`*^9}},ExpressionUUID->"1d81d730-6fd7-4d5c-95e0-\
+757d97f20f00"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"g", "=", 
+       RowBox[{"m", " ", 
+        SuperscriptBox["cz", "2"], 
+        RowBox[{"(", GridBox[{
+           {"1", "0"},
+           {"0", 
+            SuperscriptBox[
+             RowBox[{"Cos", "[", "\[Delta]", "]"}], "2"]}
+          }], ")"}]}]}], ",", "\[IndentingNewLine]", 
+      RowBox[{"zDD", "=", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"gDD", "[", 
+           RowBox[{
+            RowBox[{"\[ScriptCapitalD]", "[", "a_", "]"}], ",", 
+            RowBox[{"\[ScriptCapitalD]", "[", "b_", "]"}]}], "]"}], "/;", 
+          RowBox[{"(", 
+           RowBox[{"a", "=!=", "b"}], ")"}]}], "->", "0"}], "}"}]}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"zUU", "=", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"gUU", "[", 
+           RowBox[{
+            RowBox[{"\[ScriptCapitalU]", "[", "a_", "]"}], ",", 
+            RowBox[{"\[ScriptCapitalU]", "[", "b_", "]"}]}], "]"}], "/;", 
+          RowBox[{"(", 
+           RowBox[{"a", "=!=", "b"}], ")"}]}], "->", "0"}], "}"}]}]}], "}"}], 
+    ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Echo", "[", 
+      RowBox[{
+       RowBox[{"pendulumMetricRules", "=", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"MatrixToUDRules", "[", 
+          RowBox[{"g", ",", "gDD", ",", "\[ScriptCapitalD]", ",", "coords"}], 
+          "]"}], "~", "Join", "~", "zDD"}]}], 
+       ",", "\"\<\!\(\*SubscriptBox[\(g\), \(\[VeryThinSpace]\(\[Mu]\
+\[VeryThinSpace]\[Nu]\)\)]\) =\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"Echo", "[", 
+      RowBox[{
+       RowBox[{"pendulumInverseMetricRules", "=", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"MatrixToUDRules", "[", 
+          RowBox[{
+           RowBox[{"Inverse", "[", "g", "]"}], ",", "gUU", ",", 
+           "\[ScriptCapitalU]", ",", "coords"}], "]"}], "~", "Join", "~", 
+         "zUU"}]}], 
+       ",", "\"\<\!\(\*SuperscriptBox[\(g\), \(\[VeryThinSpace]\(\[Mu]\
+\[VeryThinSpace]\[Nu]\)\)]\) :\>\""}], "]"}], ";"}]}], "]"}], ";"}]], "Input",\
+
+ CellChangeTimes->{{3.9801069831521463`*^9, 3.9801070938495693`*^9}, {
+   3.980107155397128*^9, 3.980107293011609*^9}, {3.9801073588243637`*^9, 
+   3.980107428743656*^9}, {3.980107793557382*^9, 3.9801077937567377`*^9}, {
+   3.980109361242671*^9, 3.9801093778986187`*^9}, {3.980110016616506*^9, 
+   3.9801100174388657`*^9}, {3.980110465007703*^9, 3.980110470413064*^9}, 
+   3.9801106356432953`*^9, {3.980114331547015*^9, 3.9801143327140837`*^9}, {
+   3.980115109019174*^9, 3.980115205698853*^9}, 3.9801158543820133`*^9, {
+   3.980115959160256*^9, 3.9801159742066603`*^9}, {3.980116027031735*^9, 
+   3.980116325841806*^9}},
+ CellLabel->
+  "In[133]:=",ExpressionUUID->"95a372a6-378d-4442-a711-25c888ed9c93"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"\\!\\(\\*SubscriptBox[\\(g\\), \\(\[VeryThinSpace]\\(\[Mu]\
+\[VeryThinSpace]\[Nu]\\)\\)]\\) =\"\>",
+   "EchoLabel"], "  ", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"gDD", 
+      SubscriptBox["", "\[Delta]"], 
+      SubscriptBox["", "\[Delta]"]}], "\[Rule]", 
+     RowBox[{
+      SuperscriptBox["cz", "2"], " ", "m"}]}], ",", 
+    RowBox[{
+     RowBox[{"gDD", 
+      SubscriptBox["", "\[Eta]"], 
+      SubscriptBox["", "\[Eta]"]}], "\[Rule]", 
+     RowBox[{
+      SuperscriptBox["cz", "2"], " ", "m", " ", 
+      SuperscriptBox[
+       RowBox[{"Cos", "[", "\[Delta]", "]"}], "2"]}]}], ",", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"gDD", 
+       SubscriptBox["", "a_"], 
+       SubscriptBox["", "b_"]}], "/;", 
+      RowBox[{"a", "=!=", "b"}]}], "\[Rule]", "0"}]}], "}"}]}]], "Echo",
+ CellChangeTimes->{
+  3.980116326423443*^9},ExpressionUUID->"84b98c94-3144-46c7-869e-\
+bdabe5355658"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"\\!\\(\\*SuperscriptBox[\\(g\\), \\(\[VeryThinSpace]\\(\[Mu]\
+\[VeryThinSpace]\[Nu]\\)\\)]\\) :\"\>",
+   "EchoLabel"], "  ", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"gUU", 
+      SuperscriptBox["", "\[Delta]"], 
+      SuperscriptBox["", "\[Delta]"]}], "\[Rule]", 
+     FractionBox["1", 
+      RowBox[{
+       SuperscriptBox["cz", "2"], " ", "m"}]]}], ",", 
+    RowBox[{
+     RowBox[{"gUU", 
+      SuperscriptBox["", "\[Eta]"], 
+      SuperscriptBox["", "\[Eta]"]}], "\[Rule]", 
+     FractionBox[
+      SuperscriptBox[
+       RowBox[{"Sec", "[", "\[Delta]", "]"}], "2"], 
+      RowBox[{
+       SuperscriptBox["cz", "2"], " ", "m"}]]}], ",", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"gUU", 
+       SuperscriptBox["", "a_"], 
+       SuperscriptBox["", "b_"]}], "/;", 
+      RowBox[{"a", "=!=", "b"}]}], "\[Rule]", "0"}]}], "}"}]}]], "Echo",
+ CellChangeTimes->{
+  3.980116326431156*^9},ExpressionUUID->"17778bc7-b4eb-4c67-8682-\
+471d3b13607c"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Calculate Geometric Connection", "Subsection",
+ CellChangeTimes->{{3.9801074565042877`*^9, 
+  3.980107467496718*^9}},ExpressionUUID->"4b05e5c5-521c-479d-ac20-\
+f74b0743b0aa"],
+
+Cell[TextData[{
+ "The connection is purely geometric. Masses and lengths have canceled out, a \
+consequence of Einstein\[CloseCurlyQuote]s Equivalence Principle. Notice that \
+we zero-out off-diagaonal components of the metric tensor late in the game, \
+after expanding all the derivatives of the metric internally to ",
+ StyleBox["CalculateGammaComponent", "Input"],
+ "."
+}], "Text",
+ CellChangeTimes->{{3.980114255460387*^9, 3.9801143034805527`*^9}, {
+  3.9801143396677094`*^9, 
+  3.980114378781452*^9}},ExpressionUUID->"3e927ccd-1b73-40e9-938e-\
+556e049f1d41"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"\[CapitalGamma]Pendulum", "=", 
+   RowBox[{
+    RowBox[{"CalculateGammaComponent", "[", "\[IndentingNewLine]", 
+     RowBox[{
+     "#1", ",", "#2", ",", "#3", ",", "\[IndentingNewLine]", "gDD", ",", 
+      "pendulumMetricRules", ",", "\[IndentingNewLine]", "gUU", ",", 
+      "pendulumInverseMetricRules", ",", "\[IndentingNewLine]", "coords"}], 
+     "]"}], "&"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Table", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"\[CapitalGamma]Pendulum", "[", 
+     RowBox[{
+     "a", ",", "b", ",", "c", ",", "gDD", ",", "pendulumMetricRules", ",", 
+      "gUU", ",", "pendulumInverseMetricRules", ",", "coords"}], "]"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{"a", ",", "coords"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"b", ",", "coords"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"c", ",", "coords"}], "}"}]}], "]"}], "//", 
+  "MatrixForm"}]}], "Input",
+ CellChangeTimes->{{3.980107482297648*^9, 3.980107511355369*^9}, {
+   3.980109691116933*^9, 3.9801096981587343`*^9}, {3.980110028623859*^9, 
+   3.980110035298409*^9}, {3.980114514665587*^9, 3.980114530842648*^9}, 
+   3.980116224172208*^9, 3.980116342744562*^9},
+ CellLabel->
+  "In[134]:=",ExpressionUUID->"18b0f1a0-67cb-49a9-b3aa-43ca1739c635"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {"0"},
+          {"0"}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {"0"},
+          {
+           RowBox[{
+            RowBox[{"Cos", "[", "\[Delta]", "]"}], " ", 
+            RowBox[{"Sin", "[", "\[Delta]", "]"}]}]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]},
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {"0"},
+          {
+           RowBox[{"-", 
+            RowBox[{"Tan", "[", "\[Delta]", "]"}]}]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           RowBox[{"-", 
+            RowBox[{"Tan", "[", "\[Delta]", "]"}]}]},
+          {"0"}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{
+  3.9801159412749767`*^9, {3.980115998242794*^9, 3.980116006278805*^9}, 
+   3.9801161511114264`*^9, {3.9801162174113407`*^9, 3.980116227050928*^9}, 
+   3.980116343533958*^9},
+ CellLabel->
+  "Out[135]//MatrixForm=",ExpressionUUID->"609f2086-84a5-4ea1-aba1-\
+564e72edcbc3"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Define Potential Scalar Field", "Subsection",
+ CellChangeTimes->{{3.980107556482889*^9, 
+  3.980107565399856*^9}},ExpressionUUID->"08417ff3-0573-4770-8fef-\
+d74b6ec884ed"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "V", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Echo", "[", 
+   RowBox[{
+    RowBox[{"V", "=", 
+     RowBox[{"m", " ", "g", " ", "cz", " ", 
+      RowBox[{"Cos", "[", "\[Delta]", "]"}], 
+      RowBox[{"Cos", "[", "\[Eta]", "]"}]}]}], ",", "\"\<V =\>\""}], "]"}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.98010775692019*^9, 3.9801077837921457`*^9}, {
+  3.980107826471671*^9, 3.980107843703158*^9}, {3.9801079085744343`*^9, 
+  3.980107921005226*^9}, {3.980114310728075*^9, 3.980114321213562*^9}},
+ CellLabel->
+  "In[136]:=",ExpressionUUID->"e9a34d56-f88c-4974-b10c-5b4e6e3e1617"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"V =\"\>",
+   "EchoLabel"], "  ", 
+  RowBox[{"cz", " ", "g", " ", "m", " ", 
+   RowBox[{"Cos", "[", "\[Delta]", "]"}], " ", 
+   RowBox[{"Cos", "[", "\[Eta]", "]"}]}]}]], "Echo",
+ CellChangeTimes->{
+  3.9801163663027782`*^9},ExpressionUUID->"cc448f57-73b7-4177-8715-\
+cc759d09bd55"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Derive Equations of Motion", "Subsection",
+ CellChangeTimes->{{3.9801078914649754`*^9, 
+  3.980107897714526*^9}},ExpressionUUID->"c024d850-d5bb-4fab-b6ea-\
+3362eb898a46"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "equations", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"injectTime", "=", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"\[Delta]", "->", 
+         RowBox[{"\[Delta]", "[", "t", "]"}]}], ",", 
+        RowBox[{"\[Eta]", "->", 
+         RowBox[{"\[Eta]", "[", "t", "]"}]}]}], "}"}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Do", "[", 
+     RowBox[{
+      RowBox[{"Module", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"accelTerm", ",", "forceTerm"}], "}"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"Geometric", " ", "Acceleration", " ", 
+          RowBox[{"(", 
+           RowBox[{"Geodesic", " ", "Equation"}], ")"}]}], "*)"}], 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Echo", "[", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"accelTerm", "=", 
+            RowBox[{
+             RowBox[{"D", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"coords", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "[", "t", "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"t", ",", "2"}], "}"}]}], "]"}], "+", 
+             "\[IndentingNewLine]", 
+             RowBox[{"Sum", "[", "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{"\[CapitalGamma]Pendulum", "[", 
+                   RowBox[{
+                    RowBox[{"coords", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], ",", 
+                    RowBox[{"coords", "[", 
+                    RowBox[{"[", "j", "]"}], "]"}], ",", 
+                    RowBox[{"coords", "[", 
+                    RowBox[{"[", "k", "]"}], "]"}]}], "]"}], "/.", 
+                  "injectTime"}], ")"}], "*", "\[IndentingNewLine]", 
+                RowBox[{"D", "[", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"coords", "[", 
+                    RowBox[{"[", "j", "]"}], "]"}], "[", "t", "]"}], ",", 
+                  "t"}], "]"}], "*", "\[IndentingNewLine]", 
+                RowBox[{"D", "[", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"coords", "[", 
+                    RowBox[{"[", "k", "]"}], "]"}], "[", "t", "]"}], ",", 
+                  "t"}], "]"}]}], ",", "\[IndentingNewLine]", 
+               RowBox[{"{", 
+                RowBox[{"j", ",", "1", ",", "2"}], "}"}], ",", 
+               "\[IndentingNewLine]", 
+               RowBox[{"{", 
+                RowBox[{"k", ",", "1", ",", "2"}], "}"}]}], "]"}]}]}], ",", 
+           "\[IndentingNewLine]", "\"\<accel :\>\""}], "]"}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{"RHS", ":", 
+           RowBox[{"Potential", " ", "Force", " ", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "Grad"}], " ", "V"}], ")"}]}]}], "*)"}], 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{"Force", "^", "u"}], "=", 
+           RowBox[{
+            RowBox[{"-", 
+             RowBox[{"g", "^", "uv"}]}], "*", 
+            RowBox[{"dV", "/", 
+             RowBox[{"dx", "^", "v"}]}]}]}], "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"Echo", "[", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"forceTerm", "=", 
+            RowBox[{"-", 
+             RowBox[{"Sum", "[", "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"gUU", "[", 
+                    RowBox[{
+                    RowBox[{"\[ScriptCapitalU]", "[", 
+                    RowBox[{"coords", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "]"}], ",", 
+                    RowBox[{"\[ScriptCapitalU]", "[", 
+                    RowBox[{"coords", "[", 
+                    RowBox[{"[", "k", "]"}], "]"}], "]"}]}], "]"}], "/.", " ",
+                     "pendulumInverseMetricRules"}], ")"}], "*", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"D", "[", 
+                   RowBox[{"V", ",", 
+                    RowBox[{"coords", "[", 
+                    RowBox[{"[", "k", "]"}], "]"}]}], "]"}]}], ")"}], "/.", 
+                "injectTime"}], ",", "\[IndentingNewLine]", 
+               RowBox[{"{", 
+                RowBox[{"k", ",", "1", ",", "2"}], "}"}]}], "]"}]}]}], 
+           ",", "\"\<force :\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+         RowBox[{"Echo", "[", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"equations", "[", "i", "]"}], "=", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"accelTerm", "==", "forceTerm"}], ")"}], "//", 
+             "FullSimplify"}]}], ",", "\[IndentingNewLine]", 
+           RowBox[{"\"\<equation[\>\"", "<>", 
+            RowBox[{"ToString", "[", "i", "]"}], "<>", "\"\<] :\>\""}]}], 
+          "]"}]}]}], "]"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", "2"}], "}"}]}], "]"}]}], "]"}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.9800975728042707`*^9, 3.980097572805059*^9}, {
+   3.9800976151351023`*^9, 3.9800976711092043`*^9}, 3.98010500138867*^9, {
+   3.980105031647558*^9, 3.9801051840962467`*^9}, {3.9801052150747337`*^9, 
+   3.9801052327067823`*^9}, {3.980108045880842*^9, 3.980108095060103*^9}, {
+   3.980108131204062*^9, 3.980108131545866*^9}, {3.980108215667935*^9, 
+   3.9801083003145*^9}, {3.980108332488022*^9, 3.980108439243536*^9}, {
+   3.980108494002636*^9, 3.980108684933227*^9}, {3.980108790354302*^9, 
+   3.980108882491118*^9}, {3.9801089199819098`*^9, 3.980108920146824*^9}, {
+   3.9801090473713493`*^9, 3.980109086294736*^9}, {3.980109171980113*^9, 
+   3.980109176943116*^9}, {3.9801092960193567`*^9, 3.9801093118588676`*^9}, {
+   3.9801094118833637`*^9, 3.980109489686631*^9}, {3.9801146229546757`*^9, 
+   3.980114656817078*^9}, {3.9801147143930492`*^9, 3.980114739680245*^9}, {
+   3.9801147804392567`*^9, 3.9801148174437237`*^9}, {3.980114848824603*^9, 
+   3.9801148910376053`*^9}, {3.980114955722741*^9, 3.980114969520789*^9}, {
+   3.980115001374091*^9, 3.980115086578011*^9}, {3.9801163788142548`*^9, 
+   3.980116400090828*^9}, {3.9801164430329237`*^9, 3.980116508146039*^9}},
+ CellLabel->
+  "In[142]:=",ExpressionUUID->"f2583268-82d8-47a4-aee4-6fd80863f25c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"accel :\"\>",
+   "EchoLabel"], "  ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Cos", "[", 
+     RowBox[{"\[Delta]", "[", "t", "]"}], "]"}], " ", 
+    RowBox[{"Sin", "[", 
+     RowBox[{"\[Delta]", "[", "t", "]"}], "]"}], " ", 
+    SuperscriptBox[
+     RowBox[{
+      SuperscriptBox["\[Eta]", "\[Prime]",
+       MultilineFunction->None], "[", "t", "]"}], "2"]}], "+", 
+   RowBox[{
+    SuperscriptBox["\[Delta]", "\[Prime]\[Prime]",
+     MultilineFunction->None], "[", "t", "]"}]}]}]], "Echo",
+ CellChangeTimes->{
+  3.980116510235137*^9},ExpressionUUID->"dbb02eb2-492b-4dec-b25d-\
+6091faa57ef3"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"force :\"\>",
+   "EchoLabel"], "  ", 
+  FractionBox[
+   RowBox[{"g", " ", 
+    RowBox[{"Cos", "[", 
+     RowBox[{"\[Eta]", "[", "t", "]"}], "]"}], " ", 
+    RowBox[{"Sin", "[", 
+     RowBox[{"\[Delta]", "[", "t", "]"}], "]"}]}], "cz"]}]], "Echo",
+ CellChangeTimes->{
+  3.980116510252307*^9},ExpressionUUID->"185f8d42-1b6c-4ca7-9c84-\
+a75928a00f37"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"equation[1] :\"\>",
+   "EchoLabel"], "  ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"Cos", "[", 
+      RowBox[{"\[Delta]", "[", "t", "]"}], "]"}], " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"\[Delta]", "[", "t", "]"}], "]"}], " ", 
+     SuperscriptBox[
+      RowBox[{
+       SuperscriptBox["\[Eta]", "\[Prime]",
+        MultilineFunction->None], "[", "t", "]"}], "2"]}], "+", 
+    RowBox[{
+     SuperscriptBox["\[Delta]", "\[Prime]\[Prime]",
+      MultilineFunction->None], "[", "t", "]"}]}], "\[Equal]", 
+   FractionBox[
+    RowBox[{"g", " ", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"\[Eta]", "[", "t", "]"}], "]"}], " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"\[Delta]", "[", "t", "]"}], "]"}]}], "cz"]}]}]], "Echo",
+ CellChangeTimes->{
+  3.980116510255921*^9},ExpressionUUID->"05d5715b-b071-45b0-ac1c-\
+b4fd23131c3e"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"accel :\"\>",
+   "EchoLabel"], "  ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "2"}], " ", 
+    RowBox[{"Tan", "[", 
+     RowBox[{"\[Delta]", "[", "t", "]"}], "]"}], " ", 
+    RowBox[{
+     SuperscriptBox["\[Delta]", "\[Prime]",
+      MultilineFunction->None], "[", "t", "]"}], " ", 
+    RowBox[{
+     SuperscriptBox["\[Eta]", "\[Prime]",
+      MultilineFunction->None], "[", "t", "]"}]}], "+", 
+   RowBox[{
+    SuperscriptBox["\[Eta]", "\[Prime]\[Prime]",
+     MultilineFunction->None], "[", "t", "]"}]}]}]], "Echo",
+ CellChangeTimes->{
+  3.980116510269678*^9},ExpressionUUID->"b5f1a95a-ffe5-4ada-8876-\
+7d3f6b8bcf75"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"force :\"\>",
+   "EchoLabel"], "  ", 
+  FractionBox[
+   RowBox[{"g", " ", 
+    RowBox[{"Sec", "[", 
+     RowBox[{"\[Delta]", "[", "t", "]"}], "]"}], " ", 
+    RowBox[{"Sin", "[", 
+     RowBox[{"\[Eta]", "[", "t", "]"}], "]"}]}], "cz"]}]], "Echo",
+ CellChangeTimes->{
+  3.980116510272037*^9},ExpressionUUID->"ab4f034e-59e5-4995-a321-\
+03b91413284c"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"equation[2] :\"\>",
+   "EchoLabel"], "  ", 
+  RowBox[{
+   RowBox[{
+    FractionBox[
+     RowBox[{"g", " ", 
+      RowBox[{"Sec", "[", 
+       RowBox[{"\[Delta]", "[", "t", "]"}], "]"}], " ", 
+      RowBox[{"Sin", "[", 
+       RowBox[{"\[Eta]", "[", "t", "]"}], "]"}]}], "cz"], "+", 
+    RowBox[{"2", " ", 
+     RowBox[{"Tan", "[", 
+      RowBox[{"\[Delta]", "[", "t", "]"}], "]"}], " ", 
+     RowBox[{
+      SuperscriptBox["\[Delta]", "\[Prime]",
+       MultilineFunction->None], "[", "t", "]"}], " ", 
+     RowBox[{
+      SuperscriptBox["\[Eta]", "\[Prime]",
+       MultilineFunction->None], "[", "t", "]"}]}]}], "\[Equal]", 
+   RowBox[{
+    SuperscriptBox["\[Eta]", "\[Prime]\[Prime]",
+     MultilineFunction->None], "[", "t", "]"}]}]}]], "Echo",
+ CellChangeTimes->{
+  3.980116510281528*^9},ExpressionUUID->"1ea3d737-ee0b-4184-9dde-\
+80d000a1724e"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["References", "Section",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 
+   3.9768092516184673`*^9}},ExpressionUUID->"d347c5b5-401c-4ef2-a2ab-\
+e917feb8284c"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3594810?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3594810?p_p_auth=UT9pBPpe"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". From the steam age to quantum fields: a unified \
+approach via UD tensorial calculus",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3594810?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3594810?p_p_auth=UT9pBPpe"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post. "
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811023241335*^9}, 
+   3.976811164017178*^9},ExpressionUUID->"5a5186f3-3e56-41ad-8380-\
+e5f7fdff11a8"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3601899?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3601899?p_p_auth=UT9pBPpe"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". General relativity in the UD calculus",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3601899?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3601899?p_p_auth=UT9pBPpe"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.9773156105087147`*^9, 
+   3.977315610512374*^9}},ExpressionUUID->"f5024369-fc9a-4681-a718-\
+32f21ce11f7d"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3605564?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3605564?p_p_auth=UT9pBPpe"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". Formal Differential Geometry in the UD Calculus: Part \
+1",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3605564?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3605564?p_p_auth=UT9pBPpe"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358766466103`*^9, 
+   3.977535876649281*^9}},ExpressionUUID->"4d3374f3-deee-4080-8fbc-\
+63749ec6f55e"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian. ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Covariant Derivatives and Connections in the",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[" \[ScriptCapitalU]\[ScriptCapitalD]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[" Calculus",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.977678516222975*^9, 3.977678516224441*^9}, {3.97822628070759*^9, 
+   3.978226316805443*^9}},ExpressionUUID->"18f5a39c-8809-44ab-b3d4-\
+3960e547729e"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian. ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3627521"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3627521"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Riemann Curvature in ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3627521"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3627521"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["\[ScriptCapitalU]\[ScriptCapitalD]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3627521"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3627521"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[" + Compiler POC",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3627521"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3627521"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.977678516222975*^9, 3.977678516224441*^9}, {3.9781915128399878`*^9, 
+   3.978191520193355*^9}, {3.978192638843432*^9, 3.978192672174715*^9}, {
+   3.978856659537746*^9, 
+   3.978856683235709*^9}},ExpressionUUID->"ff5708ee-ab41-4baf-bdae-\
+57d698ba06de"],
+
+Cell[TextData[{
+ "Beckman, Brian. ",
+ StyleBox["Schwarzschild Orbits in the",
+  FontSlant->"Italic"],
+ " \[ScriptCapitalU]\[ScriptCapitalD]",
+ StyleBox[" Calculus",
+  FontSlant->"Italic"],
+ ". Wolfram Community post (to appear)."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.977678516222975*^9, 3.977678516224441*^9}, {3.9781915128399878`*^9, 
+   3.978191520193355*^9}, {3.9781926382093287`*^9, 
+   3.978192638213464*^9}},ExpressionUUID->"3df30547-ae4b-43ca-84c0-\
+87b56f5a4396"],
+
+Cell[TextData[{
+ "Beckman, Brian. ",
+ StyleBox["Schwarzschild Metric from Scratch via",
+  FontSlant->"Italic"],
+ " \[ScriptCapitalU]\[ScriptCapitalD] ",
+ StyleBox["Compilation",
+  FontSlant->"Italic"],
+ ". Wolfram Community post (to appear)."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.977678516222975*^9, 3.977678516224441*^9}, {3.978358055448645*^9, 
+   3.9783580595456676`*^9}, 
+   3.978358187595776*^9},ExpressionUUID->"ed4efd47-9ea4-4e86-be23-\
+4218728a3adf"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Wolfram Function Repository",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"], None},
+  ButtonNote->
+   "https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". MetricTensor",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"], None},
+  ButtonNote->
+   "https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". For component-based calculations."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.97767851735391*^9, 
+   3.9776785420655413`*^9}},ExpressionUUID->"3c223a9c-2994-47d8-b3bd-\
+4659d07cfb75"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Wolfram Function Repository",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"], None},
+  ButtonNote->
+   "https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". ChristoffelSymbol",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://resources.wolframcloud.com/FunctionRepository/resources/\
+ChristoffelSymbol/"], None},
+  ButtonNote->
+   "https://resources.wolframcloud.com/FunctionRepository/resources/\
+ChristoffelSymbol/"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". For component-based calculations."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.97767851735391*^9, 3.9776785420655413`*^9}, {3.977678579758896*^9, 
+   3.977678611159862*^9}},ExpressionUUID->"28adb113-0e29-4705-adc5-\
+10e328a8944e"],
+
+Cell[TextData[{
+ "[MTW] ",
+ StyleBox[ButtonBox["Misner, Charles W.; Thorne, Kip S.; Wheeler, John \
+Archibald",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/8w3cecG"], None},
+  ButtonNote->"https://a.co/d/8w3cecG"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". Gravitation",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/8w3cecG"], None},
+  ButtonNote->"https://a.co/d/8w3cecG"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Princeton University Press, 2017."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.9784634778774223`*^9, 
+   3.9784634778792048`*^9}},ExpressionUUID->"f225bdae-b422-4d77-a985-\
+0a64a6ef23b1"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Sean Carroll, ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/a8A0P97"], None},
+  ButtonNote->"https://a.co/d/a8A0P97"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Spacetime and Geometry: An Introduction to General \
+Relativity",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/a8A0P97"], None},
+  ButtonNote->"https://a.co/d/a8A0P97"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Cambridge University Press, 2019."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463525398262*^9, 3.978463568840535*^9}, {3.978463647808242*^9, 
+   3.978463687986936*^9}},ExpressionUUID->"fcb215d1-bd1a-41de-a921-\
+083fb81e3e4a"],
+
+Cell[TextData[{
+ "Friedrich W. Hehl et al., ",
+ StyleBox["General Relativity with Spin and Torsion: Foundations and \
+Prospects",
+  FontSlant->"Italic"],
+ " (Rev. Mod. Phys. 48, 393, 1976)"
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463525398262*^9, 
+   3.9784635433588142`*^9}},ExpressionUUID->"f3341c48-53c5-49e9-976a-\
+15dcb73e56c4"],
+
+Cell[TextData[{
+ "T. W. B. Kibble, ",
+ StyleBox["Lorentz Invariance and the Gravitational Field",
+  FontSlant->"Italic"],
+ " (J. Math. Phys. 2, 212, 1961)"
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463524614047*^9, 3.9784635246159153`*^9}, {3.978859946113061*^9, 
+   3.978859946116845*^9}},ExpressionUUID->"02594bf2-2c8b-41f0-95ff-\
+50ecf041f554"],
+
+Cell[TextData[{
+ "Sciama, D. W., ",
+ StyleBox["On the analogy between charge and spin in general relativity",
+  FontSlant->"Italic"],
+ ". In: Recent Developments in General Relativity, p. 415. Pergamon, New \
+York, 1962."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463524614047*^9, 3.9784635246159153`*^9}, {3.9788599469857597`*^9, 
+   3.9788600079020452`*^9}},ExpressionUUID->"3845a3c7-01fc-4edd-9c37-\
+c0b9372dd49b"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{2112, 1381},
+WindowMargins->{{1286, Automatic}, {Automatic, 0}},
+PrintingCopies->1,
+PrintingPageRange->{1, Automatic},
+SpellingDictionaries->{"CorrectWords"->{
+ "\[Phi]d", "\[Theta]d", "\[Psi]d", "nsoln", "Beckman", "Fehlberg", 
+  "dzhanybekhov", "Dzhanibekov", "versors", "\[Mu]s", "Underactuated", 
+  "Universidad", "Tournier", "Maxime", "Taeyoung", "Leok", "Needham", 
+  "Evandro", "Bernardes", "Stephane", "Viollet", "lon", "cringeworthy", 
+  "visualizable", "lons", "th", "bijections", "Clojure", "secularly", "dsoln",
+   "preimages", "antanaresis", "antanareses", "prioris", "Moylan", 
+  "approximator", "Lagrangians", "Neuenschwander's", "overdotted", 
+  "extremalizes", "extremalizing", "differentiably", 
+  "Golstein\[CloseCurlyQuote]s", "Lovelock", "Neuenschwander", 
+  "Rund\[CloseCurlyQuote]s", "Rund", "Isham\[CloseCurlyQuote]s", "Isham", 
+  "contravariantly", "Clairot\[CloseCurlyQuote]s", "contravariance", 
+  "covariantly", "covector", "Covector", "covectors", "Contravariance", 
+  "sigil", "Rosenfeld", "Belinfante", "reparametrize", "clickables", 
+  "overtick", "Hessians", "Covectors", "kinematically", "Carlip", 
+  "Electrodynamical", "Wiechert", "nonradiative", "electrodynamical", 
+  "fiddliness", "d\[Lambda]ds", "facto", "overblowing", "invariantly", 
+  "tensorially", "unprimed", "tensoriality", "quotienting", "Misner", 
+  "Thorne", "Hanno", "mnemonical", "Schutz", "Koszul", "algebrize", "Trifoil",
+   "ut", "cdg", "rebaggaged"}},
+Magnification:>1.5 Inherited,
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"aa3c8c6b-1788-45ea-951a-11738bb353bc"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[422, 15, 695, 10, 144, "Title",ExpressionUUID->"c689ba04-2842-43d6-aa5b-126f3039c9d7"],
+Cell[1120, 27, 258, 4, 45, "Author",ExpressionUUID->"47dfe6fc-42fd-425b-b8f1-171f01ffece7"],
+Cell[1381, 33, 393, 6, 45, "Author",ExpressionUUID->"f31d7393-2da6-4b45-8fa3-4c2dd24714cb"],
+Cell[1777, 41, 149, 3, 99, "Section",ExpressionUUID->"913360c8-5a19-4b3c-860a-ece9872b5783"],
+Cell[CellGroupData[{
+Cell[1951, 48, 176, 3, 77, "Section",ExpressionUUID->"01d70810-8ee9-4c00-848e-4511290397ab"],
+Cell[2130, 53, 1449, 36, 116, "Text",ExpressionUUID->"3e91d720-51f9-4ada-b7d5-5a723a2e4c70"],
+Cell[3582, 91, 825, 18, 83, "Text",ExpressionUUID->"014435af-88c8-4fd7-9159-c6c6c52e94ad"],
+Cell[4410, 111, 741, 13, 116, "Text",ExpressionUUID->"ce4fa437-b070-4f11-99fe-f9e50bd82ebb"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[5188, 129, 157, 3, 77, "Section",ExpressionUUID->"99b95f0d-6e81-4743-8c2f-11b7663afbd9"],
+Cell[5348, 134, 169, 3, 50, "Text",ExpressionUUID->"3d5535a3-5e2d-416a-a0e1-084b3b753d10"],
+Cell[5520, 139, 709, 12, 116, "Text",ExpressionUUID->"fd41b3d1-862d-4b82-bcd9-19427025bcce"],
+Cell[6232, 153, 444, 8, 83, "Text",ExpressionUUID->"1862e5fe-3056-4201-81df-7e1c0441fa1b"],
+Cell[6679, 163, 562, 11, 83, "Text",ExpressionUUID->"1e70cc90-c160-41fa-b036-081ee590f124"],
+Cell[7244, 176, 185, 3, 50, "Text",ExpressionUUID->"f33a52e4-97ab-460f-9f5b-bc3511d81bbe"],
+Cell[7432, 181, 283, 6, 50, "Text",ExpressionUUID->"b45a0993-24f4-4063-a5ea-a804547b76d9"],
+Cell[7718, 189, 582, 12, 149, "Text",ExpressionUUID->"1a7b9593-974b-4d73-9df5-80179241e537"],
+Cell[8303, 203, 245, 4, 50, "Text",ExpressionUUID->"bd7bf4ba-582c-45a2-9ae3-119ad00dd0fd"],
+Cell[8551, 209, 369, 7, 50, "Text",ExpressionUUID->"d9901220-13eb-47c3-ac77-d0915c5ec491"],
+Cell[8923, 218, 246, 6, 50, "Text",ExpressionUUID->"d4bc9cbb-e972-4bf6-ad5b-df1b09ec2dc8"],
+Cell[9172, 226, 806, 14, 149, "Text",ExpressionUUID->"221458c5-60d3-41ab-a2c3-b39ad3b5d298"],
+Cell[9981, 242, 425, 8, 83, "Text",ExpressionUUID->"d6bdcff9-c557-41a7-a6c0-e297bd9f2366"],
+Cell[10409, 252, 181, 3, 50, "Text",ExpressionUUID->"68586465-b978-4f5e-864d-0387cff4bd55"],
+Cell[10593, 257, 348, 7, 50, "Text",ExpressionUUID->"bcf424ee-3731-464c-ad92-dbac37c10fe3"],
+Cell[10944, 266, 243, 4, 50, "Text",ExpressionUUID->"6fbc817a-6f05-471a-bdf5-50a0c3e85bf3"],
+Cell[11190, 272, 360, 8, 83, "Text",ExpressionUUID->"5da9b4ac-ecce-4819-88ef-1c7eede39c5e"],
+Cell[11553, 282, 432, 8, 83, "Text",ExpressionUUID->"311f6dca-3b27-45e3-a043-dcc56a13cb25"],
+Cell[11988, 292, 215, 5, 50, "Text",ExpressionUUID->"bfd265c2-2269-4836-a2ab-9787b658a22f"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[12240, 302, 411, 6, 77, "Section",ExpressionUUID->"e0792760-7d08-469c-bd15-b84ab8afddcb"],
+Cell[CellGroupData[{
+Cell[12676, 312, 377, 6, 79, "Subsection",ExpressionUUID->"3b914edd-1ba5-4605-ab50-f6cfd0be297b"],
+Cell[CellGroupData[{
+Cell[13078, 322, 1559, 33, 76, "Item",ExpressionUUID->"81fdef78-2089-4910-9cec-0edb66284188"],
+Cell[14640, 357, 744, 13, 44, "Input",ExpressionUUID->"29fa4ac9-c1ef-4696-97eb-6fb5b5e77774",
+ Evaluatable->False],
+Cell[15387, 372, 648, 10, 44, "Input",ExpressionUUID->"386c6876-de7a-46b4-a113-ab1aab14a3ba"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16084, 388, 165, 3, 79, "Subsection",ExpressionUUID->"f24ce5d6-daa5-46f7-bf16-a5e41e79c5ad"],
+Cell[CellGroupData[{
+Cell[16274, 395, 1927, 39, 227, "Input",ExpressionUUID->"4785ae05-6267-48dd-b220-83eabadbfd3b"],
+Cell[CellGroupData[{
+Cell[18226, 438, 228, 6, 35, "Echo",ExpressionUUID->"285a68df-7860-4e39-94ee-209cad6ec867"],
+Cell[18457, 446, 229, 6, 35, "Echo",ExpressionUUID->"4be70af6-2827-4e39-bc91-b834e37acb73"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18759, 460, 177, 3, 99, "Section",ExpressionUUID->"99be33e9-0642-4924-9cc2-bcedb301cd5b"],
+Cell[18939, 465, 432, 8, 50, "Text",ExpressionUUID->"42588a46-7961-48a2-94e4-3f2fe583151f"],
+Cell[19374, 475, 348, 5, 50, "Text",ExpressionUUID->"f63cbd32-7ed3-44a3-892f-9252914121c1"],
+Cell[CellGroupData[{
+Cell[19747, 484, 378, 6, 79, "Subsection",ExpressionUUID->"57598084-f20e-4dc2-97a4-d6edb5799fff"],
+Cell[20128, 492, 437, 6, 50, "Text",ExpressionUUID->"9d0c19c8-8173-4133-a9c1-6828551cb019"],
+Cell[20568, 500, 402, 8, 44, "Input",ExpressionUUID->"9dd068e4-5103-4678-951d-c5068e4b7db1"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21007, 513, 169, 3, 79, "Subsection",ExpressionUUID->"06cecc59-3af2-4c52-8338-fe2c75132927"],
+Cell[21179, 518, 232, 4, 50, "Text",ExpressionUUID->"b42085b6-685f-4000-8092-43567914785d"],
+Cell[21414, 524, 720, 21, 58, "DisplayFormulaNumbered",ExpressionUUID->"d7f7353c-4836-46dd-ba68-57d2dea5e617"],
+Cell[22137, 547, 214, 5, 50, "Text",ExpressionUUID->"1d81d730-6fd7-4d5c-95e0-757d97f20f00"],
+Cell[CellGroupData[{
+Cell[22376, 556, 2868, 69, 272, "Input",ExpressionUUID->"95a372a6-378d-4442-a711-25c888ed9c93"],
+Cell[CellGroupData[{
+Cell[25269, 629, 937, 29, 37, "Echo",ExpressionUUID->"84b98c94-3144-46c7-869e-bdabe5355658"],
+Cell[26209, 660, 993, 31, 57, "Echo",ExpressionUUID->"17778bc7-b4eb-4c67-8682-471d3b13607c"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27263, 698, 180, 3, 79, "Subsection",ExpressionUUID->"4b05e5c5-521c-479d-ac20-f74b0743b0aa"],
+Cell[27446, 703, 563, 11, 83, "Text",ExpressionUUID->"3e927ccd-1b73-40e9-938e-556e049f1d41"],
+Cell[CellGroupData[{
+Cell[28034, 718, 1310, 30, 258, "Input",ExpressionUUID->"18b0f1a0-67cb-49a9-b3aa-43ca1739c635"],
+Cell[29347, 750, 3000, 85, 141, "Output",ExpressionUUID->"609f2086-84a5-4ea1-aba1-564e72edcbc3"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[32396, 841, 177, 3, 79, "Subsection",ExpressionUUID->"08417ff3-0573-4770-8fef-d74b6ec884ed"],
+Cell[CellGroupData[{
+Cell[32598, 848, 647, 15, 74, "Input",ExpressionUUID->"e9a34d56-f88c-4974-b10c-5b4e6e3e1617"],
+Cell[33248, 865, 318, 9, 35, "Echo",ExpressionUUID->"cc448f57-73b7-4177-8715-cc759d09bd55"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[33615, 880, 176, 3, 79, "Subsection",ExpressionUUID->"c024d850-d5bb-4fab-b6ea-3362eb898a46"],
+Cell[CellGroupData[{
+Cell[33816, 887, 6552, 147, 718, "Input",ExpressionUUID->"f2583268-82d8-47a4-aee4-6fd80863f25c"],
+Cell[CellGroupData[{
+Cell[40393, 1038, 625, 19, 35, "Echo",ExpressionUUID->"dbb02eb2-492b-4dec-b25d-6091faa57ef3"],
+Cell[41021, 1059, 386, 12, 51, "Echo",ExpressionUUID->"185f8d42-1b6c-4ca7-9c84-a75928a00f37"],
+Cell[41410, 1073, 874, 26, 51, "Echo",ExpressionUUID->"05d5715b-b071-45b0-ac1c-b4fd23131c3e"],
+Cell[42287, 1101, 656, 20, 35, "Echo",ExpressionUUID->"b5f1a95a-ffe5-4ada-8876-7d3f6b8bcf75"],
+Cell[42946, 1123, 386, 12, 51, "Echo",ExpressionUUID->"ab4f034e-59e5-4995-a321-03b91413284c"],
+Cell[43335, 1137, 888, 26, 52, "Echo",ExpressionUUID->"1ea3d737-ee0b-4184-9dde-80d000a1724e"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[44296, 1171, 685, 11, 99, "Section",ExpressionUUID->"d347c5b5-401c-4ef2-a2ab-e917feb8284c"],
+Cell[44984, 1184, 1558, 33, 46, "ItemNumbered",ExpressionUUID->"5a5186f3-3e56-41ad-8380-e5f7fdff11a8"],
+Cell[46545, 1219, 1634, 33, 46, "ItemNumbered",ExpressionUUID->"f5024369-fc9a-4681-a718-32f21ce11f7d"],
+Cell[48182, 1254, 1706, 35, 46, "ItemNumbered",ExpressionUUID->"4d3374f3-deee-4080-8fbc-63749ec6f55e"],
+Cell[49891, 1291, 2261, 44, 46, "ItemNumbered",ExpressionUUID->"18f5a39c-8809-44ab-b3d4-3960e547729e"],
+Cell[52155, 1337, 2346, 46, 46, "ItemNumbered",ExpressionUUID->"ff5708ee-ab41-4baf-bdae-57d698ba06de"],
+Cell[54504, 1385, 1371, 25, 46, "ItemNumbered",ExpressionUUID->"3df30547-ae4b-43ca-84c0-87b56f5a4396"],
+Cell[55878, 1412, 1358, 25, 46, "ItemNumbered",ExpressionUUID->"ed4efd47-9ea4-4e86-be23-4218728a3adf"],
+Cell[57239, 1439, 1771, 37, 46, "ItemNumbered",ExpressionUUID->"3c223a9c-2994-47d8-b3bd-4659d07cfb75"],
+Cell[59013, 1478, 1834, 37, 46, "ItemNumbered",ExpressionUUID->"28adb113-0e29-4705-adc5-10e328a8944e"],
+Cell[60850, 1517, 1531, 32, 46, "ItemNumbered",ExpressionUUID->"f225bdae-b422-4d77-a985-0a64a6ef23b1"],
+Cell[62384, 1551, 1617, 32, 46, "ItemNumbered",ExpressionUUID->"fcb215d1-bd1a-41de-a921-083fb81e3e4a"],
+Cell[64004, 1585, 1230, 22, 46, "ItemNumbered",ExpressionUUID->"f3341c48-53c5-49e9-976a-15dcb73e56c4"],
+Cell[65237, 1609, 1242, 21, 46, "ItemNumbered",ExpressionUUID->"02594bf2-2c8b-41f0-95ff-50ecf041f554"],
+Cell[66482, 1632, 1312, 22, 46, "ItemNumbered",ExpressionUUID->"3845a3c7-01fc-4edd-9c37-c0b9372dd49b"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
