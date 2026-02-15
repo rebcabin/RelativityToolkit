@@ -51,6 +51,7 @@ Module[{symbols = Symbol /@ {
 	"CD",
 	"checkFormalIdentity",
 	"ChristoffelsFromMetric",
+	"ChristoffelsFromMetricIndexer",
 	"Contract",
 	"ContractAll",
 	"contractValence",
@@ -636,6 +637,11 @@ ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_]/;(gDD =!= gUU) :=
       (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
        Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
        Partials[gDD[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Lambda]]]])];
+      
+(* A version that works from metrics made via MakeIndexer *)        
+ChristoffelsFromMetricIndexer[ g_, gi_, \[Sigma]_, \[Mu]_, \[Nu]_, coords_]:=
+Sum[(1/2) gi[\[Sigma],\[Lambda]] (D[g[\[Lambda], \[Mu]], \[Nu]] + D[g[\[Lambda], \[Nu]], \[Mu]] - D[g[\[Mu], \[Nu]], \[Lambda]]),
+  {\[Lambda], coords}];
 
 CalculateGammaComponent[s_,m_,n_,
    gDD_Symbol,gDDRules_,
@@ -730,17 +736,17 @@ Contract[expr_, coords_List] :=
       If[Length[pairs] === 0,
        term,
        (idx = First[pairs];
-       (* Total up on the expansion over all coords *)
-       Total[term /. idx -> # & /@ coords])]];
+        (* Total up on the expansion over all coords *)
+        Total[term /. idx -> # & /@ coords])]];
        
-      (* Apply the scanner to all terms with the same bound index *)
-      With[{ec = Expand[canonicalExpr]},
-        result = If[Head[ec] === Plus,
-          Map[oneShotScanner, ec],
-          oneShotScanner[ec]]];
+    (* Apply the scanner to all terms with the same bound index *)
+    With[{ec = Expand[canonicalExpr]},
+      result = If[Head[ec] === Plus,
+        Map[oneShotScanner, ec],
+        oneShotScanner[ec]]];
           
-      (* Restore Partials from PD for downstream UD evaluation. *)
-      result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
+    (* Restore Partials from PD for downstream UD evaluation. *)
+    result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
       
       
 (* ContractAll: Contract on all bound indices (repeated up-down in a term) *)
@@ -777,8 +783,7 @@ ContractAll[expr_, coords_List] := Module[{
   result /. PD[f_, \[ScriptCapitalD][i_]] :> Partials[f, x[\[ScriptCapitalU][i]]]];
   
   
-(* Compile UD partials into Wolfram D expressions. *)
-  
+(* Compile UD partials into Wolfram D expressions. *)  
 EvaluateUDPartials[expr_] := expr /. 
   With[{killBogusChainRule = {(\[ScriptCapitalU]|\[ScriptCapitalD])'[idx_] -> 0}},
     { 
@@ -803,9 +808,6 @@ EvaluateUDPartials[expr_] := expr /.
 (*        The Length of coords must match the dimension of the array (unchecked).    *)
 (* Return: a function that looks up components in the array by coord symbols.        *)
 
-MakeIndexer[table_List, coords_List] :=
-  Module[{dispatcher = Dispatch[MapIndexed[(#1 -> #2[[1]])&, coords]]},
-    (* double-delayed; single-delay evaluates `Lookup` too early *)
-    table[[Sequence @@ (Lookup[dispatcher, {##}]&)[Sequence @@ {##}]]]&];
-  
-  
+MakeIndexer[table_List,coords_List] :=
+  With[{rules=MapIndexed[(#1->#2[[1]])&,coords]},
+    table[[Sequence@@({##}//.rules)]]&];  
