@@ -14,7 +14,7 @@ Print["================================================================\n"];
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Test Harness*)
 
 
@@ -78,7 +78,7 @@ AssertProtected[e_, label_String:""] :=
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Type Checking*)
 
 
@@ -118,7 +118,7 @@ Quiet[Module[{badSum = x[\[ScriptCapitalU][\[Mu]]] + p[\[ScriptCapitalD][\[Mu]]]
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Canonicalization*)
 
 
@@ -160,7 +160,7 @@ Module[{
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Physics with the Metric*)
 
 
@@ -303,7 +303,7 @@ Module[{gammaProd, expandedProd, dummies},
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Metric Equivalence*)
 
 
@@ -341,7 +341,7 @@ Module[{termUp, termDown},
   
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Boxes for Second Derivative*)
 
 
@@ -368,7 +368,7 @@ Module[{boxStructure, hasFraction, hasSquaredSym},
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Calculus Engine*)
 
 
@@ -437,7 +437,7 @@ Module[{nestedCD, allIndices, generatedDummies},
   
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Quotient Theorem*)
 
 
@@ -481,7 +481,7 @@ Module[{expr1, expected1, expr2, expected2, formalS},
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Tensor Form*)
 
 
@@ -509,7 +509,7 @@ Module[{weirdTerm, formatted, formalPattern, isClean},
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Comma Notation Display Logic*)
 
 
@@ -580,7 +580,7 @@ Module[{checkDisplay, box, hasParens, isSubscript},
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Einstein Summation (Contract & ContractAll)*)
 
 
@@ -666,7 +666,7 @@ Module[{coords, exprSingle, exprDouble, exprMixed, exprPartial,
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Electrodynamics and Gauge Invariance*)
 
 
@@ -741,7 +741,7 @@ Module[{geometricW, mixedGaugeRules, gW, \[CapitalLambda], W, Z, transformedW, e
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Riemann Curvature Derivation*)
 
 
@@ -771,7 +771,7 @@ Module[{comm, term1, term2, A, calculatedRiemann, expectedRiemann, formalS, \[La
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Geometry Operators: Gradient, Laplacian*)
 
 
@@ -844,7 +844,7 @@ Block[{coords, flatMetric, flatRules, flatInvRules, sqrtDetFlat,
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Formal Symbols*)
 
 
@@ -991,6 +991,66 @@ AssertTrue[FormalSymbolExtendedQ["\[FormalI]999"],
 
 
 (* ::Chapter:: *)
+(*Indexed Objects and Contractions*)
+
+
+(* ========================================================================= *)
+Print["\n--- SECTION 15: GENERALIZED CONTRACTION & ARITY DETECTION ---"];
+(* ========================================================================= *)
+
+Module[{mockGamma, testCoords, resFunction, resSlots, resSymbol, resMismatch},
+
+  (* 1. Arity Detection Tests *)
+  AssertEqual[determineArity[x |-> x^2 + x], 1, 
+    "Arity: Explicit Function (x |-> ...)"];
+    
+  AssertEqual[determineArity[{x, y} |-> x*y], 2, 
+    "Arity: Explicit List Function ({x,y} |-> ...)"];
+    
+  AssertEqual[determineArity[#1 + #2^2 &], 2, 
+    "Arity: Slot Function (#1, #2)"];
+    
+  AssertEqual[determineArity[#^2 &], 1, 
+    "Arity: Single Slot Function (#)"];
+
+  (* Mock Symbol with DownValues *)
+  ClearAll[mockGamma];
+  mockGamma[a_, b_, c_] := a + b + c;
+  AssertEqual[determineArity[mockGamma], 3, 
+    "Arity: DownValues Inspection (mockGamma[a,b,c])"];
+
+
+  (* 2. ContractIndexedAll Tests *)
+  testCoords = {1, 2};
+  
+  (* Case A: Explicit Function *)
+  resFunction = ContractIndexedAll[{j, k} |-> (j + k), testCoords];
+  (* Sum[j+k, {j,1,2}, {k,1,2}] = (1+1)+(1+2)+(2+1)+(2+2) = 2+3+3+4 = 12 *)
+  AssertEqual[resFunction, 12, "ContractIndexedAll: Function Syntax"];
+
+  (* Case B: Slot Syntax *)
+  resSlots = ContractIndexedAll[#1 * #2 &, testCoords];
+  (* Sum[j*k] = 1*1 + 1*2 + 2*1 + 2*2 = 1+2+2+4 = 9 *)
+  AssertEqual[resSlots, 9, "ContractIndexedAll: Slot Syntax"];
+
+  (* Case C: Symbol Syntax *)
+  (* Sum[a+b+c, {a,1,2}, {b,1,2}, {c,1,2}] *)
+  (* Sum of elements is 12. 3 indices -> 2*12 + 2*12 + 2*12? No, let's trust Mathematica math. *)
+  (* Sum[a,{a,1,2}]*4 + ... = 3*4 + 3*4 + 3*4 = 36 *)
+  resSymbol = ContractIndexedAll[mockGamma, testCoords];
+  AssertEqual[resSymbol, 36, "ContractIndexedAll: Symbol/DownValue Syntax"];
+
+  (* Case D: Manual Override *)
+  (* Force a 1-argument function to be treated as 2-argument (iterating twice) *)
+  (* The function ignores the second arg, but Sum iterates it. *)
+  resMismatch = ContractIndexedAll[#1 &, testCoords, 2];
+  (* Sum[j, {j,1,2}, {k,1,2}] = (1+2)*2 = 6 *)
+  AssertEqual[resMismatch, 6, "ContractIndexedAll: Manual Arity Override"];
+
+];
+
+
+(* ::Chapter:: *)
 (*Summary*)
 
 
@@ -1006,8 +1066,6 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
-
-
 
 
 

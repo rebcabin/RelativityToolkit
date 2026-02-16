@@ -1,19 +1,19 @@
 (* ::Package:: *)
 
 (* ::Title:: *)
-(*Relativity Toolkit v1.11.0*)
+(*Relativity Toolkit v1.12.0*)
 
 
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode)                                   *)
-(* Version: 1.11.0 (Disciplined Formal Symbols)                                             *)
+(* Version: 1.12.0 (Indexed Arrays + Contraction)                            *)
 (* ------------------------------------------------------------------------- *)
 (* TODO: complete the removal of hard-coded \[CapitalGamma]. Currently, only torsionRules, *)
 (* CD, and SetConnection know about RelativityConnection. There are several  *)
 (* places in MakeBoxes and other display functions that hard-code \[CapitalGamma].         *)
 (* ========================================================================= *)
 
-Echo[RelativityToolkitVersion = "1.11.0", "Relativity Toolkit version :"];
+Echo[RelativityToolkitVersion = "1.12.0", "Relativity Toolkit version :"];
 
 (* CONFIGURATION: The Connection Symbol *)
 (* Default is \[CapitalGamma]; change it to A, C, etc., for Electrodynamics, Yang-Mills, etc. *)
@@ -58,6 +58,9 @@ Module[{symbols = Symbol /@ {
 	"ChristoffelsFromMetricIndexer",
 	"Contract",
 	"ContractAll",
+	"ContractIndexed1",
+	"ContractIndexed2",
+	"ContractIndexedAll",
 	"contractValence",
 	"CreateExtendedFormal",
 	"differentiationRules",
@@ -817,4 +820,55 @@ EvaluateUDPartials[expr_] := expr /.
 
 MakeIndexer[table_List,coords_List] :=
   With[{rules=MapIndexed[(#1->#2[[1]])&,coords]},
-    table[[Sequence@@({##}//.rules)]]&];  
+    table[[Sequence@@({##}//.rules)]]&];
+    
+    
+ContractIndexed1[f1_,coords_]:=Sum[f1[k],{k,coords}];
+ContractIndexed2[f2_,coords_]:=Sum[f2[j,k],{j,coords},{k,coords}];
+    
+    
+(*1. Helper to deduce function arity*)
+ClearAll[determineArity];
+determineArity[f_]:=
+	Module[{lhs},
+	Which[
+		(*Explicit Function[{x,y},body]*)
+		MatchQ[f,HoldPattern[Function[{__},_]]],Length[f[[1]]],
+		(*Explicit Function[x,body] (Single arg)*)
+		MatchQ[f,HoldPattern[Function[_Symbol,_]]],1,
+		(*Pure Function with Slots (#1,#2)*)
+		MatchQ[f,HoldPattern[Function[_]]],
+			With[{slots=Cases[f,Slot[i_Integer]:>i,Infinity]},
+				If[slots==={},(*If no numbered slots, fail for ## (SlotSequence), which is ambiguous*)
+					If[FreeQ[f,SlotSequence],0,$Failed],
+					Max[slots]]],
+		(*Symbol with DownValues (e.g.foo[a_,b_]:=...)*)
+		MatchQ[f,_Symbol]&&Length[DownValues[f]]>0,
+		Extract[
+			First[DownValues[f]],
+			{1,1},
+			Function[term,Length[Unevaluated[term]],HoldAll]],
+		(*Default:Cannot determine*)
+		True,$Failed]];
+		
+		
+(*2. The Generalized Contractor*)
+ClearAll[ContractIndexedAll];
+ContractIndexedAll[func_,coords_List,explicitArity:_Integer|Automatic:Automatic]:=
+	Module[{arity,dummies,iterators},
+	(*Determine how many indices to generate*)
+	arity=If[IntegerQ[explicitArity],
+		explicitArity,
+		determineArity[func]];(*'Automatic' case*)
+	(*Safety Check*)
+	If[!IntegerQ[arity]||arity<1,
+		(Message[ContractIndexedAll::noarity,func];
+		Return[$Failed])];
+	(*Generate Dummies and Sum*)
+	dummies=Table[Unique["idx"],arity];
+	iterators={#,coords}&/@dummies;
+	(*Apply func to dummies (f[i,j,k]) and Sum*)
+	Sum[func@@dummies,Evaluate[Sequence@@iterators]]];
+
+(*Error Message definition*)
+ContractIndexedAll::noarity="Could not automatically determine the arity of function `1`. Please specify the number of indices as the third argument.";
