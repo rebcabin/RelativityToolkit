@@ -31,15 +31,19 @@ Echo[RelativityConnection = \[CapitalGamma], "Relativity Connection Symbol :"];
 (* ========================================================================= *)
 
 Unprotect[MakeBoxes];
-Quiet[DownValues[MakeBoxes] = 
-   Select[DownValues[MakeBoxes], FreeQ[#, Partials] &]];
-Quiet[DownValues[MakeBoxes] = 
-   Select[DownValues[MakeBoxes], FreeQ[#, CD] &]];
+
+(* Unset explicit Toolkit symbols *)
+Quiet[MakeBoxes[Partials[__], StandardForm] =.];
+Quiet[MakeBoxes[CD[__], StandardForm] =.];
 Quiet[MakeBoxes[\[Delta][__], StandardForm] =.];
 Quiet[MakeBoxes[\[CapitalGamma][__], StandardForm] =.];
-Quiet[DownValues[MakeBoxes] = 
-   Select[DownValues[MakeBoxes], 
-    FreeQ[#, \[ScriptCapitalU]] && FreeQ[#, \[ScriptCapitalD]] &]];
+
+(* Clear the generic U/D rules by checking ONLY the Pattern (LHS), not the RHS *)
+(* This removes rules that MATCH on U/D, but saves rules that just USE U/D internally *)
+DownValues[MakeBoxes] = Select[DownValues[MakeBoxes], 
+   FreeQ[First[#], \[ScriptCapitalU]] && FreeQ[First[#], \[ScriptCapitalD]] &
+];
+
 Protect[MakeBoxes];
 
 Module[{symbols = Symbol /@ {
@@ -85,6 +89,7 @@ Module[{symbols = Symbol /@ {
 	"torsionRules",
 	"upQ",
 	"valence",
+	(* TODO: Protect all these symbols ! *)
 	"x", (* all coordinate functions are named x *)
 	"\[ScriptCapitalD]", (* essential syntax *)
 	"\[ScriptCapitalU]", (* essential syntax *)
@@ -292,7 +297,7 @@ MakeBoxes[Partials[num_, den_], StandardForm] :=
      RowBox[{"\[PartialD]", MakeBoxes[num, StandardForm]}], 
      RowBox[{"\[PartialD]", MakeBoxes[den, StandardForm]}]] ] ];
 
-(* TODO: Potential replacement by RelativityConnection *)
+(* TODO: replace with RelativityConnection *)
 MakeBoxes[\[CapitalGamma][\[ScriptCapitalU][u_], \[ScriptCapitalD][d1_], \[ScriptCapitalD][d2_]], StandardForm] := 
   SubsuperscriptBox["\[CapitalGamma]", 
    RowBox[{MakeBoxes[d1, StandardForm], MakeBoxes[d2, StandardForm]}],
@@ -305,20 +310,22 @@ MakeBoxes[\[Delta][\[ScriptCapitalU][up_], \[ScriptCapitalD][down_]], StandardFo
 MakeBoxes[\[Delta][\[ScriptCapitalD][down_], \[ScriptCapitalU][up_]], StandardForm] := 
   SubsuperscriptBox["\[Delta]", MakeBoxes[down, StandardForm], 
    MakeBoxes[up, StandardForm]];
-
+   
 MakeBoxes[h_[indices__], StandardForm] /; 
-    (h =!= \[Delta]) && 
-    (h =!= Partials) && 
-    (h =!= CD) && 
-    (h =!= \[CapitalGamma]) && 
-    (* TODO: Potential replacement by RelativityConnection *)
-    MatchQ[{indices}, {(_[\[ScriptCapitalU]] | _[\[ScriptCapitalD]] | \[ScriptCapitalU][_] | \[ScriptCapitalD][_]) ..}] := 
+   (h =!= \[Delta]) && 
+   (h =!= Partials) && 
+   (h =!= CD) && 
+   (h =!= \[CapitalGamma]) && 
+   (* Hold for safe inspection *)
+   MatchQ[Hold[indices], Hold[(_[\[ScriptCapitalU]] | _[\[ScriptCapitalD]] | \[ScriptCapitalU][_] | \[ScriptCapitalD][_]) ..]] := 
  Module[{formattedScripts}, 
+  (* Handle the replacement safely, though usually 
+     if we matched the pattern, the args are just symbols/indices anyway. *)
   formattedScripts = {indices} /. {\[ScriptCapitalU][i_] :> 
       SuperscriptBox["", 
        MakeBoxes[i, StandardForm]], \[ScriptCapitalD][i_] :> 
       SubscriptBox["", MakeBoxes[i, StandardForm]]};
-  RowBox[Prepend[formattedScripts, MakeBoxes[h, StandardForm]]]]
+  RowBox[Prepend[formattedScripts, MakeBoxes[h, StandardForm]]]];
 
 Protect[MakeBoxes];
 
