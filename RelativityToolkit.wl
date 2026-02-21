@@ -1,19 +1,19 @@
 (* ::Package:: *)
 
 (* ::Title:: *)
-(*Relativity Toolkit v1.12.0*)
+(*Relativity Toolkit v1.12.1*)
 
 
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode)                                   *)
-(* Version: 1.12.0 (Indexed Arrays + Contraction)                            *)
+(* Version: 1.12.1 (Indexed Arrays + Contraction, internal documentation)    *)
 (* ------------------------------------------------------------------------- *)
 (* TODO: complete the removal of hard-coded \[CapitalGamma]. Currently, only torsionRules, *)
 (* CD, and SetConnection know about RelativityConnection. There are several  *)
 (* places in MakeBoxes and other display functions that hard-code \[CapitalGamma].         *)
 (* ========================================================================= *)
 
-Echo[RelativityToolkitVersion = "1.12.0", "Relativity Toolkit version :"];
+Echo[RelativityToolkitVersion = "1.12.1", "Relativity Toolkit version :"];
 
 (* CONFIGURATION: The Connection Symbol *)
 (* Default is \[CapitalGamma]; change it to A, C, etc., for Electrodynamics, Yang-Mills, etc. *)
@@ -111,6 +111,15 @@ ClearAll[
 (*Formal Symbols*)
 
 
+(* ::Text:: *)
+(*formalCharCodeQ*)
+(*showCodes*)
+(*checkFormalIdentity*)
+(*FormalSymbolQ*)
+(*FormalSymbolExtendedQ*)
+(*CreateExtendedFormal*)
+
+
 (* FORMAL SYMBOLS *)
   
 (* from analysis of Wolfram documentation *)
@@ -177,8 +186,16 @@ Module[{valid},
 	     CreateExtendedFormal[SymbolName[sym]]; ];
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Valence and Type Checker*)
+
+
+(* ::Text:: *)
+(*upQ*)
+(*downQ*)
+(*contractValence*)
+(*noValence*)
+(*valence*)
 
 
 (* ========================================================================= *)
@@ -247,8 +264,16 @@ valence[___] := noValence;
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Display Rules*)
+
+
+(* ::Text:: *)
+(*MakeBoxes[CD, ...]*)
+(*MakeBoxes[Partials, ...]*)
+(*MakeBoxes[\[CapitalGamma], ...]*)
+(*MakeBoxes[\[Delta], ...]*)
+(*MakeBoxes[h_[idcs___], ...]*)
 
 
 (* ========================================================================= *)
@@ -338,6 +363,14 @@ Protect[MakeBoxes];
 (*Tensor-Algebra Rules*)
 
 
+(* ::Text:: *)
+(*CanonicalizeTerm*)
+(*CanonicalizeIndices*)
+(*robustTransformRules*)
+(*TensorForm*)
+(*ExtractCoefficient*)
+
+
 (* ========================================================================= *)
 (* 4. ALGEBRAIC SIMPLIFICATION                                               *)
 (* ========================================================================= *)
@@ -362,10 +395,10 @@ CanonicalizeIndices[expr_] := CanonicalizeTerm[expr];
 
 robustTransformRules = {
   A_[\[ScriptCapitalU][primed_]] :> 
-    Module[{fresh = CreateExtendedFormal@Unique["\[FormalMu]"]}, 
+    With[{fresh = CreateExtendedFormal@Unique["\[FormalMu]"]}, 
      Partials[x[\[ScriptCapitalU][primed]], x[\[ScriptCapitalU][fresh]]] * A[\[ScriptCapitalU][fresh]]], 
   p_[\[ScriptCapitalD][primed_]] :> 
-    Module[{fresh = CreateExtendedFormal@Unique["\[FormalNu]"]}, 
+    With[{fresh = CreateExtendedFormal@Unique["\[FormalNu]"]}, 
      Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][primed]]] * p[\[ScriptCapitalD][fresh]]]};
 
 (* DYNAMIC TENSOR FORM *)
@@ -428,6 +461,13 @@ ExtractCoefficient[expr_, field_Symbol] :=
 (*Application-Specific Rules*)
 
 
+(* ::Text:: *)
+(*metricRules*)
+(*torsionRules*)
+(*ruleLeviCivita*)
+(*metricDifferentiationRules*)
+
+
 (* ========================================================================= *)
 (* 5. APPLICATION-SPECIFIC RULES                                             *)
 (*    User must explicitly apply these when wanted                           *)
@@ -485,7 +525,7 @@ torsionRules = {
 };
 
 ruleLeviCivita=\[CapitalGamma][\[ScriptCapitalU][\[Lambda]_],\[ScriptCapitalD][a_],\[ScriptCapitalD][b_]]:>
-  Module[{\[Sigma] = CreateExtendedFormal@Unique["\[FormalSigma]"]},
+  With[{\[Sigma] = CreateExtendedFormal@Unique["\[FormalSigma]"]},
     1/2 g[\[ScriptCapitalU][\[Lambda]],\[ScriptCapitalU][\[Sigma]]]*
      (Partials[g[\[ScriptCapitalD][\[Sigma]],\[ScriptCapitalD][b]],x[\[ScriptCapitalU][a]]]+
       Partials[g[\[ScriptCapitalD][\[Sigma]],\[ScriptCapitalD][a]],x[\[ScriptCapitalU][b]]]-
@@ -515,6 +555,12 @@ metricDifferentiationRules={
 (*Differentiation Engine*)
 
 
+(* ::Text:: *)
+(*differentiationRules*)
+(*ExpandDerivatives*)
+(*Partials*)
+
+
 (* ========================================================================= *)
 (* 6. DIFFERENTIATION ENGINE                                                 *)
 (* ========================================================================= *)
@@ -526,7 +572,7 @@ differentiationRules = {
   Partials[a_^n_, var_] :> n a^(n-1) * Partials[a, var],
   Partials[n_, _] /; (NumericQ[n]) :> 0,
   Partials[expr_, x[\[ScriptCapitalU][idx_]]] /; StringContainsQ[ToString[idx], "'"] :> 
-    Module[{fresh = CreateExtendedFormal@Unique["\[FormalSigma]"]}, 
+    With[{fresh = CreateExtendedFormal@Unique["\[FormalSigma]"]}, 
      Partials[x[\[ScriptCapitalU][fresh]], x[\[ScriptCapitalU][idx]]]*
       Partials[expr, x[\[ScriptCapitalU][fresh]]]]};
 
@@ -542,6 +588,14 @@ Partials[Partials[f_, x[\[ScriptCapitalU][a_]]], x[\[ScriptCapitalU][b_]]] /;
 
 (* ::Chapter:: *)
 (*Covariant Derivative*)
+
+
+(* ::Text:: *)
+(*SetConnection*)
+(*CD*)
+(*GradRaised*)
+(*GradSquared*)
+(*ScalarLaplacian*)
 
 
 (* ========================================================================= *)
@@ -564,12 +618,12 @@ CD[prod_Times /; !FreeQ[prod, RelativityConnection], var_] :=
    
    (* Apply Corrections using the CURRENT Connection Symbol *)
    upCorrections = Sum[
-     Module[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
+     With[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
       RelativityConnection[\[ScriptCapitalU][idx], \[ScriptCapitalD][var[[1,1]]], \[ScriptCapitalD][lam]] * (prod /. idx -> lam)
      ], {idx, up}];
      
    downCorrections = Sum[
-     Module[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
+     With[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
       RelativityConnection[\[ScriptCapitalU][lam], \[ScriptCapitalD][idx], \[ScriptCapitalD][var[[1,1]]]] * (prod /. idx -> lam)
      ], {idx, down}];
      
@@ -590,12 +644,12 @@ CD[expr_, x[\[ScriptCapitalU][nu_]]] :=
   
   (* DYNAMIC: Generate corrections using RelativityConnection *)
   upCorrections = Sum[
-    Module[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
+    With[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
      RelativityConnection[\[ScriptCapitalU][idx], \[ScriptCapitalD][nu], \[ScriptCapitalD][lam]] * (expr /. idx -> lam)
     ], {idx, up}];
     
   downCorrections = Sum[
-    Module[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
+    With[{lam = CreateExtendedFormal@Unique["\[FormalLambda]"]},
      RelativityConnection[\[ScriptCapitalU][lam], \[ScriptCapitalD][idx], \[ScriptCapitalD][nu]] * (expr /. idx -> lam)
     ], {idx, down}];
     
@@ -630,6 +684,14 @@ ScalarLaplacian[func_, gInvUU_Symbol, gInvUURules_, sqrtDetg_, coords_]:=
 (*Gamma, Riemann, Ricci*)
 
 
+(* ::Text:: *)
+(*ChristoffelsFromMetric*)
+(*ChristoffelsFromMetrixIndexer*)
+(*CalculateGammaComponent*)
+(*CalculateRiemannComponent*)
+(*CalculateRicciComponent*)
+
+
 (* ========================================================================= *)
 (* 8. RIEMANN CURVATURE TENSOR FROM METRIC                                   *)
 (* ========================================================================= *)
@@ -642,24 +704,24 @@ ScalarLaplacian[func_, gInvUU_Symbol, gInvUURules_, sqrtDetg_, coords_]:=
 (* The symbol for covariant gDD must not equal that for contravariant gUU. *)
 
 ChristoffelsFromMetric[gDD_, gUU_, \[Sigma]_, \[Mu]_, \[Nu]_]/;(gDD =!= gUU) := 
-  Module[{\[Lambda] = CreateExtendedFormal@Unique["\[FormalLambda]"]},
+  With[{\[Lambda] = CreateExtendedFormal@Unique["\[FormalLambda]"]},
     (1/2) gUU[\[ScriptCapitalU][\[Sigma]],\[ScriptCapitalU][\[Lambda]]] 
       (Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Mu]]], x[\[ScriptCapitalU][\[Nu]]]] +
        Partials[gDD[\[ScriptCapitalD][\[Lambda]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Mu]]]] -
        Partials[gDD[\[ScriptCapitalD][\[Mu]], \[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Lambda]]]])];
       
 (* A version that works from metrics made via MakeIndexer *)        
-ChristoffelsFromMetricIndexer[ g_, gi_, \[Sigma]_, \[Mu]_, \[Nu]_, coords_]:=
+ChristoffelsFromMetricIndexer[g_, gi_, \[Sigma]_, \[Mu]_, \[Nu]_, coords_]:=
 Sum[(1/2) gi[\[Sigma],\[Lambda]] (D[g[\[Lambda], \[Mu]], \[Nu]] + D[g[\[Lambda], \[Nu]], \[Mu]] - D[g[\[Mu], \[Nu]], \[Lambda]]),
   {\[Lambda], coords}];
 
-CalculateGammaComponent[s_,m_,n_,
-   gDD_Symbol,gDDRules_,
-   gInvUU_Symbol,gInvUURules_,
+CalculateGammaComponent[
+   \[Sigma]_, \[Mu]_, \[Nu]_,
+   gDD_Symbol, gDDRules_,
+   gInvUU_Symbol, gInvUURules_,
    coords_] :=
   (ContractAll[
-      ChristoffelsFromMetric[gDD,gInvUU,s,m,n],
-      coords]/.
+      ChristoffelsFromMetric[gDD, gInvUU, \[Sigma], \[Mu], \[Nu]], coords]/.
      gDDRules/.
     gInvUURules)//
    EvaluateUDPartials;
@@ -690,8 +752,20 @@ CalculateRicciComponent[\[Lambda]_, \[Rho]_, RGet_, coords_]:=
                                           
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Compiler*)
+
+
+(* ::Text:: *)
+(*MatrixToUDRules*)
+(*Contract*)
+(*ContractAll*)
+(*EvaluateUDPartials*)
+(*MakeIndexer*)
+(*ContractIndexed1*)
+(*ContractIndexed2*)
+(*determineArity*)
+(*ContractIndexedAll*)
 
 
 (* ========================================================================= *)
