@@ -990,7 +990,7 @@ AssertTrue[FormalSymbolExtendedQ["\[FormalI]999"],
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Indexed Objects and Contractions*)
 
 
@@ -1051,6 +1051,103 @@ Module[{mockGamma, testCoords, resFunction, resSlots, resSymbol, resMismatch},
 
 
 (* ::Chapter:: *)
+(*Gauge Theory Equations of Motion*)
+
+
+(* ========================================================================= *)
+Print["\n--- SECTION 16: GAUGE THEORY EOM (Indexer & UD) ---"];
+(* ========================================================================= *)
+
+Module[{
+    coords, t, r, \[Theta], vIdx, V, k,
+    gMat, gInvMat,
+    gIndexer, gInvIndexer, \[CapitalGamma]Indexer,
+    gDD, gUU, gDDRules, gUURules,
+    expectedPot, expectedCurv, expectedAbs,
+    resPotIdx, resCurvIdx, resAbsIdx,
+    resPotUD, resCurvUD, resAbsUD
+  },
+
+  (* 1. Setup 2D Polar Space as the Testbed *)
+  (* This tests the identical mathematical structures as the baton's SO(3) metric *)
+  coords = {r, \[Theta]};
+  gMat = DiagonalMatrix[{1, r^2}];
+  gInvMat = DiagonalMatrix[{1, 1/r^2}];
+
+  (* Indexer Setup *)
+  gIndexer = MakeIndexer[gMat, coords];
+  gInvIndexer = MakeIndexer[gInvMat, coords];
+  \[CapitalGamma]Indexer[\[Sigma]_, \[Mu]_, \[Nu]_] := ChristoffelsFromMetricIndexer[gIndexer, gInvIndexer, \[Sigma], \[Mu], \[Nu], coords];
+  
+  (* Note: Indexer requires pre-injected velocities to mimic the notebook logic *)
+  vIdx = MakeIndexer[{r'[t], \[Theta]'[t]}, coords];
+
+  (* UD Setup *)
+  gDDRules = MatrixToUDRules[gMat, gDD, \[ScriptCapitalD], coords];
+  gDDRules = Join[gDDRules, {gDD[__] -> 0}];
+  gUURules = MatrixToUDRules[gInvMat, gUU, \[ScriptCapitalU], coords];
+  gUURules = Join[gUURules, {gUU[__] -> 0}];
+
+  (* 2. Define Physics & Expected Results *)
+  (* Potential with explicit time dependence to stress-test the `injectTime` logic *)
+  V = (1/2) * k * r^2 * t; 
+
+  (* Expected Force from Potential: F^\[Mu] = -g^\[Mu]\[Nu] \!\(
+\*SubscriptBox[\(\[PartialD]\), \(\[Nu]\)]V\) *)
+  (* The \[Theta] component is perfectly 0, testing zero-handling *)
+  expectedPot = {-k * r[t] * t, 0};
+  
+  (* Expected Inertial Force: \[CapitalGamma]^\[Mu]_\[Nu]\[Lambda] v^\[Nu] v^\[Lambda] *)
+  (* Yields classical centrifugal (-r \[Theta]'^2) and Coriolis (2/r r' \[Theta]') forces *)
+  expectedCurv = {-r[t] * \[Theta]'[t]^2, (2/r[t]) * r'[t] * \[Theta]'[t]};
+  
+  (* Expected Absolute Derivative: Coordinate Accel + Inertial Force *)
+  expectedAbs = {r''[t] - r[t] * \[Theta]'[t]^2, \[Theta]''[t] + (2/r[t]) * r'[t] * \[Theta]'[t]};
+
+  (* 3. Test Indexer Sector *)
+  resPotIdx = PotentialScalarFieldFromMetricIndexer[V, gInvIndexer, t, coords] // Simplify;
+  AssertEqual[resPotIdx, expectedPot, "PotentialScalarFieldFromMetricIndexer (2D Polar)"];
+
+  resCurvIdx = CurvatureForcesFromConnectionIndexer[vIdx, \[CapitalGamma]Indexer, t, coords] // Simplify;
+  AssertEqual[resCurvIdx, expectedCurv, "CurvatureForcesFromConnectionIndexer (2D Polar)"];
+
+  resAbsIdx = AbsoluteDerivativeFromConnectionIndexer[vIdx, \[CapitalGamma]Indexer, t, coords] // Simplify;
+  AssertEqual[resAbsIdx, expectedAbs, "AbsoluteDerivativeFromConnectionIndexer (2D Polar)"];
+
+  (* 4. Test UD Sector *)
+  resPotUD = PotentialScalarFieldUD[V, gUU, gUURules, t, coords] // Simplify;
+  AssertEqual[resPotUD, expectedPot, "PotentialScalarFieldUD (2D Polar)"];
+
+  resCurvUD = CurvatureForcesUD[gDD, gDDRules, gUU, gUURules, t, coords] // Simplify;
+  AssertEqual[resCurvUD, expectedCurv, "CurvatureForcesUD (2D Polar)"];
+
+  resAbsUD = AbsoluteDerivativeUD[gDD, gDDRules, gUU, gUURules, t, coords] // Simplify;
+  AssertEqual[resAbsUD, expectedAbs, "AbsoluteDerivativeUD (2D Polar)"];
+  
+  (* 5. Corner Case: 1D Flat Space (Stress Test Arity and Degenerate Collapse) *)
+  Module[{coords1D, V1D, gMat1D, gInvMat1D, gIdx1D, gInvIdx1D, \[CapitalGamma]Idx1D, v1D, expectedAbs1D, x},
+    coords1D = {x};
+    V1D = 0;
+    gMat1D = {{1}};
+    gInvMat1D = {{1}};
+    
+    gIdx1D = MakeIndexer[gMat1D, coords1D];
+    gInvIdx1D = MakeIndexer[gInvMat1D, coords1D];
+    \[CapitalGamma]Idx1D[\[Sigma]_, \[Mu]_, \[Nu]_] := ChristoffelsFromMetricIndexer[gIdx1D, gInvIdx1D, \[Sigma], \[Mu], \[Nu], coords1D];
+    v1D = MakeIndexer[{x'[t]}, coords1D];
+    
+    expectedAbs1D = {x''[t]};
+    
+    AssertEqual[
+      AbsoluteDerivativeFromConnectionIndexer[v1D, \[CapitalGamma]Idx1D, t, coords1D] // Simplify, 
+      expectedAbs1D, 
+      "AbsoluteDerivativeFromConnectionIndexer (1D Corner Case)"
+    ];
+  ];
+];
+
+
+(* ::Chapter::Closed:: *)
 (*Summary*)
 
 
@@ -1066,7 +1163,5 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
-
-
 
 
