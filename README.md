@@ -3,7 +3,7 @@
 **A Symbolic Tensor Domain-Specific Language Embedded in Wolfram.**
 with emphasis on general relativity
 
-> Current Version: v1.9.0
+> Current Version: v1.13.0
 
 > License: MIT
 
