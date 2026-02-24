@@ -1,19 +1,19 @@
 (* ::Package:: *)
 
 (* ::Title:: *)
-(*Relativity Toolkit v1.12.1*)
+(*Relativity Toolkit v1.13.0*)
 
 
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode)                                   *)
-(* Version: 1.12.1 (Indexed Arrays + Contraction, internal documentation)    *)
+(* Version: 1.13.0 (Gauge Theory)                                            *)
 (* ------------------------------------------------------------------------- *)
 (* TODO: complete the removal of hard-coded \[CapitalGamma]. Currently, only torsionRules, *)
 (* CD, and SetConnection know about RelativityConnection. There are several  *)
 (* places in MakeBoxes and other display functions that hard-code \[CapitalGamma].         *)
 (* ========================================================================= *)
 
-Echo[RelativityToolkitVersion = "1.12.1", "Relativity Toolkit version :"];
+Echo[RelativityToolkitVersion = "1.13.0", "Relativity Toolkit version :"];
 
 (* CONFIGURATION: The Connection Symbol *)
 (* Default is \[CapitalGamma]; change it to A, C, etc., for Electrodynamics, Yang-Mills, etc. *)
@@ -22,7 +22,7 @@ Echo[RelativityConnection = \[CapitalGamma], "Relativity Connection Symbol :"];
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Clean Slate*)
 
 
@@ -107,7 +107,7 @@ ClearAll[
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Formal Symbols*)
 
 
@@ -359,7 +359,7 @@ Protect[MakeBoxes];
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Tensor-Algebra Rules*)
 
 
@@ -457,7 +457,7 @@ ExtractCoefficient[expr_, field_Symbol] :=
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Application-Specific Rules*)
 
 
@@ -551,7 +551,7 @@ metricDifferentiationRules={
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Differentiation Engine*)
 
 
@@ -586,7 +586,7 @@ Partials[Partials[f_, x[\[ScriptCapitalU][a_]]], x[\[ScriptCapitalU][b_]]] /;
 
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Covariant Derivative*)
 
 
@@ -680,7 +680,7 @@ ScalarLaplacian[func_, gInvUU_Symbol, gInvUURules_, sqrtDetg_, coords_]:=
       
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Gamma, Riemann, Ricci*)
 
 
@@ -946,3 +946,78 @@ ContractIndexedAll[func_,coords_List,explicitArity:_Integer|Automatic:Automatic]
 
 (*Error Message definition*)
 ContractIndexedAll::noarity="Could not automatically determine the arity of function `1`. Please specify the number of indices as the third argument.";
+
+
+(* ::Chapter:: *)
+(*Gauge Theory*)
+
+
+(* ::Text:: *)
+(*CurvatureForcesFromConnectionIndexer*)
+(* AbsoluteDerivativeFromConnectionIndexer*)
+(* PotentialScalarFieldFromMetricIndexer*)
+(* CurvatureForcesUD*)
+(* AbsoluteDerivativeUD*)
+(* PotentialScalarFieldUD*)
+
+
+CurvatureForcesFromConnectionIndexer[v_,\[CapitalGamma]_,time_,coords_]:=
+	With[{injectTime=Flatten[(c|->{c->c[time],c'->c'[time]})/@coords]},
+		Table[
+			ContractIndexedAll[
+				{\[Nu],\[Lambda]}|->(\[CapitalGamma][\[Mu],\[Nu],\[Lambda]]/.injectTime)v[\[Nu]]v[\[Lambda]],
+				coords],
+		{\[Mu],coords}]];
+
+
+AbsoluteDerivativeFromConnectionIndexer[v_,\[CapitalGamma]_,time_,coords_]:=
+	With[{
+		inertialTerms=CurvatureForcesFromConnectionIndexer[v,\[CapitalGamma],time,coords],
+		coordinateAcceleration=(c|->c''[time])/@coords},
+	inertialTerms+coordinateAcceleration];
+
+
+PotentialScalarFieldFromMetricIndexer[V_,invMetric_,time_,coords_]:=
+	With[{injectTime=Flatten[(c|->{c->c[time],c'->c'[time]})/@coords]},
+		Table[
+			-ContractIndexedAll[
+				{\[Nu]}|->invMetric[\[Mu],\[Nu]]*D[V,\[Nu]],
+				coords],
+		{\[Mu],coords}]/.injectTime];
+
+
+CurvatureForcesUD[
+		gDD_Symbol, gDDRules_,
+		gUU_Symbol, gUURules_,
+		time_Symbol,
+		coords_]:=
+	With[{injectTime=Flatten[(c|->{c->c[time],c'->c'[time]})/@coords]},
+	Table[
+		ContractIndexedAll[
+			{\[Nu],\[Lambda]}|->(CalculateGammaComponent[
+				\[Mu],\[Nu],\[Lambda],
+				gDD, gDDRules,
+				gUU, gUURules,
+				coords]/.injectTime)*D[\[Nu][time], time] * D[\[Lambda][time], time],
+			coords],
+	{\[Mu],coords}]];
+
+
+AbsoluteDerivativeUD[  
+		gDD_Symbol, gDDRules_,(* Metric symbol and rules *)
+		gUU_Symbol, gUURules_,    (* Inverse Metric symbol and rules *)
+		time_Symbol,           (* The time variable, e.g. t *)
+		coords_      (* The list of coordinate symbols *)
+	] := 
+	With[{
+		inertialTerms=CurvatureForcesUD[gDD,gDDRules,gUU,gUURules,time,coords],
+		coordinateAcceleration=(c|->c''[time])/@coords},
+	inertialTerms+coordinateAcceleration];
+
+
+ClearAll[PotentialScalarFieldUD];
+PotentialScalarFieldUD[V_,gUU_Symbol,gUURules_,time_Symbol,coords_]:=
+	With[{injectTime=Flatten[(c|->{c->c[time],c'->c'[time]})/@coords],
+		GradV=GradRaised[V,gUU,gUURules,coords]},
+		-GradV/.injectTime
+];
