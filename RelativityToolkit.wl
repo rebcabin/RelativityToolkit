@@ -1,19 +1,19 @@
 (* ::Package:: *)
 
 (* ::Title:: *)
-(*Relativity Toolkit v1.13.0*)
+(*Relativity Toolkit v1.13.1*)
 
 
 (* ========================================================================= *)
 (* RELATIVITY TOOLKIT ENGINE (Script Mode)                                   *)
-(* Version: 1.13.0 (Gauge Theory)                                            *)
+(* Version: 1.13.1 (Bug fix: \[FormalJ]\[FormalK]1234 identified as Extended format)           *)
 (* ------------------------------------------------------------------------- *)
 (* TODO: complete the removal of hard-coded \[CapitalGamma]. Currently, only torsionRules, *)
 (* CD, and SetConnection know about RelativityConnection. There are several  *)
 (* places in MakeBoxes and other display functions that hard-code \[CapitalGamma].         *)
 (* ========================================================================= *)
 
-Echo[RelativityToolkitVersion = "1.13.0", "Relativity Toolkit version :"];
+Echo[RelativityToolkitVersion = "1.13.1", "Relativity Toolkit version :"];
 
 (* CONFIGURATION: The Connection Symbol *)
 (* Default is \[CapitalGamma]; change it to A, C, etc., for Electrodynamics, Yang-Mills, etc. *)
@@ -107,7 +107,7 @@ ClearAll[
 
 
 
-(* ::Chapter::Closed:: *)
+(* ::Chapter:: *)
 (*Formal Symbols*)
 
 
@@ -156,7 +156,9 @@ checkFormalIdentity[s:(_Symbol|_String)]:=
 		codes=ToCharacterCode[name];
 		Which[
 			(Length[codes]==1&&formalCharCodeQ[First[codes]]), "Pure",
-			(Length[codes]>0&&formalCharCodeQ[First[codes]]),"Extended",
+			(Length[codes]>0 && 
+			 formalCharCodeQ[First[codes]] && 
+			 !AnyTrue[Rest[codes],formalCharCodeQ]),"Extended",
 			True,"Neither"
 	]];
 checkFormalIdentity[___]:=$Failed;

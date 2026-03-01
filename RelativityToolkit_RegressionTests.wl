@@ -844,7 +844,7 @@ Block[{coords, flatMetric, flatRules, flatInvRules, sqrtDetFlat,
 
 
 
-(* ::Chapter::Closed:: *)
+(* ::Chapter:: *)
 (*Formal Symbols*)
 
 
@@ -868,6 +868,9 @@ Print["--- (1) Identity & Built-in Protection ---"];
 AssertEqual[checkFormalIdentity[\[FormalI]],"Pure","input: formal symbol literal"];
 AssertEqual[checkFormalIdentity["\[FormalI]"],"Pure","input: formal symbol string"];
 AssertEqual[checkFormalIdentity[\[FormalJ]1234],"Extended","input: extended symbol literal"];
+AssertEqual[checkFormalIdentity[\[FormalJ]\[FormalK]123],"Neither","input: two leading formal chars"];
+AssertEqual[checkFormalIdentity[\[FormalJ]12\[FormalK]4],"Neither","input: embedded formal char"];
+AssertEqual[checkFormalIdentity[\[FormalJ]123\[FormalK]],"Neither","input: trailing formal char"];
 AssertEqual[checkFormalIdentity["\[FormalJ]2345"],"Extended","input: extended symbol string"];
 AssertEqual[checkFormalIdentity[foo],"Neither","non-formal symbol literal"];
 AssertEqual[checkFormalIdentity["foo"],"Neither","non-formal string"];
@@ -1050,7 +1053,7 @@ Module[{mockGamma, testCoords, resFunction, resSlots, resSymbol, resMismatch},
 ];
 
 
-(* ::Chapter:: *)
+(* ::Chapter::Closed:: *)
 (*Gauge Theory Equations of Motion*)
 
 
@@ -1163,5 +1166,3 @@ If[FailCount == 0,
   Print[Style["STATUS: GREEN (Ready for Publication)", Green]],
   Print[Style["STATUS: RED (Fix bugs before publishing)", Red]]];
 Print["----------------------------------------------------------------"];
-
-
