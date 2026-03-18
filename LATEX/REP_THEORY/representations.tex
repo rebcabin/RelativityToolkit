@@ -1,0 +1,177 @@
+
+%  ___                              _        _   _             
+% | _ \___ _ __ _ _ ___ ___ ___ _ _| |_ __ _| |_(_)___ _ _  ___
+% |   / -_) '_ \ '_/ -_)_-</ -_) ' \  _/ _` |  _| / _ \ ' \(_-<
+% |_|_\___| .__/_| \___/__/\___|_||_\__\__,_|\__|_\___/_||_/__/
+%         |_|                                                  
+
+\section{Representations}
+
+\noindent \textbf{Representations} are maps from a Lie group or a Lie Algebra 
+to a vector space of matrices. The representations of a Lie group preserve the 
+group properties and the representations of a Lie algebra preserve the Lie 
+bracket. Formally:
+
+\begin{definition}[Lie Group Representation]
+    A representation of a Lie group $G$ is a map $\Pi$ from any Lie group element
+    $g\in{G}$ to a linear transformation $\Pi(g)$ of some vector space $V$ such
+    that group properties are preserved.
+\begin{equation}
+    g \underbrace{\longrightarrow~}_{\Pi} \Pi(g) \tag{Sch:3.65}
+\end{equation}
+\end{definition}
+
+\begin{remark}
+\noindent Preserving group properties means:
+\begin{description}[noitemsep]
+    \item[Multiplication is preserved:] $\Pi(g_1 g_2) = \Pi(g_1) \Pi(g_2)$ 
+    \item[Group identity maps to matrix identity:] $\Pi(e) = I$
+    \item[Inverses are preserved:] $\Pi(g^{-1}) = \Pi(g)^{-1}$
+\end{description}
+\end{remark}
+
+\begin{definition}[Lie Algebra Representation]
+    A representation of a Lie algebra $\mathfrak{g}$ is a map $\pi$ from any 
+    Lie algebra element $X \in \mathfrak{g}$ to a linear transformation 
+    $\pi(X)$ of some vector space $V$ such that the Lie bracket is preserved:
+    \begin{equation}
+        \pi([X, Y]) = [\pi(X), \pi(Y)] % \tag{Sch:3.66}
+    \end{equation}
+    where the bracket on the right is the standard matrix commutator: $[\pi(X), \pi(Y)] \definedas \pi(X)\pi(Y) -
+  \pi(Y)\pi(X)$.
+\end{definition}
+
+\noindent When a Lie group and a Lie algebra are linked by the exponential map, every
+representation of a group ``lifts'' to a representation of its algebra, and vice
+versa. Figure~\ref{fig:bridge} shows the relationships amongst:
+
+\begin{description}% [noitemsep]
+    \item[The Lie algebra $\mathfrak{g}$:] e.g, \su{2}, spanned by by $T$ in the fundamental 
+        and by $J$ in the adjoint representation
+    \item[The Lie group $G$:] e.g., $G_{\text{sc}}=\SU{2}$, the unique simply connected
+        group, or $G=\SO{3}$, the multiply connected group of rotation
+        matrices in $\mathbb{R}^3$
+    \item[The Carrier Space $V$:] e.g., for $\SU{2}$, $V = \mathbb{C}^2$, the 
+        \firstmention{spinor space}; for $\SO{3}$, $V = \mathbb{R}^3$, the physical Euclidean space
+    \item[The General Linear Group $GL(V)$:] the group of all invertible linear transformations
+        of the carrier space
+    \item[The General Linear Algebra $\mathfrak{gl}(V)$:] the space of all linear maps from $V$
+        to $V$ that preserve the Lie bracket as the matrix commutator $[A,B]=AB-BA$
+\end{description}
+
+\begin{figure}[h]
+    \centering
+    \refstepcounter{figure}\label{fig:bridge}
+    \addtocounter{figure}{-1}
+    \begin{tikzpicture}[
+        node distance=3.5cm,
+        auto,
+        >=Stealth
+    ]
+    % Nodes
+    \node (g) {$\mathfrak{g}$};
+    \node (G) [above of=g] {$G$};
+    \node (glV) [right of=g] {$\mathfrak{gl}(V)$};
+    \node (GLV) [above of=glV] {$GL(V)$};
+
+    % Mappings (Morphisms)
+    \draw[->, bend left=20] (g) to node {$\exp$} (G);
+    \draw[->, dashed, bend left=20] (G) to node {$\log$} (g);
+
+    \draw[->, bend left=20] (glV) to node {$\operatorname{Exp}$} (GLV);
+    \draw[->, dashed, bend left=20] (GLV) to node {$\operatorname{Log}$} (glV);
+
+    % The Functorial Relationship (Morphisms between Morphisms)
+    \draw[->, blue, thick] (G) to node {$\Pi$} (GLV);
+    \draw[->, red, thick] (g) to node [swap] {$\pi \definedas d\Pi$} (glV);
+
+    % Legend / Labels
+    \node[anchor=west] at (5, 1.7) {
+        \begin{minipage}{5.5cm}
+        \footnotesize
+        \(\pi\) is the \firstmention{differential} of \(\Pi\). \\
+        \vspace{2mm}
+        \(\log \circ \exp = \operatorname{id}_{\mathfrak{g}}\) (Locally) \\
+        \(\exp \circ \log = \operatorname{id}_G\) (Locally) \\
+        \vspace{2mm}
+        \(\operatorname{Exp} \circ \pi = \Pi \circ \exp\) \\
+        \vspace{2mm}
+        \(\pi\) is the \textit{linearization} of \(\Pi\).
+        \end{minipage}
+    };
+\end{tikzpicture}
+\caption{The relationship amongst Lie group and Lie algebra representations.}
+\end{figure}
+
+\section{The Two Worlds of su(2)}
+
+\noindent In our motivating example of \su{2}, we found two distinct bases: a
+$2 \times 2$ complex basis $\{T_a\}$ and a $3 \times 3$ real basis $\{J_a\}$.
+To a physicist, these are not just different sizes of matrices; they represent
+two different ways a group can act on the physical world.
+
+\subsection{The Fundamental Pair (Direct Action)}
+The $2 \times 2$ representation is the \firstmention{fundamental
+representation}. It describes how the group \SU{2} acts on its ``native'' carrier
+space $V = \mathbb{C}^2$ (the space of spinors).
+\begin{itemize}[noitemsep]
+    \item \textbf{Group Level}: $\Pi_{\text{fund}}(Q)$ is the $2 \times 2$ matrix itself.
+    \item \textbf{Algebra Level}: $\pi_{\text{fund}}(X)$ is the $2 \times 2$ generator.
+    \item \textbf{Action}: The \firstmention{direct action} $Q \ket{\xi}$, where $Q \in \SU{2}$
+        and $\ket{\xi}$ is a spinor, produces a new spinor.
+\end{itemize}
+
+\subsection{The Adjoint Pair (Adjoint Action)}
+The $3 \times 3$ representation is the \firstmention{adjoint representation}.
+It describes how the group \SU{2} acts on its own Lie algebra
+$\mathfrak{su}(2)$.
+\begin{itemize}[noitemsep]
+    \item \textbf{Group Level}: $\Pi_{\text{adj}}(Q)$ is the $3 \times 3$ rotation matrix in \SO{3}.
+    \item \textbf{Algebra Level}: $\pi_{\text{adj}}(X)$ is the $3 \times 3$ matrix of structure 
+        constants $(J_a)_{bc} = \epsilon_{abc}$.
+    \item \textbf{Action}: The \firstmention{adjoint action} $Q X Q^\dagger$, where $Q \in \SU{2}$ 
+        and $X$ is a vector in the algebra, produces a new vector in the algebra.
+\end{itemize}
+
+\begin{remark}
+Note the ``squaring'' relationship: The adjoint representation is (roughly) the
+product of two fundamental representations ($Q \dots Q^\dagger$). This is why
+\SO{3} is the adjoint group of \SU{2}. It is also why spinors ($SU(2)$) are the
+"square root" of vectors ($SO(3)$), and why it takes a $4\pi$ rotation to
+return a spinor to its original state, while $2\pi$ suffices for a vector.
+Another view is that the relationship between the fundamental and adjoint
+representations explains the \firstmention{double covering} of \SO{3} by \SU{2}.
+\end{remark}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[node distance=2cm, auto, >=Stealth]
+        % Fundamental World
+        \node (spinor) {$\ket{\xi} \in \mathbb{C}^2$};
+        \node (spinor_rot) [right=of spinor] {$Q\ket{\xi}$};
+        \draw[->] (spinor) to node {Direct} (spinor_rot);
+        \node at (1.5, -0.8) {\footnotesize \textbf{Fundamental (Spin-1/2)}};
+
+        % Adjoint World
+        \node (vec) [below=1.5cm of spinor] {$X \in \mathfrak{su}(2)$};
+        \node (vec_rot) [right=of vec] {$QXQ^\dagger$};
+        \draw[->] (vec) to node {Adjoint} (vec_rot);
+        \node at (1.5, -3.2) {\footnotesize \textbf{Adjoint (Spin-1)}};
+
+        % Label
+        \node[draw, dashed, inner sep=10pt] at (6.5, -1.5) {
+            \begin{minipage}{3.5cm}
+            \footnotesize
+            \textbf{Topology Bridge:} \\
+            \(Q \to -Q\) leaves the \\
+            Adjoint action invariant, \\
+            but flips the Direct action.
+            \end{minipage}
+        };
+    \end{tikzpicture}
+    \caption{Direct vs. Adjoint actions of $SU(2)$.}
+\end{figure}
+
+\begin{fact}
+The Adjoint representation is always available for any Lie group. It is the "regulation" way to view a Lie group as a matrix group of rotations on its own algebra.
+\end{fact}

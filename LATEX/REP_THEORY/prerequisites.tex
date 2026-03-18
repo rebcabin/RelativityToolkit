@@ -1,0 +1,30 @@
+%  ___                           _    _ _          
+% | _ \_ _ ___ _ _ ___ __ _ _  _(_)__(_) |_ ___ ___
+% |  _/ '_/ -_) '_/ -_) _` | || | (_-< |  _/ -_|_-<
+% |_| |_| \___|_| \___\__, |\_,_|_/__/_|\__\___/__/
+%                        |_|                       
+
+\section{Prerequisites}
+
+Arfken\cite{arfken2012} is excellent background for these notes.
+Look there for undefined terms like \textit{vector space} or
+\textit{differentiable manifold}. We adhere to the following terse
+definitions in the rest of these notes.
+
+\begin{definition}[Lie Algebra]
+    A Lie algebra is a vector space $\mathfrak{g}$ equipped with a
+    bilinear, anticommutative, binary operation
+    $[,]:\mathfrak{g}\times\mathfrak{g}\rightarrow\mathfrak{g}$ that satisfies the
+    Jacobi identity:
+    \begin{equation*}
+        [X,[Y,Z]]+[Z,[X,Y]+[Y,[Z,X]]=0
+    \end{equation*}
+\end{definition}
+
+\begin{definition}[Lie Group]
+    A Lie group is a group and also a differentiable manifold.
+\end{definition}
+
+\noindent It bears emphasis that a Lie algebra is not a group under the Lie bracket and
+is not a differentiable manifold.
+

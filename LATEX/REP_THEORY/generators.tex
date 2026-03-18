@@ -1,0 +1,213 @@
+%   ___                       _              
+%  / __|___ _ _  ___ _ _ __ _| |_ ___ _ _ ___
+% | (_ / -_) ' \/ -_) '_/ _` |  _/ _ \ '_(_-<
+%  \___\___|_||_\___|_| \__,_|\__\___/_| /__/
+%
+
+\section{Generators}
+
+\noindent The rest of this document concerns the relationships between Lie
+groups and Lie algebras. The first of these relationships comes via 
+\firstmention{generators}.
+
+\begin{definition}[Generator]
+    A generator $X\in\mathfrak{g}$ is a Lie-algebra element that, multiplied by
+    a real $\theta$,\sidenote{$X$ is a vector in the Lie Algebra $\mathfrak{g}$
+        as a vector space, and vectors can always be multiplied by scalars from
+        the underlying field of the vector space, by vector-space rules}
+    produces a an element of a Lie group G under the exponential map:
+    \begin{align*}
+        \exp &: (\mathfrak{g} \times \mathbb{R}) \rightarrow G \\
+        h(\theta) &= \exp(\theta{}X)
+    \end{align*}
+\end{definition}
+
+The exponential map is abstract, here. It must be further defined for any
+concretization. Physicists work almost exclusively with matrix concretizations
+for the sake of calculation. In such concretizations, $\exp$ is a matrix
+exponential, defined by Taylor series. From this point on, assume all
+concretizations are matrix concretizations. We hope it's obvious from context
+when we're working abstractly and when we're working concretely.
+
+\begin{remark} A generator $X\in\su{2}$ in the Lie algebra can be recovered 
+    from a Lie-group element $h(\theta)$ as follows:
+    \begin{equation*}
+        X = \left.\frac{d h(\theta)}{d \theta}\right|_{\theta=0}
+    \end{equation*}
+\end{remark}
+
+
+Many Lie groups can map to the same Lie algebra. 
+
+\begin{example}
+    \SO{3} and \SU{2} have the same Lie algebra: \su{2}. Begin by
+    considering \SO{3}\sidenote{\SO{3} is also a Lie group, of course} as a
+    matrix group: the set of real, $3\times{}3$ orthogonal matrices with
+    determinant 1. 
+
+\begin{proposition}
+    Real $3\times{}3$ generators $J\in\su{2}$ of the special orthogonal group
+    \SO{3} are traceless and antisymmetric.
+\end{proposition}
+\begin{proof}
+\leavevmode
+\begin{itemize}[noitemsep] % Removes space between items
+    \item \textit{Traceless}:
+    ``Special'' means that the elements $O\in\SO{3}$ have unit determinant.
+    That fact implies that the generators are traceless:\sidenote{Equation
+    numbers with prefixes, such as (Sch:3.60), are taken from other sources
+    that are meant to be obvious from the prefix.}
+        \begin{equation}
+            \det{O}\mustbe{1}\quad\implies\quad\det{e^{\theta{}J}}=e^{\theta\;\trace{J}}\mustbe{}1
+            \tag{Sch:3.60}
+        \end{equation}
+    \item \textit{Antisymmetric}: 
+        ``Orthogonal'' means that elements $O$ of \SO{3} satisfy 
+        $\transpose{O}O=O\transpose{O}\mustbe{1}$. Therefore:
+        \begin{equation}
+            {\transpose{O}}O=e^{\theta\transpose{J}}
+                               e^{\theta{}J}\mustbe{}1
+                       \quad\implies\quad
+                       \transpose{J}\mustbe{}-J
+        \tag{Sch:3.59}
+    \end{equation}
+    The \textit{transpose} operation lifts into the exponent, as can be see by
+    a Taylor expansion, because $\theta$ is a scalar.
+\end{itemize}
+\end{proof}
+
+\noindent Both \su{2} and \SO(3) are three-dimensional, \su{2} in the sense
+that a basis requires three linearly independent generators $\{X_1$, $X_2$,
+$X_3\}$ to span the space, \SO{3} in the sense that its matrix form consists of
+$3\times{}3$ matrices. A basis for the following \textit{adjoint
+representation}\sidenote{This usage of ``adjoint'' is distinct from the adjoint
+operation on matrices and is explained in the next section.}\sidenote{Informally,
+    for now,
+take ``representation'' to mean ``matrices corresponding to elements of a Lie
+group or Lie algebra.'' We'll make this notion rigorous shortly.} of \su{2} is
+
+{
+\small
+\addtolength{\arraycolsep}{-3pt}
+\begin{equation}
+    J_1 = 
+    \begin{pmatrix}
+        0 & 0 & 0 \\
+        0 & 0 & -1 \\
+        0 & 1 & 0
+    \end{pmatrix}, \quad
+    J_2 = 
+    \begin{pmatrix}
+        0 & 0 & 1 \\
+        0 & 0 & 0 \\
+        -1 & 0 & 0
+    \end{pmatrix}, \quad
+    J_3 = 
+    \begin{pmatrix}
+        0 & -1 & 0 \\
+        1 & 0 & 0 \\
+        0 & 0 & 0
+    \end{pmatrix}
+    \tag{Sch:3.61}
+\end{equation}
+}
+
+\noindent We note, in passing, that the Lie bracket can ``generate'' the basis
+(in a different sense of the word \textit{generate}), from just two of the $J$
+vectors / matrices,\sidenote{``Vectors'' in \su{2} are matrices in this
+representation.} because $[J_1, J_2]=J_3$, etc.
+
+The following Mathematica code checks that these generators in \su{2} satisfy
+the Lie-algebra commutation relations $[J_i, J_j] = \epsilon_{ijk}
+J_k$:\sidenote{$\epsilon_{ijk}$ is the totally antisymmetric Levi-Civita symbol
+    that equals $1$ when $ijk$ is an even permutation of $123$, $-1$ when
+${ijk}$ is an odd permutation, and $0$ otherwise. This expression is
+\textit{not} using the Einstein summation convention; it's just ordinary
+scalar-vector (as matrix) multiplication for any $i$, $j$, and $k$.}
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+J1 = {{0, 0, 0}, {0, 0, -1}, {0, 1, 0}};
+J2 = {{0, 0, 1}, {0, 0, 0}, {-1, 0, 0}};
+J3 = {{0, -1, 0}, {1, 0, 0}, {0, 0, 0}};
+
+J1.J2 - J2.J1 == J3 (* True *)
+J2.J3 - J3.J2 == J1 (* True *)
+J3.J1 - J1.J3 == J2 (* True *)
+\end{Verbatim}
+
+\noindent Mathematica can further check that the matrix exponentials of these
+generators span \SO{3} as a matrix group. The following should suffice to
+convince you of this fact, assuming that you are familiar with elementary
+rotation matrices:
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+MatrixExp[\[Theta] J1]
+{{1, 0, 0}, 
+ {0, Cos[\[Theta]], -Sin[\[Theta]]}, 
+ {0, Sin[\[Theta]],  Cos[\[Theta]]}}
+\end{Verbatim}
+
+\begin{proposition}
+    Complex $2\times{}2$ generators $T\in\su{2}$ of the special unitary group \SU{2} 
+    are traceless and anti-Hermitian.\sidenote{``Anti-Hermitian'' for complex matrices
+        is analogous to antisymmetric for real matrices like the adjoint representation
+    of \SO{3} above.}
+\end{proposition}
+\begin{proof}
+
+    Proof of the traceless property goes just as above. 
+
+    ``Unitary'' means that the elements $U$ of \SU{2} satisfy
+    $\adjoint{U}U=U\adjoint{U}\mustbe{1}$, where $\adjoint{U}$ is complex
+    conjugate transpose, or \textit{adjoint}, symbolized by the $\dagger$. \sidenote{
+        As noted above, this meaning of ``adjoint'' is distinct from its meaning 
+        in ``adjoint representation'', which pertains to the representation of \SO{3} 
+        above.}
+
+    ``Hermitian'' means that a matrix is self-adjoint. ``Anti-Hermitian'' means
+    that a matrix equals the negative of its adjoint. Now we see that
+        \begin{equation}
+            {\adjoint{U}}{U}=e^{\theta\adjoint{T}}
+                             e^{\theta{}T}\mustbe{}1
+                       \quad\implies\quad
+                       \adjoint{T}\mustbe{}-T
+        \end{equation}
+
+\noindent The adjoint operation also lifts into the exponent, like
+\textit{transpose}, because $\theta$ is a \textit{real} scalar. 
+
+\end{proof}
+
+\noindent A basis for this \textit{fundamental
+representation}\sidenote{Clarified below.} is $-i/2$ times the three
+\textit{Pauli matrices}:
+
+{
+\small
+\addtolength{\arraycolsep}{-3pt}
+\begin{equation}
+    \sigma_1 = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \quad
+    \sigma_2 = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}, \quad
+    \sigma_3 = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}.
+    \tag{Sch:3.80}
+\end{equation}
+}
+
+\noindent The basis is $T_1 = -i\sigma_1/2$, $T_2 = -i\sigma_2/2$, $T_3 = -i
+\sigma_3/2$ as can be readily verified in Mathematica, showing, again in
+passing, that the factor of $1/2$ maintains the unit \textit{structure
+constants} $\epsilon_{ijk}$:\sidenote{We'll see more diverse structure constants
+in the sequel.} Without the $1/2$, we'd be chasing around factors of $2$. 
+This fact is related to the \textit{double covering} of the fundamental representation
+over the adjoint representation, a notion we'll get back to.
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+T1 = -I/2 PauliMatrix[1];
+T2 = -I/2 PauliMatrix[2];
+T3 = -I/2 PauliMatrix[3];
+T1 . T2 - T2 . T1 == T3 (* True *)
+T2 . T3 - T3 . T2 == T1 (* True *)
+T3 . T1 - T1 . T3 == T2 (* True *)
+\end{Verbatim}
+
+\end{example}
