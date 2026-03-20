@@ -1,0 +1,143 @@
+
+%   ___      _       _                
+%  / _ \ _ _| |_ ___| |___  __ _ _  _ 
+% | (_) | ' \  _/ _ \ / _ \/ _` | || |
+%  \___/|_||_\__\___/_\___/\__, |\_, |
+%                          |___/ |__/ 
+
+\chapter{Ontology}
+
+\section{Object Inventory}
+
+\begin{fullwidth}
+\centering
+\captionof{table}{Inventory of Lie Theory Components}
+\vspace{10pt}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lll}
+\toprule
+\textbf{Short Name} & \textbf{Item Description} & \textbf{Context / Physical Interpretation} \\ 
+\midrule
+$\mathfrak{g}$ & Abs $\mathfrak{su}(2)$ & Abstract Lie algebra: $[E_i, E_j] = \epsilon_{ijk}E_k$. \\ 
+$\mathfrak{su}(2)_2$ & $\mathfrak{su}(2)$ 2x2 Rep & Complex matrix realization (Generators $T_k$). \\ 
+$\mathfrak{so}(3)_3$ & $\mathfrak{so}(3)$ 3x3 Rep & Real matrix realization (Generators $J_k$). \\ 
+$SU(2)$ & $SU(2)$ Group & $2 \times 2$ unitary matrices, $\det=1$. \\ 
+$SO(3)$ & $SO(3)$ Group & $3 \times 3$ orthogonal matrices, $\det=1$. \\ \addlinespace
+$\mathbb{V}_{spin}$ & Spinors ($\mathbb{C}^2$) & Space for Fund Act of $SU(2)$. \\ 
+$\mathbb{R}^3$ & Real $\mathbb{R}^3$ & Euclidean space of physical 3-vectors. \\ 
+$\mathfrak{h}_0$ & Mat-Vecs ($h_0$) & Traceless Hermitian $2 \times 2$ matrices. \\ 
+$\sigma_k$ & Pauli Matrix & Basis $\{\sigma_1, \sigma_2, \sigma_3\}$ for the Pauli Map. \\ 
+$f_{ijk}$ & Struct Consts & Numbers $\epsilon_{ijk}$ characterizing the bracket. \\ \addlinespace
+$\mathcal{Z}$ & Center & The kernel $\{I, -I\}$ of the $SU(2) \to SO(3)$ map. \\ 
+$S^3$ & Topo $S^3$ & Topology of $SU(2)$ (3-sphere). \\ 
+$\mathbb{RP}^3$ & Topo $\mathbb{RP}^3$ & Topology of $SO(3)$ (Projective space). \\ 
+$ad_X$ & Infit. Ad & Algebra action $[X, \cdot]$. \\ 
+$Ad_Q$ & Finite Ad & Group action $Q \cdot Z \cdot Q^\dagger$. \\ \addlinespace
+$B$ & Killing Form & Trace inner product for coordinate extraction. \\ 
+\bottomrule
+\end{tabular*}
+\end{fullwidth}
+
+\vspace{2cm}
+
+\section{Mapping Inventory}
+
+\begin{fullwidth}
+\centering
+\captionof{table}{Registry of Mappings and Actions}
+\vspace{10pt}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llll}
+\toprule
+\textbf{Short Name} & \textbf{Target} & \textbf{Name / Mechanism} & \textbf{Type} \\ 
+\midrule
+$\mathfrak{su}(2)_2$ & $SU(2)$ & \texttt{MatrixExp} & \textbf{Surj} \\ 
+$\mathfrak{so}(3)_3$ & $SO(3)$ & \texttt{MatrixExp} & \textbf{Surj} \\ 
+$SU(2)$ & $SO(3)$ & Ad Rep / 2-to-1 Cover & \textbf{Surj (2:1)} \\ 
+$\mathcal{Z}$ & $SU(2)$ & Center inclusion & \textbf{Inj} \\ 
+$\mathbb{R}^3$ & $\mathfrak{h}_0$ & Pauli Map ($\vec{v} \cdot \vec{\sigma}$) & \textbf{Bij} \\ \addlinespace
+$\mathfrak{h}_0$ & $\mathbb{R}^3$ & Trace Projection (\texttt{getTCoeffs}) & \textbf{Bij} \\ 
+$\mathfrak{su}(2)_2$ & $\mathfrak{so}(3)_3$ & Algebra Ad Rep (\texttt{TtoJ}) & \textbf{Bij} \\ 
+$\mathfrak{g}$ & $f_{ijk}$ & Basis Mapping & \textbf{Surj} \\ 
+$SU(2)$ & $S^3$ & Topo ID & \textbf{Bij (Diffeo)} \\ 
+$SO(3)$ & $\mathbb{RP}^3$ & Topo ID & \textbf{Bij (Diffeo)} \\ \addlinespace
+$SU(2)$ & $\mathbb{V}_{spin}$ & Fund Act ($Q \psi$) & \textbf{Act} \\ 
+$SU(2)$ & $\mathfrak{h}_0$ & Ad Act ($Q Z Q^\dagger$) & \textbf{Act} \\ 
+$SO(3)$ & $\mathbb{R}^3$ & Standard Rot ($R \vec{v}$) & \textbf{Act} \\ 
+\bottomrule
+\end{tabular*}
+\end{fullwidth}
+
+\clearpage
+
+\section{Relationships}
+
+\begin{fullwidth}
+    \centering
+    \captionof{figure}{Ontology of Objects and Mappings}\label{fig:bridge_ontology}
+    \vspace{10pt}
+    \begin{tikzpicture}[
+        scale=0.85, every node/.style={scale=0.85},
+        node distance=1.2cm and 0.8cm,
+        block/.style={rectangle, draw, rounded corners, minimum width=2.8cm, minimum height=0.8cm, align=center, fill=gray!5},
+        action/.style={rectangle, draw, dashed, rounded corners, minimum width=2.8cm, minimum height=0.8cm, align=center, fill=blue!5},
+        lbl/.style={fill=white, fill opacity=0.85, text opacity=1, inner sep=1.5pt, rounded corners=1pt},
+        arrow/.style={-Stealth, thick},
+        bij/.style={Stealth-Stealth, thick},
+        line/.style={thick}
+    ]
+
+    % Pillars: Left (Spin/Complex) and Right (Vector/Real)
+    
+    % Level 1: Core Algebra
+    \node[block] (g) {Abstract $\mathfrak{su}(2)$};
+    \node[block] (f) [above=1.2cm of g] {$f_{ijk}$ Constants};
+
+    % Level 2: Matrix Representations
+    \node[block] (su2) [below left=1.5cm and 1.5cm of g] {$\mathfrak{su}(2)$ 2x2 ($T$)};
+    \node[block] (so3) [below right=1.5cm and 1.5cm of g] {$\mathfrak{so}(3)$ 3x3 ($J$)};
+
+    % Level 3: Groups
+    \node[block] (SU2) [below=2.0cm of su2] {$SU(2)$ Group};
+    \node[block] (SO3) [below=2.0cm of so3] {$SO(3)$ Group};
+    \node[block] (Center) [left=0.8cm of SU2] {Center $\{I, -I\}$};
+
+    % Level 4: Final Objects (The "Wings" Layout)
+    \node[block] (Spin) [below=2.0cm of SU2] {Spinors ($\mathbb{C}^2$)};
+    \node[block] (R3) [below=2.0cm of SO3] {Real $\mathbb{R}^3$};
+    
+    % Centered between the pillars
+    \node[block] (h0) at ($(Spin)!0.5!(R3)$) {Mat-Vecs ($\mathfrak{h}_0$)};
+    
+    % Far outer wings for topology
+    \node[block] (S3) [left=0.8cm of Spin] {$S^3$ Sphere};
+    \node[block] (RP3) [right=0.8cm of R3] {$\mathbb{RP}^3$ Space};
+
+    % --- EDGES ---
+
+    % Algebra
+    \draw[bij] (f) -- node[lbl, right] {\footnotesize Bij (Basis)} (g);
+    \draw[line] (g) -- (su2);
+    \draw[line] (g) -- (so3);
+    \draw[bij] (su2) -- node[lbl, above] {\footnotesize Bij: TtoJ} (so3);
+
+    % Groups
+    \draw[arrow] (su2) -- node[lbl, left] {\footnotesize Surj: Exp} (SU2);
+    \draw[arrow] (so3) -- node[lbl, right] {\footnotesize Surj: Exp} (SO3);
+    \draw[arrow] (Center) -- node[lbl, above] {\footnotesize Inj} (SU2);
+    \draw[arrow] (SU2) -- node[lbl, above] {\footnotesize Surj (2:1)} (SO3);
+
+    % Topology (The outer-wing paths)
+    \draw[bij] (SU2) -- node[lbl, midway, above left] {\footnotesize Bij (Diffeo)} (S3);
+    \draw[bij] (SO3) -- node[lbl, midway, above right] {\footnotesize Bij (Diffeo)} (RP3);
+
+    % Actions
+    \draw[arrow, dashed] (SU2) -- node[lbl, midway, left] {\footnotesize Act: Fund} (Spin);
+    \draw[arrow, dashed] (SU2) -- node[lbl, midway, above right, xshift=-5pt] {\footnotesize Act: Adjoint} (h0);
+    \draw[arrow, dashed] (SO3) -- node[lbl, midway, left] {\footnotesize Act: Rotation} (R3);
+
+    % Vector Space Isometry
+    \draw[bij] (h0) -- node[lbl, midway, below=12pt] {\footnotesize Bij: Pauli Map} (R3);
+
+    \end{tikzpicture}
+\end{fullwidth}

@@ -4,7 +4,7 @@
 %  \___\___|_||_\___|_| \__,_|\__\___/_| /__/
 %
 
-\section{Generators}
+\chapter{Generators}
 
 \noindent The rest of this document concerns the relationships between Lie
 groups and Lie algebras. The first of these relationships comes via 
@@ -13,78 +13,139 @@ groups and Lie algebras. The first of these relationships comes via
 \begin{definition}[Generator]
     A generator $X\in\mathfrak{g}$ is a Lie-algebra element that, multiplied by
     a real $\theta$,\sidenote{$X$ is a vector in the Lie Algebra $\mathfrak{g}$
-        as a vector space, and vectors can always be multiplied by scalars from
-        the underlying field of the vector space, by vector-space rules}
-    produces a an element of a Lie group G under the exponential map:
+    considered as a vector space, and, by the rules of vector spaces,
+    vectors can always be multiplied by scalars from the underlying field}
+produces a an element of a Lie group G under the (abstract) exponential map:
     \begin{align*}
         \exp &: (\mathfrak{g} \times \mathbb{R}) \rightarrow G \\
         h(\theta) &= \exp(\theta{}X)
     \end{align*}
 \end{definition}
 
-The exponential map is abstract, here. It must be further defined for any
-concretization. Physicists work almost exclusively with matrix concretizations
-for the sake of calculation. In such concretizations, $\exp$ is a matrix
-exponential, defined by Taylor series. From this point on, assume all
-concretizations are matrix concretizations. We hope it's obvious from context
-when we're working abstractly and when we're working concretely.
-
-\begin{remark} A generator $X\in\su{2}$ in the Lie algebra can be recovered 
-    from a Lie-group element $h(\theta)$ as follows:
+\begin{remark} A generator $X\in\mathfrak{g}$ in the Lie algebra can be recovered 
+    from a Lie-group element $h(\theta)$ by (abstract) differentiation: 
     \begin{equation*}
         X = \left.\frac{d h(\theta)}{d \theta}\right|_{\theta=0}
     \end{equation*}
 \end{remark}
 
+\section{A representation is a concretization}
 
-Many Lie groups can map to the same Lie algebra. 
+The exponential map above is abstract, as is the differentiation operation to
+recover the Lie-algebra element. $\operatorname{Exp}$ must be further defined
+for any concretization. For the sake of computation, physicists work almost
+exclusively with matrix concretizations. In such concretizations, $\exp$ is a
+matrix exponential, defined by Taylor series. From this point on, assume all
+concretizations are matrix concretizations. 
 
-\begin{example}
-    \SO{3} and \SU{2} have the same Lie algebra: \su{2}. Begin by
-    considering \SO{3}\sidenote{\SO{3} is also a Lie group, of course} as a
-    matrix group: the set of real, $3\times{}3$ orthogonal matrices with
-    determinant 1. 
+Loosely, a \firstmention{representation} is a matrix that stands for a
+Lie-algebra or Lie-group element. We formalize \textit{representation} later,
+but for the purpose of illustrating generators as matrices, we must choose
+representations.
+
+\section{The same Lie algebra can generate many Lie Groups}
+
+We will present some general results and then illustrate them with two
+particular examples of interest in physics. Those two examples are
+representations of one Lie algebra \su{2} that generate two different Lie
+groups. In the first representation, the \firstmention{adjoint
+representation},\sidenote{symbolised by \adjrep}\sidenote{no relation to the
+adjoint operation on matrices, which is complex-conjugate transpose.} elements
+of the Lie algebra are represented by $3\times{}3$ real matrices. In the second
+representation, the \firstmention{fundamental
+representation},\sidenote{symbolized by \fndrep} elements are represented by
+$2\times{}2$ complex matrices. We will show how to map from one to the other
+and back, that is, the \firstmention{isomorphism} between these two
+representations. The meaning of that isomorphism is that the two
+representations actually represent the same Lie algebra. However, the two
+generated Lie groups are \textit{not} equivalent, and interesting physics
+follow from that fact.
+
+For the time being, take the words \textit{adjoint} and \textit{fundamental} at
+face value. We will elaborate them extensively as we go along.
+
+\section{Some general results}
 
 \begin{proposition}
-    Real $3\times{}3$ generators $J\in\su{2}$ of the special orthogonal group
-    \SO{3} are traceless and antisymmetric.
+    \label{prop:traceless-antisymmetric}
+    Any real matrix generators $J\in\mathfrak{g}$ of a \firstmention{special}
+    \firstmention{orthogonal} group \SO{N} are traceless and antisymmetric.
 \end{proposition}
+
+\begin{remark}
+    \SO{N} is a group of $N\times{}N$ invertible\sidenote{All elements of any
+    group are invertible, by definition of a group} matrices with two more
+    properties:
+    \begin{itemize}
+        \item \textit{Special} means that the elements of \SO{N} have unit determinant. 
+        \item \textit{Orthogonal} means that the transpose $\transpose{O}$ of any
+            element equals its matrix inverse $O^{-1}$.
+    \end{itemize}
+\end{remark}
+
+\begin{remark}
+    A generator in the Lie algebra, if it is to geneate an $N\times{}N$ real matrix in the Lie group by the
+    matrix exponential, must itself be represented by an $N\times{}N$ real matrix.
+\end{remark}
+
 \begin{proof}
+    The proof proceeds from implications of the definition of a matrix exponential.
 \leavevmode
 \begin{itemize}[noitemsep] % Removes space between items
     \item \textit{Traceless}:
-    ``Special'' means that the elements $O\in\SO{3}$ have unit determinant.
-    That fact implies that the generators are traceless:\sidenote{Equation
-    numbers with prefixes, such as (Sch:3.60), are taken from other sources
-    that are meant to be obvious from the prefix.}
+        \textit{Special} implies that the $N$\nobreakdash-dimensional
+        generators are traceless:\sidenote{Equation numbers with prefixes, such
+        as (Sch:3.60), are taken from particular references that are meant to
+        be obvious from the prefix.}
         \begin{equation}
-            \det{O}\mustbe{1}\quad\implies\quad\det{e^{\theta{}J}}=e^{\theta\;\trace{J}}\mustbe{}1
+            \begin{split}
+                \det{O}\mustbe{1}&\quad\implies\quad\det{e^{\theta{}J}}=e^{\theta\;\trace{J}}=1 \\
+                e^{\theta\;\trace{J}}=1&\implies\theta\;\trace{J}=0\implies\trace{J}=0
+            \end{split}
             \tag{Sch:3.60}
         \end{equation}
+        \noindent by \firstmention{Jacobi's formula} linking $\det{\exp}$ and 
+        $\exp{(\operatorname{Tr})}$.\cite{horn2012matrix}
     \item \textit{Antisymmetric}: 
-        ``Orthogonal'' means that elements $O$ of \SO{3} satisfy 
+        \textit{Orthogonal} means that elements $O$ of \SO{3} satisfy 
         $\transpose{O}O=O\transpose{O}\mustbe{1}$. Therefore:
         \begin{equation}
+            \begin{split}
             {\transpose{O}}O=e^{\theta\transpose{J}}
                                e^{\theta{}J}\mustbe{}1
-                       \quad\implies\quad
-                       \transpose{J}\mustbe{}-J
+                               &\quad\implies\quad
+                           e^{\theta\;(\transpose{J}+J)}=1\\
+                       &\quad\implies\quad 
+                       \transpose{J}=-J
+            \end{split}
         \tag{Sch:3.59}
     \end{equation}
+    \noindent by the Baker-Campbell-Hausdorff formula\cite{hall2015lie} for matrix
+    exponentials, because $\transpose{J}$ and $J$ commute.
     The \textit{transpose} operation lifts into the exponent, as can be see by
     a Taylor expansion, because $\theta$ is a scalar.
 \end{itemize}
 \end{proof}
 
-\noindent Both \su{2} and \SO(3) are three-dimensional, \su{2} in the sense
-that a basis requires three linearly independent generators $\{X_1$, $X_2$,
-$X_3\}$ to span the space, \SO{3} in the sense that its matrix form consists of
-$3\times{}3$ matrices. A basis for the following \textit{adjoint
-representation}\sidenote{This usage of ``adjoint'' is distinct from the adjoint
-operation on matrices and is explained in the next section.}\sidenote{Informally,
-    for now,
-take ``representation'' to mean ``matrices corresponding to elements of a Lie
-group or Lie algebra.'' We'll make this notion rigorous shortly.} of \su{2} is
+\section{The Adjoint Representation is a particular real 3x3 representation}
+
+\SO{3} is our controlling example: it is the Lie group of rotations in 3D
+Euclidean space, familiar to all physics students. 
+
+Proposition~\ref{prop:traceless-antisymmetric} pertains to any special
+orthogonal group \SO{N}. How do we get members of \SO{3} from generators in
+\su{2}? First, we state\sidenote{without proof, for now} that \su{2} is a
+3\nobreakdash-dimensional vector space, so we can choose a basis of three
+linearly independent generators $\{X_1, X_2, X_3\}$ to span \su{2}. 
+
+\SO{3} is also three dimensional, in the different sense that it's full of
+$3\times{}3$ matrices. 
+
+The following basis makes up the ajoint representation of \su{2} that generates
+\SO{3}. This set is not a guess; we'll show later how to derive it from the
+fundamental representation.\sidenote{The Lie bracket can ``generate'' the basis
+    (in a different sense of the word \textit{generate}), from just two of the
+$J$ because $[J_1, J_2]=J_3$, etc.}
 
 {
 \small
@@ -112,23 +173,18 @@ group or Lie algebra.'' We'll make this notion rigorous shortly.} of \su{2} is
 \end{equation}
 }
 
-\noindent We note, in passing, that the Lie bracket can ``generate'' the basis
-(in a different sense of the word \textit{generate}), from just two of the $J$
-vectors / matrices,\sidenote{``Vectors'' in \su{2} are matrices in this
-representation.} because $[J_1, J_2]=J_3$, etc.
-
 The following Mathematica code checks that these generators in \su{2} satisfy
 the Lie-algebra commutation relations $[J_i, J_j] = \epsilon_{ijk}
 J_k$:\sidenote{$\epsilon_{ijk}$ is the totally antisymmetric Levi-Civita symbol
     that equals $1$ when $ijk$ is an even permutation of $123$, $-1$ when
-${ijk}$ is an odd permutation, and $0$ otherwise. This expression is
-\textit{not} using the Einstein summation convention; it's just ordinary
+${ijk}$ is an odd permutation, and $0$ otherwise. This expression does
+\textit{not} use the Einstein summation convention; it's just ordinary
 scalar-vector (as matrix) multiplication for any $i$, $j$, and $k$.}
 
 \begin{Verbatim}[frame=single, label=Mathematica]
-J1 = {{0, 0, 0}, {0, 0, -1}, {0, 1, 0}};
-J2 = {{0, 0, 1}, {0, 0, 0}, {-1, 0, 0}};
-J3 = {{0, -1, 0}, {1, 0, 0}, {0, 0, 0}};
+J1 = {{0,  0, 0}, {0, 0, -1}, { 0, 1, 0}};
+J2 = {{0,  0, 1}, {0, 0,  0}, {-1, 0, 0}};
+J3 = {{0, -1, 0}, {1, 0,  0}, { 0, 0, 0}};
 
 J1.J2 - J2.J1 == J3 (* True *)
 J2.J3 - J3.J2 == J1 (* True *)
@@ -136,9 +192,8 @@ J3.J1 - J1.J3 == J2 (* True *)
 \end{Verbatim}
 
 \noindent Mathematica can further check that the matrix exponentials of these
-generators span \SO{3} as a matrix group. The following should suffice to
-convince you of this fact, assuming that you are familiar with elementary
-rotation matrices:
+generators span \SO{3} as a matrix group. The following should convince you
+if you are familiar with elementary rotation matrices:
 
 \begin{Verbatim}[frame=single, label=Mathematica]
 MatrixExp[\[Theta] J1]
@@ -147,24 +202,47 @@ MatrixExp[\[Theta] J1]
  {0, Sin[\[Theta]],  Cos[\[Theta]]}}
 \end{Verbatim}
 
+\section{The Fundamental Representation is a distinguished complex 2x2 representation}
+
+\begin{fact}
+There is exactly one simply connected Lie group corresponding to each Lie algebra.
+\end{fact}
+
+\begin{proof}
+    See Spivak.\cite{spivak1999}
+\end{proof}
+
+\noindent We don't need yet to understand ``simply connected'' to
+appreciate that the simply connected Lie group is the important and
+distinguished one. For our controlling example, this group is \SU{2}, 
+the special \firstmention{unitary} group of $2\times{}2$ matrices.
+
+\begin{remark}\leavevmode
+    \begin{itemize}
+        \item \textit{Special} means that the elements of \SU{2} have unit determinant, as before.
+        \item \textit{Unitary} means that the complex-conjugate transpose $\adjoint{U}$ of any
+            element $U\in\SU{2}$ equals its matrix inverse $U^{-1}$. \textit{Unitary} for complex 
+            matrices is the analog of \textit{orthogonal} for real matrices.
+    \end{itemize}
+\end{remark}
+
 \begin{proposition}
-    Complex $2\times{}2$ generators $T\in\su{2}$ of the special unitary group \SU{2} 
-    are traceless and anti-Hermitian.\sidenote{``Anti-Hermitian'' for complex matrices
-        is analogous to antisymmetric for real matrices like the adjoint representation
-    of \SO{3} above.}
+    Complex $2\times{}2$ generators $T\in\su{2}$ of the special unitary group
+    \SU{2} are traceless and
+    \firstmention{anti-Hermitian}.\sidenote{\textit{Anti-Hermitian} for complex
+    matrices is the analog of antisymmetric for real matrices.}
 \end{proposition}
+
 \begin{proof}
 
     Proof of the traceless property goes just as above. 
 
-    ``Unitary'' means that the elements $U$ of \SU{2} satisfy
-    $\adjoint{U}U=U\adjoint{U}\mustbe{1}$, where $\adjoint{U}$ is complex
-    conjugate transpose, or \textit{adjoint}, symbolized by the $\dagger$. \sidenote{
-        As noted above, this meaning of ``adjoint'' is distinct from its meaning 
-        in ``adjoint representation'', which pertains to the representation of \SO{3} 
-        above.}
+    \textit{Unitary} means that the elements $U$ of \SU{2} satisfy
+    $\adjoint{U}U=U\adjoint{U}\mustbe{1}$,\sidenote{
+        As noted, this meaning of \textit{adjoint} is distinct from its meaning 
+        in \textit{adjoint representation}, which pertains to the representation of \SO{3}.}
 
-    ``Hermitian'' means that a matrix is self-adjoint. ``Anti-Hermitian'' means
+    \textit{Hermitian} means that a matrix is self-adjoint. \textit{Anti-Hermitian} means
     that a matrix equals the negative of its adjoint. Now we see that
         \begin{equation}
             {\adjoint{U}}{U}=e^{\theta\adjoint{T}}
@@ -178,9 +256,12 @@ MatrixExp[\[Theta] J1]
 
 \end{proof}
 
-\noindent A basis for this \textit{fundamental
-representation}\sidenote{Clarified below.} is $-i/2$ times the three
-\textit{Pauli matrices}:
+\noindent A basis for this fundamental
+representation is $-i/2$ times the three
+\firstmention{Pauli matrices}:\sidenote{The Pauli matrices are also not a 
+    guess. They are the unique $2\times{}2$ traceless Hermitian matrices
+    in the complex domain. The factor of $-i$ makes them anti-Hermitian,
+    and the factor of $1/2$ is convenient.}
 
 {
 \small
@@ -195,19 +276,14 @@ representation}\sidenote{Clarified below.} is $-i/2$ times the three
 
 \noindent The basis is $T_1 = -i\sigma_1/2$, $T_2 = -i\sigma_2/2$, $T_3 = -i
 \sigma_3/2$ as can be readily verified in Mathematica, showing, again in
-passing, that the factor of $1/2$ maintains the unit \textit{structure
-constants} $\epsilon_{ijk}$:\sidenote{We'll see more diverse structure constants
-in the sequel.} Without the $1/2$, we'd be chasing around factors of $2$. 
-This fact is related to the \textit{double covering} of the fundamental representation
-over the adjoint representation, a notion we'll get back to.
+passing, that the factor of $1/2$ maintains the unit \firstmention{structure
+constants} $\epsilon_{ijk}$. Without the $1/2$, we'd be chasing around factors of $2$. 
 
 \begin{Verbatim}[frame=single, label=Mathematica]
 T1 = -I/2 PauliMatrix[1];
 T2 = -I/2 PauliMatrix[2];
 T3 = -I/2 PauliMatrix[3];
-T1 . T2 - T2 . T1 == T3 (* True *)
-T2 . T3 - T3 . T2 == T1 (* True *)
-T3 . T1 - T1 . T3 == T2 (* True *)
+T1.T2 - T2.T1 == T3 (* True *)
+T2.T3 - T3.T2 == T1 (* True *)
+T3.T1 - T1.T3 == T2 (* True *)
 \end{Verbatim}
-
-\end{example}

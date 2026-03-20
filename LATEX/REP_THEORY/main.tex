@@ -1,8 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Reverted to tufte-handout with [nols] to fix soul package errors
+% tufte-book with [no-fonts] and custom fontspec for lualatex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %! TEX program = lualatex
-\documentclass[no-fonts,nols]{tufte-handout} 
+\documentclass[no-fonts,nols]{tufte-book} 
 
 \usepackage{stmaryrd}
 \usepackage{amsmath}
@@ -25,6 +25,9 @@
 \newcommand{\SO}[1]{\ensuremath{\mathrm{SO}(#1)}}
 \newcommand{\SU}[1]{\ensuremath{\mathrm{SU}(#1)}}
 \newcommand{\su}[1]{\ensuremath{\mathfrak{su}(#1)}}
+
+\newcommand{\adjrep}{\ensuremath{\operatorname{rep}_\mathrm{adj}}}
+\newcommand{\fndrep}{\ensuremath{\operatorname{rep}_\mathrm{fnd}}}
 
 \newcommand{\R}{\ensuremath{\mathbb{R}}} % Real numbers
 \newcommand{\C}{\ensuremath{\mathbb{C}}} % Complex numbers
@@ -59,7 +62,7 @@
 % -------------------------
    
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc}
 
 \usepackage{graphicx}
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
@@ -70,30 +73,30 @@
 
 \usepackage{booktabs}
 \usepackage{siunitx}
+\usepackage{tabularx}
 \usepackage{fancyvrb}
 \fvset{fontsize=\normalsize}
 \usepackage{multicol}
 \usepackage{lipsum}
 \usepackage[base]{babel}
 
-\usepackage{newclude} % Allows \include* (no page breaks)
-% \includeonly{representations} % ONLY recompile this section
+% Use caption for centered captions. 
+% floatrow and float are removed to avoid conflicts with tufte-book.
+\usepackage[font=small,labelfont=bf,justification=centering,skip=20pt]{caption}
 
 \usepackage{hyperref}
 \usepackage{cleveref} % MUST BE LAST!
 
 \begin{document}
 
-
 \maketitle
 
-\include*{abstract}
-\include*{notation}
-\include*{prerequisites}
-\include*{generators}
-\include*{representations}
-
-% sandbox.tex
+\include{introduction}
+\include{ontology}
+\include{notation}
+\include{prerequisites}
+\include{generators}
+\include{representations}
 
 \bibliography{sample-handout}
 \bibliographystyle{plainnat}
