@@ -141,3 +141,162 @@ $SO(3)$ & $\mathbb{R}^3$ & Standard Rot ($R \vec{v}$) & \textbf{Act} \\
 
     \end{tikzpicture}
 \end{fullwidth}
+
+\chapter{Adjoint and Fundamental Representations}
+
+\section{The Adjoint Representation of \su{2}}
+The adjoint representation realization $\mathfrak{so}(3)$ is spanned by $3\times 3$ real skew-symmetric matrices. These generators satisfy the same commutation relations as the abstract algebra.
+
+\subsection{Generators}
+The basis $J = \{J_1, J_2, J_3\}$ is derived from the structure constants $\epsilon_{ijk}$.
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+J = {
+  {{0, 0, 0}, {0, 0, -1}, {0, 1, 0}},
+  {{0, 0, 1}, {0, 0, 0}, {-1, 0, 0}},
+  {{0, -1, 0}, {1, 0, 0}, {0, 0, 0}}
+};
+\end{Verbatim}
+
+\subsection{Cyclic Commutation}
+We verify that $[J_i, J_j] = \epsilon_{ijk} J_k$. This cyclic property defines the "DNA" of 3D rotations.
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+comm[M_][i_, j_] := M[[i]].M[[j]] - M[[j]].M[[i]];
+commTest[M_][i_, j_, k_] := comm[M][i, j] == M[[k]];
+triples = NestList[RotateLeft, Range[3], 2];
+proof[And @@ commTest[J] @@@ triples] (* Returns True *)
+\end{Verbatim}
+
+\section{The Fundamental Representation of \su{2}}
+The fundamental representation is the "native" $2\times 2$ complex realization, spanned by the Pauli matrices.
+
+\subsection{Definition}
+The generators $T_k$ are defined as $T_k = -\frac{i}{2}\sigma_k$.
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+T = (-I/2) PauliMatrix /@ {1, 2, 3};
+proof[And @@ commTest[T] @@@ triples] (* Returns True *)
+\end{Verbatim}
+
+\section{The Commutative Diagram Proof}
+The mapping $\pi: \mathfrak{su}(2) \to \mathfrak{so}(3)$ preserves the exponential structure. This means that mapping an algebra element and then exponentiating is equivalent to exponentiating first and then mapping the group element.
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+(* Commutative Diagram Check *)
+commutativeDiagram[X_] := FullSimplify[
+  MatrixExp[\[Pi]Map[X]] == ComplexExpand[\[CapitalPi]map[MatrixExp[X]]]
+];
+proof[And @@ commutativeDiagram /@ (\[Theta] T)] (* Returns True *)
+\end{Verbatim}
+
+\section{The Big Beautiful Example: Adjoint Action}
+This final proof demonstrates that rotating a real vector $\vec{v} \in \mathbb{R}^3$ using an $SO(3)$ matrix $R$ is identical to the Adjoint Action of $SU(2)$ on the corresponding matrix-vector $v_{\mathfrak{h}_0} \in \mathfrak{h}_0$.
+
+\subsection{Equivalence of Results}
+We build a rotation from Euler-like angles $(\alpha, \beta, \gamma)$ and compare the two paths.
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+vR3 = {x, y, z};
+{\[Phi], \[Theta], \[Psi]} = {\[Alpha], \[Beta], \[Gamma]}; 
+
+(* Path 1: SO(3) Rotation *)
+R = MatrixExp[\[Phi] J[[3]]] . MatrixExp[\[Theta] J[[2]]] . MatrixExp[\[Psi] J[[1]]];
+vPrimeR3 = Simplify[R . vR3];
+
+(* Path 2: SU(2) Adjoint Action *)
+Q = MatrixExp[\[Phi] T[[3]]] . MatrixExp[\[Theta] T[[2]]] . MatrixExp[\[Psi] T[[1]]];
+vPrimeH0 = Simplify[ComplexExpand[Q . toH0[vR3] . ConjugateTranspose[Q]]];
+
+(* The Bridge *)
+proof[Simplify[fromH0[vPrimeH0] == vPrimeR3]] (* Returns True *)
+\end{Verbatim}
+
+\chapter{Formal Proofs and Interleaved Mathematica Verification}
+
+\section{Adjoint Representation Algebra}
+The adjoint representation $\mathfrak{so}(3)$ is characterized by $3\times 3$ real skew-symmetric matrices. 
+
+\subsection{Generator Definition}
+The generators $J_k$ are defined such that they satisfy the relation $[J_i, J_j] = \epsilon_{ijk} J_k$. In the standard basis:
+\begin{equation*}
+    J_1 = \begin{pmatrix} 0 & 0 & 0 \\ 0 & 0 & -1 \\ 0 & 1 & 0 \end{pmatrix}, \quad
+    J_2 = \begin{pmatrix} 0 & 0 & 1 \\ 0 & 0 & 0 \\ -1 & 0 & 0 \end{pmatrix}, \quad
+    J_3 = \begin{pmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix}
+\end{equation*}
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+J = {
+  {{0, 0, 0}, {0, 0, -1}, {0, 1, 0}},
+  {{0, 0, 1}, {0, 0, 0}, {-1, 0, 0}},
+  {{0, -1, 0}, {1, 0, 0}, {0, 0, 0}}
+};
+\end{Verbatim}
+
+\subsection{Verification of the Lie Bracket}
+We verify the cyclic commutation relations $[J_1, J_2] = J_3$, $[J_2, J_3] = J_1$, and $[J_3, J_1] = J_2$.
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+comm[M_][i_, j_] := M[[i]].M[[j]] - M[[j]].M[[i]];
+triples = NestList[RotateLeft, Range[3], 2];
+And @@ (comm[J][#[[1]], #[[2]]] == J[[#[[3]]]] & /@ triples) (* Returns True *)
+\end{Verbatim}
+
+\section{Fundamental Representation Algebra}
+The fundamental representation $\mathfrak{su}(2)$ is spanned by $2\times 2$ complex traceless anti-Hermitian matrices.
+
+\subsection{Definition via Pauli Matrices}
+The generators $T_k$ are proportional to the Pauli matrices $\sigma_k$:
+\begin{equation*}
+    T_k \definedas -\frac{i}{2}\sigma_k
+\end{equation*}
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+T = (-I/2) PauliMatrix /@ {1, 2, 3};
+\end{Verbatim}
+
+\subsection{Trace Inner Product and Metric}
+The Killing form on $\mathfrak{su}(2)$ is proportional to the trace inner product. For the $T$ basis, we have $\trace{T_i T_j} = -\frac{1}{2}\delta_{ij}$.
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+Table[Tr[T[[i]] . T[[j]]], {i, 3}, {j, 3}] // MatrixForm
+(* Returns -1/2 IdentityMatrix[3] *)
+\end{Verbatim}
+
+\section{The Adjoint Action Bridge}
+The core isomorphism between $SU(2)$ and $SO(3)$ is realized by the adjoint action of the group on its own algebra.
+
+\subsection{Mapping Matrices to Vectors}
+An element $X \in \mathfrak{su}(2)$ can be mapped to a vector $\vec{v} \in \mathbb{R}^3$ using the trace projection:
+\begin{equation*}
+    v_k = -2 \trace{X \cdot T_k}
+\end{equation*}
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+fromH0[mat_] := Table[-2 Tr[mat . T[[k]]], {k, 3}];
+toH0[v_List] := Total[v * T];
+\end{Verbatim}
+
+\subsection{Symbolic Proof of Rotational Equivalence}
+Let $Q \in SU(2)$ be a group element and $v \in \mathfrak{h}_0$ be a matrix-vector. The adjoint action $Q v Q^\dagger$ produces a new matrix-vector $v' \in \mathfrak{h}_0$. We prove this is equivalent to the $SO(3)$ rotation $R \vec{v}$.
+
+\begin{equation*}
+    \text{to}\mathfrak{h}_0(R \cdot \vec{v}) \mustbe Q \cdot \text{to}\mathfrak{h}_0(\vec{v}) \cdot Q^\dagger
+\end{equation*}
+
+\begin{Verbatim}[frame=single, label=Mathematica]
+(* Parameters *)
+vR3 = {x, y, z};
+{\[Phi], \[Theta], \[Psi]} = {\[Alpha], \[Beta], \[Gamma]};
+
+(* Path A: SO(3) *)
+R = MatrixExp[\[Phi] J[[3]]] . MatrixExp[\[Theta] J[[2]]] . MatrixExp[\[Psi] J[[1]]];
+vPrimeSO3 = Simplify[R . vR3];
+
+(* Path B: SU(2) Adjoint *)
+Q = MatrixExp[\[Phi] T[[3]]] . MatrixExp[\[Theta] T[[2]]] . MatrixExp[\[Psi] T[[1]]];
+vPrimeSU2 = Simplify[ComplexExpand[Q . toH0[vR3] . ConjugateTranspose[Q]]];
+
+(* QED Verification *)
+Simplify[fromH0[vPrimeSU2] == vPrimeSO3] (* Returns True *)
+\end{Verbatim}
