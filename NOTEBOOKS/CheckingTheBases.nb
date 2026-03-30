@@ -9534,7 +9534,7 @@ SpellingDictionaries->{"CorrectWords"->{
   "\[CloseCurlyQuote]s", "brack"}},
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"73570659-1074-4326-a401-8941f054cd0f"
+ExpressionUUID->"bb089ee7-a30d-423d-9cb2-903149af32c7"
 ]
 (* End of Notebook Content *)
 
@@ -9551,14 +9551,14 @@ Cell[CellGroupData[{
 Cell[576, 22, 277, 4, 96, "Title",ExpressionUUID->"657fee8b-ea6a-4178-8803-59dfb4c6d771"],
 Cell[856, 28, 309, 5, 30, "Author",ExpressionUUID->"883e0006-3f27-45b6-a072-b18b2de76d67"],
 Cell[1168, 35, 424, 7, 30, "Author",ExpressionUUID->"9360e31b-0239-4681-bcde-7928e4511e3b"],
-Cell[1595, 44, 1686, 36, 77, "Text",ExpressionUUID->"63237b43-2266-48ad-8ed6-9d7e1a587b45"],
+Cell[1595, 44, 1686, 36, 55, "Text",ExpressionUUID->"63237b43-2266-48ad-8ed6-9d7e1a587b45"],
 Cell[3284, 82, 734, 12, 33, "Text",ExpressionUUID->"dc754e15-5a68-4a2e-9d06-5c2154cf13ab"],
 Cell[CellGroupData[{
 Cell[4043, 98, 158, 3, 66, "Section",ExpressionUUID->"93f27e63-35e9-4e83-9ac2-a470bcbab09d"],
 Cell[4204, 103, 1531, 34, 126, "Input",ExpressionUUID->"7354b7d2-d247-4de4-af14-1ad59d14ea7a"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[5772, 142, 208, 4, 50, "Section",ExpressionUUID->"84066372-721d-4d4b-a992-9e9f4b584994"],
+Cell[5772, 142, 208, 4, 52, "Section",ExpressionUUID->"84066372-721d-4d4b-a992-9e9f4b584994"],
 Cell[5983, 148, 3526, 78, 121, "Text",ExpressionUUID->"ed5dc775-6822-4aaa-a9b4-2d88cf044fdf"],
 Cell[CellGroupData[{
 Cell[9534, 230, 213, 4, 53, "Subsection",ExpressionUUID->"86222c04-8adc-49e9-8a83-01df14164817"],
