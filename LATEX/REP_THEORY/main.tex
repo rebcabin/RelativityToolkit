@@ -1,5 +1,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % tufte-book with [no-fonts] and custom fontspec for lualatex
+%
+% Neovim / VimTeX Compilation Keybindings:
+% \ll : Compile (continuous mode)
+% \lv : View PDF (Skim)
+% \lc : Clean auxiliary files
+% \le : Toggle Errors (Quickfix)
+% \lk : Stop compilation
+%
+% Summary of LaTeX setup:
+%  * Project Path: ~/GitHub/RelativityToolkit/LATEX/REP_THEORY/main.tex
+%  * Compiler: latexmk (configured in init.lua with -lualatex, -shell-escape, etc.)
+%  * Viewer: Skim (configured via vim.g.vimtex_view_method = "skim")
+%  * Magic Comment: Your main.tex includes %! TEX program = lualatex, which confirms the engine choice.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %! TEX program = lualatex
 \documentclass[no-fonts,nols]{tufte-book} 
@@ -25,6 +38,7 @@
 \newcommand{\SO}[1]{\ensuremath{\mathrm{SO}(#1)}}
 \newcommand{\SU}[1]{\ensuremath{\mathrm{SU}(#1)}}
 \newcommand{\su}[1]{\ensuremath{\mathfrak{su}(#1)}}
+\newcommand{\so}[1]{\ensuremath{\mathfrak{so}(#1)}}
 
 \newcommand{\adjrep}{\ensuremath{\operatorname{rep}_\mathrm{adj}}}
 \newcommand{\fndrep}{\ensuremath{\operatorname{rep}_\mathrm{fnd}}}
@@ -68,8 +82,10 @@
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 \graphicspath{{graphics/}}
 
-\title{Notes on Representation Theory}
+\title[Notes on Representation Theory]{Notes on \\ Representation Theory}
 \author{Brian Beckman}
+\date{2026}
+
 
 \usepackage{booktabs}
 \usepackage{siunitx}
@@ -84,6 +100,8 @@
 % floatrow and float are removed to avoid conflicts with tufte-book.
 \usepackage[font=small,labelfont=bf,justification=centering,skip=20pt]{caption}
 
+\usepackage{natbib}
+\bibliographystyle{plainnat}
 \usepackage{hyperref}
 \usepackage{cleveref} % MUST BE LAST!
 
@@ -98,7 +116,7 @@
 \include{generators}
 \include{representations}
 
+\nocite{*}
 \bibliography{sample-handout}
-\bibliographystyle{plainnat}
 
 \end{document}

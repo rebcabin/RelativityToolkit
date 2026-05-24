@@ -124,7 +124,7 @@ space $V = \mathbb{C}^2$ (the space of spinors).
 \subsection{The Adjoint Pair (Adjoint Action)}
 The $3 \times 3$ representation is the \firstmention{adjoint representation}.
 It describes how the group \SU{2} acts on its own Lie algebra
-$\mathfrak{su}(2)$.
+\su{2}.
 \begin{itemize}[noitemsep]
     \item \textbf{Group Level}: $\Pi_{\text{adj}}(Q)$ is the $3 \times 3$ rotation matrix in \SO{3}.
     \item \textbf{Algebra Level}: $\pi_{\text{adj}}(X)$ is the $3 \times 3$ matrix of structure 
@@ -136,8 +136,8 @@ $\mathfrak{su}(2)$.
 \begin{remark}
 Note the ``squaring'' relationship: The adjoint representation is (roughly) the
 product of two fundamental representations ($Q \dots Q^\dagger$). This is why
-\SO{3} is the adjoint group of \SU{2}. It is also why spinors ($SU(2)$) are the
-"square root" of vectors ($SO(3)$), and why it takes a $4\pi$ rotation to
+\SO{3} is the adjoint group of \SU{2}. It is also why spinors (\SU{2}) are the
+"square root" of vectors (\SO{3}), and why it takes a $4\pi$ rotation to
 return a spinor to its original state, while $2\pi$ suffices for a vector.
 Another view is that the relationship between the fundamental and adjoint
 representations explains the \firstmention{double covering} of \SO{3} by \SU{2}.
@@ -153,7 +153,7 @@ representations explains the \firstmention{double covering} of \SO{3} by \SU{2}.
         \node at (1.5, -0.8) {\footnotesize \textbf{Fundamental (Spin-1/2)}};
 
         % Adjoint World
-        \node (vec) [below=1.5cm of spinor] {$X \in \mathfrak{su}(2)$};
+        \node (vec) [below=1.5cm of spinor] {$X \in \su{2}$};
         \node (vec_rot) [right=of vec] {$QXQ^\dagger$};
         \draw[->] (vec) to node {Adjoint} (vec_rot);
         \node at (1.5, -3.2) {\footnotesize \textbf{Adjoint (Spin-1)}};
@@ -169,7 +169,7 @@ representations explains the \firstmention{double covering} of \SO{3} by \SU{2}.
             \end{minipage}
         };
     \end{tikzpicture}
-    \caption{Direct vs. Adjoint actions of $SU(2)$.}
+    \caption{Direct vs. Adjoint actions of \SU{2}.}
 \end{figure}
 
 \begin{fact}

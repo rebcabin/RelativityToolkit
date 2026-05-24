@@ -18,22 +18,22 @@
 \toprule
 \textbf{Short Name} & \textbf{Item Description} & \textbf{Context / Physical Interpretation} \\ 
 \midrule
-$\mathfrak{g}$ & Abs $\mathfrak{su}(2)$ & Abstract Lie algebra: $[E_i, E_j] = \epsilon_{ijk}E_k$. \\ 
-$\mathfrak{su}(2)_2$ & $\mathfrak{su}(2)$ 2x2 Rep & Complex matrix realization (Generators $T_k$). \\ 
-$\mathfrak{so}(3)_3$ & $\mathfrak{so}(3)$ 3x3 Rep & Real matrix realization (Generators $J_k$). \\ 
-$SU(2)$ & $SU(2)$ Group & $2 \times 2$ unitary matrices, $\det=1$. \\ 
-$SO(3)$ & $SO(3)$ Group & $3 \times 3$ orthogonal matrices, $\det=1$. \\ \addlinespace
-$\mathbb{V}_{spin}$ & Spinors ($\mathbb{C}^2$) & Space for Fund Act of $SU(2)$. \\ 
-$\mathbb{R}^3$ & Real $\mathbb{R}^3$ & Euclidean space of physical 3-vectors. \\ 
-$\mathfrak{h}_0$ & Mat-Vecs ($h_0$) & Traceless Hermitian $2 \times 2$ matrices. \\ 
-$\sigma_k$ & Pauli Matrix & Basis $\{\sigma_1, \sigma_2, \sigma_3\}$ for the Pauli Map. \\ 
-$f_{ijk}$ & Struct Consts & Numbers $\epsilon_{ijk}$ characterizing the bracket. \\ \addlinespace
-$\mathcal{Z}$ & Center & The kernel $\{I, -I\}$ of the $SU(2) \to SO(3)$ map. \\ 
-$S^3$ & Topo $S^3$ & Topology of $SU(2)$ (3-sphere). \\ 
-$\mathbb{RP}^3$ & Topo $\mathbb{RP}^3$ & Topology of $SO(3)$ (Projective space). \\ 
-$ad_X$ & Infit. Ad & Algebra action $[X, \cdot]$. \\ 
-$Ad_Q$ & Finite Ad & Group action $Q \cdot Z \cdot Q^\dagger$. \\ \addlinespace
-$B$ & Killing Form & Trace inner product for coordinate extraction. \\ 
+$\mathfrak{g}$        & Abs \su{2}                 & Abstract Lie algebra: $[E_i, E_j] = \epsilon_{ijk}E_k$ \\ 
+$\su{2}_2$            & \su{2} 2x2 Rep             & Complex matrix realization (Generators $T_k$) \\ 
+$\so{3}_3$            & \so{3} 3x3 Rep             & Real matrix realization (Generators $J_k$) \\ 
+\SU{2}                & \SU{2} Group               & $2 \times 2$ unitary matrices, $\det=1$ \\ 
+\SO{3}                & \SO{3} Group               & $3 \times 3$ orthogonal matrices, $\det=1$ \\ \addlinespace
+$\mathbb{V}_{spin}$   & Spinors ($\mathbb{C}^2$)   & Space for Fundamental Action of \SU{2} \\ 
+$\mathbb{R}^3$        & Real $\mathbb{R}^3$        & Euclidean space of physical 3-vectors \\ 
+$\mathfrak{h}_\sigma$ & Mat-Vecs                   & Traceless Hermitian $2 \times 2$ matrices \\ 
+$\sigma_k$            & Pauli Matrix               & Basis $\{\sigma_1, \sigma_2, \sigma_3\}$ for the Pauli Map \\ 
+$f_{ijk}$             & Struct Consts              & Numbers characterizing the bracket \\ \addlinespace
+$\mathcal{Z}$         & Center                     & The kernel $\{I, -I\}$ of the $\SU{2} \to \SO{3}$ map \\ 
+$S^3$                 & Topo $S^3$                 & Topology of \SU{2} (3-sphere) \\ 
+$\mathbb{RP}^3$       & Topo $\mathbb{RP}^3$       & Topology of \SO{3} (Projective space) \\ 
+$ad_X$                & Infit. Ad                  & Adjoint action $[X, \cdot]$ \\ 
+$Ad_Q$                & Finite Ad                  & Group action $Q \cdot Z \cdot Q^\dagger$ \\ \addlinespace
+$B$                   & Killing Form               & Trace inner product for coordinate extraction \\ 
 \bottomrule
 \end{tabular*}
 \end{fullwidth}
@@ -49,21 +49,21 @@ $B$ & Killing Form & Trace inner product for coordinate extraction. \\
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llll}
 \toprule
-\textbf{Short Name} & \textbf{Target} & \textbf{Name / Mechanism} & \textbf{Type} \\ 
+\textbf{Source Set}  & \textbf{Target Set} & \textbf{Name / Mechanism} & \textbf{Type} \\ 
 \midrule
-$\mathfrak{su}(2)_2$ & $SU(2)$ & \texttt{MatrixExp} & \textbf{Surj} \\ 
-$\mathfrak{so}(3)_3$ & $SO(3)$ & \texttt{MatrixExp} & \textbf{Surj} \\ 
-$SU(2)$ & $SO(3)$ & Ad Rep / 2-to-1 Cover & \textbf{Surj (2:1)} \\ 
-$\mathcal{Z}$ & $SU(2)$ & Center inclusion & \textbf{Inj} \\ 
-$\mathbb{R}^3$ & $\mathfrak{h}_0$ & Pauli Map ($\vec{v} \cdot \vec{\sigma}$) & \textbf{Bij} \\ \addlinespace
-$\mathfrak{h}_0$ & $\mathbb{R}^3$ & Trace Projection (\texttt{getTCoeffs}) & \textbf{Bij} \\ 
-$\mathfrak{su}(2)_2$ & $\mathfrak{so}(3)_3$ & Algebra Ad Rep (\texttt{TtoJ}) & \textbf{Bij} \\ 
-$\mathfrak{g}$ & $f_{ijk}$ & Basis Mapping & \textbf{Surj} \\ 
-$SU(2)$ & $S^3$ & Topo ID & \textbf{Bij (Diffeo)} \\ 
-$SO(3)$ & $\mathbb{RP}^3$ & Topo ID & \textbf{Bij (Diffeo)} \\ \addlinespace
-$SU(2)$ & $\mathbb{V}_{spin}$ & Fund Act ($Q \psi$) & \textbf{Act} \\ 
-$SU(2)$ & $\mathfrak{h}_0$ & Ad Act ($Q Z Q^\dagger$) & \textbf{Act} \\ 
-$SO(3)$ & $\mathbb{R}^3$ & Standard Rot ($R \vec{v}$) & \textbf{Act} \\ 
+$\su{2}_2$            & \SU{2}                 & \texttt{MatrixExp}                       & \textbf{Surj} \\ 
+$\so{3}_3$            & \SO{3}                 & \texttt{MatrixExp}                       & \textbf{Surj} \\ 
+\SU{2}                & \SO{3}                 & Adjoint Rep / 2-to-1 Cover               & \textbf{Surj (2:1)} \\ 
+$\mathcal{Z}$         & \SU{2}                 & Center inclusion                         & \textbf{Inj} \\ 
+$\mathbb{R}^3$        & $\mathfrak{h}_\sigma$  & Pauli Map ($\vec{v} \cdot \vec{\sigma}$) & \textbf{Bij} \\ \addlinespace
+$\mathfrak{h}_\sigma$ & $\mathbb{R}^3$         & Trace Projection (\texttt{getTCoeffs})   & \textbf{Bij} \\ 
+$\su{2}_2$            & $\so{3}_3$             & Algebra Ad Rep (\texttt{TtoJ})           & \textbf{Bij} \\ 
+$\mathfrak{g}$        & $f_{ijk}$              & Basis Mapping                            & \textbf{Surj} \\ 
+\SU{2}                & $S^3$                  & Topo ID                                  & \textbf{Bij (Diffeo)} \\ 
+\SO{3}                & $\mathbb{RP}^3$        & Topo ID                                  & \textbf{Bij (Diffeo)} \\ \addlinespace
+\SU{2}                & $\mathbb{V}_{spin}$    & Fund Act ($Q \psi$)                      & \textbf{Act} \\ 
+\SU{2}                & $\mathfrak{h}_\sigma$  & Ad Act ($Q Z Q^\dagger$)                 & \textbf{Act} \\ 
+\SO{3}                & $\mathbb{R}^3$         & Standard Rot ($R \vec{v}$)               & \textbf{Act} \\ 
 \bottomrule
 \end{tabular*}
 \end{fullwidth}
@@ -74,7 +74,7 @@ $SO(3)$ & $\mathbb{R}^3$ & Standard Rot ($R \vec{v}$) & \textbf{Act} \\
 
 \begin{fullwidth}
     \centering
-    \captionof{figure}{Ontology of Objects and Mappings}\label{fig:bridge_ontology}
+    \captionof{figure}{Ontology of Objects and Mappings for Rotations in 3D}\label{fig:bridge_ontology}
     \vspace{10pt}
     \begin{tikzpicture}[
         scale=0.85, every node/.style={scale=0.85},
@@ -90,16 +90,16 @@ $SO(3)$ & $\mathbb{R}^3$ & Standard Rot ($R \vec{v}$) & \textbf{Act} \\
     % Pillars: Left (Spin/Complex) and Right (Vector/Real)
     
     % Level 1: Core Algebra
-    \node[block] (g) {Abstract $\mathfrak{su}(2)$};
+    \node[block] (g) {Abstract \su{2}};
     \node[block] (f) [above=1.2cm of g] {$f_{ijk}$ Constants};
 
     % Level 2: Matrix Representations
-    \node[block] (su2) [below left=1.5cm and 1.5cm of g] {$\mathfrak{su}(2)$ 2x2 ($T$)};
-    \node[block] (so3) [below right=1.5cm and 1.5cm of g] {$\mathfrak{so}(3)$ 3x3 ($J$)};
+    \node[block] (su2) [below left=1.5cm and 1.5cm of g] {\su{2} 2x2 ($T$)};
+    \node[block] (so3) [below right=1.5cm and 1.5cm of g] {\so{3} 3x3 ($J$)};
 
     % Level 3: Groups
-    \node[block] (SU2) [below=2.0cm of su2] {$SU(2)$ Group};
-    \node[block] (SO3) [below=2.0cm of so3] {$SO(3)$ Group};
+    \node[block] (SU2) [below=2.0cm of su2] {\SU{2} Group};
+    \node[block] (SO3) [below=2.0cm of so3] {\SO{3} Group};
     \node[block] (Center) [left=0.8cm of SU2] {Center $\{I, -I\}$};
 
     % Level 4: Final Objects (The "Wings" Layout)
@@ -107,7 +107,7 @@ $SO(3)$ & $\mathbb{R}^3$ & Standard Rot ($R \vec{v}$) & \textbf{Act} \\
     \node[block] (R3) [below=2.0cm of SO3] {Real $\mathbb{R}^3$};
     
     % Centered between the pillars
-    \node[block] (h0) at ($(Spin)!0.5!(R3)$) {Mat-Vecs ($\mathfrak{h}_0$)};
+    \node[block] (h0) at ($(Spin)!0.5!(R3)$) {Mat-Vecs ($\mathfrak{h}_\sigma$)};
     
     % Far outer wings for topology
     \node[block] (S3) [left=0.8cm of Spin] {$S^3$ Sphere};
@@ -145,80 +145,113 @@ $SO(3)$ & $\mathbb{R}^3$ & Standard Rot ($R \vec{v}$) & \textbf{Act} \\
 \chapter{Adjoint and Fundamental Representations}
 
 \section{The Adjoint Representation of \su{2}}
-The adjoint representation realization $\mathfrak{so}(3)$ is spanned by $3\times 3$ real skew-symmetric matrices. These generators satisfy the same commutation relations as the abstract algebra.
+Consider two representations of the abstract Lie Algebra \su{2}:
+the \textit{adjoint representation} \so{3} and the \textit{fundamental representation}
+\su{2}, which happens to have the same name as the abstract algebra.
 
-\subsection{Generators}
-The basis $J = \{J_1, J_2, J_3\}$ is derived from the structure constants $\epsilon_{ijk}$.
+The \textbf{adjoint representation} \so{3} is spanned by the real
+\textbf{generators} $J_k$, defined by the specific structure constants $[J_i,
+J_j] = \epsilon_{ijk} J_k$. These structure constants model the \textit{cross
+product}, which is the way of describing rotation in elementary physics. In the standard
+basis of the 9D vector space of $3\times{}3$ real matrices, the $J_k$ are:
+
+\begin{equation*}
+    J_1 = \begin{pmatrix} 0 &  0 & 0 \\ 0 & 0 & -1 \\  0 & 1 & 0 \end{pmatrix}, \quad
+    J_2 = \begin{pmatrix} 0 &  0 & 1 \\ 0 & 0 &  0 \\ -1 & 0 & 0 \end{pmatrix}, \quad
+    J_3 = \begin{pmatrix} 0 & -1 & 0 \\ 1 & 0 &  0 \\  0 & 0 & 0 \end{pmatrix}
+\end{equation*}
 
 \begin{Verbatim}[frame=single, label=Mathematica]
 J = {
-  {{0, 0, 0}, {0, 0, -1}, {0, 1, 0}},
-  {{0, 0, 1}, {0, 0, 0}, {-1, 0, 0}},
-  {{0, -1, 0}, {1, 0, 0}, {0, 0, 0}}
+  {{0,  0, 0}, {0, 0, -1}, { 0, 1, 0}},
+  {{0,  0, 1}, {0, 0,  0}, {-1, 0, 0}},
+  {{0, -1, 0}, {1, 0,  0}, { 0, 0, 0}}
 };
 \end{Verbatim}
 
+\noindent These $3\times 3$, real, skew-symmetric matrices satisfy the
+same commutation relations as the members of the abstract algebra \su{2}.
+
 \subsection{Cyclic Commutation}
-We verify that $[J_i, J_j] = \epsilon_{ijk} J_k$. This cyclic property defines the "DNA" of 3D rotations.
+We verify that $[J_i, J_j] = \epsilon_{ijk} J_k$. 
 
 \begin{Verbatim}[frame=single, label=Mathematica]
 comm[M_][i_, j_] := M[[i]].M[[j]] - M[[j]].M[[i]];
 commTest[M_][i_, j_, k_] := comm[M][i, j] == M[[k]];
 triples = NestList[RotateLeft, Range[3], 2];
-proof[And @@ commTest[J] @@@ triples] (* Returns True *)
+proof[And @@ commTest[J] @@@ triples] 
 \end{Verbatim}
 
 \section{The Fundamental Representation of \su{2}}
-The fundamental representation is the "native" $2\times 2$ complex realization, spanned by the Pauli matrices.
+The fundamental representation is the most faithful. It is a $2\times 2$
+complex representation, spanned by the Pauli matrices. It is an isomorphism,
+unlike the adjoint representation. The adjoint representation maps two
+different members of \su{2} to one matrix.
 
 \subsection{Definition}
 The generators $T_k$ are defined as $T_k = -\frac{i}{2}\sigma_k$.
+They also enjoy cyclic commutation.
 
 \begin{Verbatim}[frame=single, label=Mathematica]
 T = (-I/2) PauliMatrix /@ {1, 2, 3};
-proof[And @@ commTest[T] @@@ triples] (* Returns True *)
+proof[And @@ commTest[T] @@@ triples] 
 \end{Verbatim}
 
 \section{The Commutative Diagram Proof}
-The mapping $\pi: \mathfrak{su}(2) \to \mathfrak{so}(3)$ preserves the exponential structure. This means that mapping an algebra element and then exponentiating is equivalent to exponentiating first and then mapping the group element.
+The mapping $\pi: \su{2} \to \so{3}$ preserves the
+exponential structure. This means that mapping an algebra element and then
+exponentiating is equivalent to exponentiating first and then mapping the group
+element.
 
 \begin{Verbatim}[frame=single, label=Mathematica]
 (* Commutative Diagram Check *)
 commutativeDiagram[X_] := FullSimplify[
-  MatrixExp[\[Pi]Map[X]] == ComplexExpand[\[CapitalPi]map[MatrixExp[X]]]
-];
-proof[And @@ commutativeDiagram /@ (\[Theta] T)] (* Returns True *)
+  MatrixExp[πMap[X]] == ComplexExpand[Πmap[MatrixExp[X]]]
+  ];
+proof[And @@ commutativeDiagram /@ (θ T)] 
 \end{Verbatim}
 
 \section{The Big Beautiful Example: Adjoint Action}
-This final proof demonstrates that rotating a real vector $\vec{v} \in \mathbb{R}^3$ using an $SO(3)$ matrix $R$ is identical to the Adjoint Action of $SU(2)$ on the corresponding matrix-vector $v_{\mathfrak{h}_0} \in \mathfrak{h}_0$.
+This final proof demonstrates that rotating a real vector $\vec{v} \in
+\mathbb{R}^3$ using an \SO{3} matrix $R$ is identical to the Adjoint Action of
+\SU{2} on the corresponding matrix-vector $v_{\mathfrak{h}_\sigma} \in
+\mathfrak{h}_\sigma$.
 
 \subsection{Equivalence of Results}
-We build a rotation from Euler-like angles $(\alpha, \beta, \gamma)$ and compare the two paths.
+We build a rotation from Euler-like angles $(\alpha, \beta, \gamma)$ and
+then compare the two paths through the commutation diagram.
 
+\clearpage
 \begin{Verbatim}[frame=single, label=Mathematica]
 vR3 = {x, y, z};
-{\[Phi], \[Theta], \[Psi]} = {\[Alpha], \[Beta], \[Gamma]}; 
+{φ, θ, ψ} = {α, β, γ}; 
 
-(* Path 1: SO(3) Rotation *)
-R = MatrixExp[\[Phi] J[[3]]] . MatrixExp[\[Theta] J[[2]]] . MatrixExp[\[Psi] J[[1]]];
+(* Path 1: \SO{3} Rotation *)
+R = MatrixExp[φ J[[3]]] . 
+    MatrixExp[θ J[[2]]] . 
+    MatrixExp[ψ J[[1]]];
 vPrimeR3 = Simplify[R . vR3];
 
-(* Path 2: SU(2) Adjoint Action *)
-Q = MatrixExp[\[Phi] T[[3]]] . MatrixExp[\[Theta] T[[2]]] . MatrixExp[\[Psi] T[[1]]];
-vPrimeH0 = Simplify[ComplexExpand[Q . toH0[vR3] . ConjugateTranspose[Q]]];
+(* Path 2: \SU{2} Adjoint Action *)
+Q = MatrixExp[φ T[[3]]] . 
+    MatrixExp[θ T[[2]]] . 
+    MatrixExp[ψ T[[1]]];
+vPrimeH0 = Simplify[ComplexExpand[
+    Q . toH0[vR3] . ConjugateTranspose[Q]]];
 
 (* The Bridge *)
-proof[Simplify[fromH0[vPrimeH0] == vPrimeR3]] (* Returns True *)
+proof[Simplify[fromH0[vPrimeH0] == vPrimeR3]] 
 \end{Verbatim}
 
-\chapter{Formal Proofs and Interleaved Mathematica Verification}
+\chapter{Formal Proofs and Mathematica Verification}
 
 \section{Adjoint Representation Algebra}
-The adjoint representation $\mathfrak{so}(3)$ is characterized by $3\times 3$ real skew-symmetric matrices. 
+The adjoint representation \so{3} is characterized by $3\times 3$
+real skew-symmetric matrices. 
 
 \subsection{Generator Definition}
-The generators $J_k$ are defined such that they satisfy the relation $[J_i, J_j] = \epsilon_{ijk} J_k$. In the standard basis:
+The generators $J_k$ are defined such that they satisfy the relation $[J_i,
+J_j] = \epsilon_{ijk} J_k$. In the standard basis:
 \begin{equation*}
     J_1 = \begin{pmatrix} 0 & 0 & 0 \\ 0 & 0 & -1 \\ 0 & 1 & 0 \end{pmatrix}, \quad
     J_2 = \begin{pmatrix} 0 & 0 & 1 \\ 0 & 0 & 0 \\ -1 & 0 & 0 \end{pmatrix}, \quad
@@ -239,11 +272,11 @@ We verify the cyclic commutation relations $[J_1, J_2] = J_3$, $[J_2, J_3] = J_1
 \begin{Verbatim}[frame=single, label=Mathematica]
 comm[M_][i_, j_] := M[[i]].M[[j]] - M[[j]].M[[i]];
 triples = NestList[RotateLeft, Range[3], 2];
-And @@ (comm[J][#[[1]], #[[2]]] == J[[#[[3]]]] & /@ triples) (* Returns True *)
+And @@ (comm[J][#[[1]], #[[2]]] == J[[#[[3]]]] & /@ triples) 
 \end{Verbatim}
 
 \section{Fundamental Representation Algebra}
-The fundamental representation $\mathfrak{su}(2)$ is spanned by $2\times 2$ complex traceless anti-Hermitian matrices.
+The fundamental representation \su{2} is spanned by $2\times 2$ complex traceless anti-Hermitian matrices.
 
 \subsection{Definition via Pauli Matrices}
 The generators $T_k$ are proportional to the Pauli matrices $\sigma_k$:
@@ -256,7 +289,7 @@ T = (-I/2) PauliMatrix /@ {1, 2, 3};
 \end{Verbatim}
 
 \subsection{Trace Inner Product and Metric}
-The Killing form on $\mathfrak{su}(2)$ is proportional to the trace inner product. For the $T$ basis, we have $\trace{T_i T_j} = -\frac{1}{2}\delta_{ij}$.
+The Killing form on \su{2} is proportional to the trace inner product. For the $T$ basis, we have $\trace{T_i T_j} = -\frac{1}{2}\delta_{ij}$.
 
 \begin{Verbatim}[frame=single, label=Mathematica]
 Table[Tr[T[[i]] . T[[j]]], {i, 3}, {j, 3}] // MatrixForm
@@ -264,10 +297,10 @@ Table[Tr[T[[i]] . T[[j]]], {i, 3}, {j, 3}] // MatrixForm
 \end{Verbatim}
 
 \section{The Adjoint Action Bridge}
-The core isomorphism between $SU(2)$ and $SO(3)$ is realized by the adjoint action of the group on its own algebra.
+The core isomorphism between \SU{2} and \SO{3} is realized by the adjoint action of the group on its own algebra.
 
 \subsection{Mapping Matrices to Vectors}
-An element $X \in \mathfrak{su}(2)$ can be mapped to a vector $\vec{v} \in \mathbb{R}^3$ using the trace projection:
+An element $X \in \su{2}$ can be mapped to a vector $\vec{v} \in \mathbb{R}^3$ using the trace projection:
 \begin{equation*}
     v_k = -2 \trace{X \cdot T_k}
 \end{equation*}
@@ -278,25 +311,25 @@ toH0[v_List] := Total[v * T];
 \end{Verbatim}
 
 \subsection{Symbolic Proof of Rotational Equivalence}
-Let $Q \in SU(2)$ be a group element and $v \in \mathfrak{h}_0$ be a matrix-vector. The adjoint action $Q v Q^\dagger$ produces a new matrix-vector $v' \in \mathfrak{h}_0$. We prove this is equivalent to the $SO(3)$ rotation $R \vec{v}$.
+Let $Q \in \SU{2}$ be a group element and $v \in \mathfrak{h}_\sigma$ be a matrix-vector. The adjoint action $Q v Q^\dagger$ produces a new matrix-vector $v' \in \mathfrak{h}_\sigma$. We prove this is equivalent to the \SO{3} rotation $R \vec{v}$.
 
 \begin{equation*}
-    \text{to}\mathfrak{h}_0(R \cdot \vec{v}) \mustbe Q \cdot \text{to}\mathfrak{h}_0(\vec{v}) \cdot Q^\dagger
+    \text{to}\mathfrak{h}_\sigma(R \cdot \vec{v}) \mustbe Q \cdot \text{to}\mathfrak{h}_\sigma(\vec{v}) \cdot Q^\dagger
 \end{equation*}
 
 \begin{Verbatim}[frame=single, label=Mathematica]
 (* Parameters *)
 vR3 = {x, y, z};
-{\[Phi], \[Theta], \[Psi]} = {\[Alpha], \[Beta], \[Gamma]};
+{φ, θ, ψ} = {α, β, γ};
 
-(* Path A: SO(3) *)
-R = MatrixExp[\[Phi] J[[3]]] . MatrixExp[\[Theta] J[[2]]] . MatrixExp[\[Psi] J[[1]]];
+(* Path A: \SO{3} *)
+R = MatrixExp[φ J[[3]]] . MatrixExp[θ J[[2]]] . MatrixExp[ψ J[[1]]];
 vPrimeSO3 = Simplify[R . vR3];
 
-(* Path B: SU(2) Adjoint *)
-Q = MatrixExp[\[Phi] T[[3]]] . MatrixExp[\[Theta] T[[2]]] . MatrixExp[\[Psi] T[[1]]];
+(* Path B: \SU{2} Adjoint *)
+Q = MatrixExp[φ T[[3]]] . MatrixExp[θ T[[2]]] . MatrixExp[ψ T[[1]]];
 vPrimeSU2 = Simplify[ComplexExpand[Q . toH0[vR3] . ConjugateTranspose[Q]]];
 
 (* QED Verification *)
-Simplify[fromH0[vPrimeSU2] == vPrimeSO3] (* Returns True *)
+Simplify[fromH0[vPrimeSU2] == vPrimeSO3] 
 \end{Verbatim}
