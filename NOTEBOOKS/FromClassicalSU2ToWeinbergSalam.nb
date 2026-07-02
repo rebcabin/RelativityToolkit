@@ -1,0 +1,4002 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[    171629,       3994]
+NotebookOptionsPosition[    149905,       3687]
+NotebookOutlinePosition[    151722,       3726]
+CellTagsIndexPosition[    151679,       3723]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Gauge Theory in \[ScriptCapitalU]\[ScriptCapitalD]", "Title",
+ CellChangeTimes->{{3.977345737052463*^9, 3.977345752398189*^9}, {
+  3.9775136521964283`*^9, 3.977513664408065*^9}, {3.9775381381170673`*^9, 
+  3.977538138292454*^9}, {3.97767222987831*^9, 3.977672236499715*^9}, {
+  3.9783428426341267`*^9, 3.978342854931329*^9}, {3.9786357543829813`*^9, 
+  3.9786357546559258`*^9}, {3.97881822565501*^9, 3.9788182420043793`*^9}, {
+  3.978992342861184*^9, 
+  3.9789923720650663`*^9}},ExpressionUUID->"c689ba04-2842-43d6-aa5b-\
+126f3039c9d7"],
+
+Cell["Brian Beckman", "Author",
+ CellChangeTimes->{{3.5011898003565187`*^9, 3.5011898164415183`*^9}, {
+  3.970503905858189*^9, 3.970503938930399*^9}, {3.9705040303289137`*^9, 
+  3.970504033015139*^9}},ExpressionUUID->"47dfe6fc-42fd-425b-b8f1-\
+171f01ffece7"],
+
+Cell["Feb 2026", "Author",
+ CellChangeTimes->{{3.970503954212903*^9, 3.97050395891148*^9}, {
+  3.972479129640115*^9, 3.9724791301125593`*^9}, {3.973546918457328*^9, 
+  3.973546918968728*^9}, {3.9762809550919313`*^9, 3.976280957806756*^9}, {
+  3.97889721918757*^9, 
+  3.978897219626444*^9}},ExpressionUUID->"f31d7393-2da6-4b45-8fa3-\
+4c2dd24714cb"],
+
+Cell[CellGroupData[{
+
+Cell["Abstract ", "Section",
+ CellChangeTimes->{{3.97889635012245*^9, 3.978896351879611*^9}, 
+   3.979349058650394*^9},ExpressionUUID->"01d70810-8ee9-4c00-848e-\
+4511290397ab"],
+
+Cell["\<\
+This notebook extends the Relativity Toolkit (v1.11.0) to basic Abelian \
+scalar gauge theory. We implement a generalized covariant derivative operator \
+that simultaneously processes spacetime geometry and internal phase geometry. \
+We demonstrate this implementation through four automated computational \
+proofs:\
+\>", "Text",
+ CellChangeTimes->{{3.980797480290036*^9, 
+  3.9807975153188868`*^9}},ExpressionUUID->"ffda4afc-61ff-426e-8851-\
+0168342cbfad"],
+
+Cell[TextData[{
+ StyleBox["Metric Compatibility",
+  FontSlant->"Italic"],
+ ": the Levi-Civita connection uniquely nulls the gradient of the metric (",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[Del]", "g"}], "=", "0"}], TraditionalForm]],ExpressionUUID->
+  "4f31d44a-a481-435d-9446-363ac6f292d6"],
+ ") "
+}], "Item",
+ CellChangeTimes->{
+  3.977513712847348*^9, {3.9775178669407883`*^9, 3.977517959906126*^9}, {
+   3.977517996418476*^9, 3.977518072452635*^9}, {3.9775181219359083`*^9, 
+   3.977518224156801*^9}, {3.9775359524035*^9, 3.977536075585163*^9}, {
+   3.97753737910937*^9, 3.977537384309*^9}, {3.97764405920399*^9, 
+   3.977644347525126*^9}, {3.977672253563974*^9, 3.977672266570442*^9}, {
+   3.977678754525832*^9, 3.977678800149303*^9}, {3.977746420549296*^9, 
+   3.977746648340251*^9}, 3.978342864699486*^9, {3.97889635568295*^9, 
+   3.9788965077541447`*^9}, {3.978896560927299*^9, 3.978896600989439*^9}, {
+   3.978992932929306*^9, 3.978992936364181*^9}, 3.979343339073921*^9, {
+   3.980075045880336*^9, 3.9800750566827908`*^9}, 
+   3.9808011619330587`*^9},ExpressionUUID->"431733cc-bbd6-4843-84b3-\
+1fb291abaa29"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"U", 
+    RowBox[{"(", "1", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "5e74591b-b535-4db5-8a34-0ac4448be1b4"],
+ StyleBox[" Gauge Covariance",
+  FontSlant->"Italic"],
+ ": the covariant derivative of a scalar field transforms covariantly under \
+local phase rotation."
+}], "Item",
+ CellChangeTimes->{
+  3.977513712847348*^9, {3.9775178669407883`*^9, 3.977517959906126*^9}, {
+   3.977517996418476*^9, 3.977518072452635*^9}, {3.9775181219359083`*^9, 
+   3.977518224156801*^9}, {3.9775359524035*^9, 3.977536075585163*^9}, {
+   3.97753737910937*^9, 3.977537384309*^9}, {3.97764405920399*^9, 
+   3.977644347525126*^9}, {3.977672253563974*^9, 3.977672266570442*^9}, {
+   3.977678754525832*^9, 3.977678800149303*^9}, {3.977746420549296*^9, 
+   3.977746648340251*^9}, 3.978342864699486*^9, {3.97889635568295*^9, 
+   3.978896509600749*^9}, {3.978896579168256*^9, 3.9788966029778643`*^9}, {
+   3.978992956836452*^9, 3.97899298390783*^9}, {3.9807975462119102`*^9, 
+   3.980797552039221*^9}},ExpressionUUID->"42d44efc-8058-4cde-8725-\
+4b44091f330b"],
+
+Cell[TextData[{
+ StyleBox["Field Strength Invariance",
+  FontSlant->"Italic"],
+ ": the electromagnetic tensor ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["F", 
+    RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Nu]"}]], TraditionalForm]],
+  ExpressionUUID->"d025e738-ff9c-4966-b615-819f1a2cf6a0"],
+ "\:200b is invariant under local gauge transformations."
+}], "Item",
+ CellChangeTimes->{
+  3.977513712847348*^9, {3.9775178669407883`*^9, 3.977517959906126*^9}, {
+   3.977517996418476*^9, 3.977518072452635*^9}, {3.9775181219359083`*^9, 
+   3.977518224156801*^9}, {3.9775359524035*^9, 3.977536075585163*^9}, {
+   3.97753737910937*^9, 3.977537384309*^9}, {3.97764405920399*^9, 
+   3.977644347525126*^9}, {3.977672253563974*^9, 3.977672266570442*^9}, {
+   3.977678754525832*^9, 3.977678800149303*^9}, {3.977746420549296*^9, 
+   3.977746648340251*^9}, 3.978342864699486*^9, {3.97889635568295*^9, 
+   3.978896511414442*^9}, {3.978896605051293*^9, 3.978896631296624*^9}, 
+   3.978992994285054*^9, 
+   3.980797560109335*^9},ExpressionUUID->"271d4663-6211-435b-b224-\
+6d5149ea04e7"],
+
+Cell[TextData[{
+ StyleBox["Charged Vector Field Covariance",
+  FontSlant->"Italic"],
+ ": the covariance of a generic charged vector field ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["V", "\[Alpha]"], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "d3699f9b-d3c6-49d7-ba38-ec02c67beea4"],
+ " transforms covariantly under simultaneous spacetime coordinate changes and \
+internal ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"U", 
+    RowBox[{"(", "1", ")"}]}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "81f6837a-5dff-4b04-9047-02083c34833e"],
+ " phase rotations. "
+}], "Item",
+ CellChangeTimes->{
+  3.977513712847348*^9, {3.9775178669407883`*^9, 3.977517959906126*^9}, {
+   3.977517996418476*^9, 3.977518072452635*^9}, {3.9775181219359083`*^9, 
+   3.977518224156801*^9}, {3.9775359524035*^9, 3.977536075585163*^9}, {
+   3.97753737910937*^9, 3.977537384309*^9}, {3.97764405920399*^9, 
+   3.977644347525126*^9}, {3.977672253563974*^9, 3.977672266570442*^9}, {
+   3.977678754525832*^9, 3.977678800149303*^9}, {3.977746420549296*^9, 
+   3.977746648340251*^9}, 3.978342864699486*^9, {3.97889635568295*^9, 
+   3.978896513826388*^9}, {3.9788966339545403`*^9, 3.978896709597795*^9}, {
+   3.978993041727272*^9, 3.978993098014254*^9}, 3.979343358050312*^9, {
+   3.980789686801648*^9, 3.980789756411687*^9}, {3.980789892336939*^9, 
+   3.980789895447556*^9}, {3.9807975833846073`*^9, 
+   3.980797604312551*^9}},ExpressionUUID->"d72fdbd1-5a66-461e-af8e-\
+7bcb66e46d09"],
+
+Cell["\<\
+Finally, we apply the updated engine to re-derive the Riemann curvature \
+tensor from the torsion-free commutator of covariant derivatives.\
+\>", "Text",
+ CellChangeTimes->{{3.980797480290036*^9, 3.9807975089154177`*^9}, {
+  3.980797618327881*^9, 
+  3.980797637791888*^9}},ExpressionUUID->"1e0c508b-f71b-4bb3-a8cd-\
+fded5237b847"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Initialize the Relativity Toolkit", "Section",
+ CellChangeTimes->{{3.9775137220895033`*^9, 3.977513731036991*^9}, {
+   3.9775149251253233`*^9, 3.9775149394419107`*^9}, {3.977515019357979*^9, 
+   3.9775150305786533`*^9}, {3.977515069824033*^9, 3.977515077560625*^9}, 
+   3.9775154960870533`*^9, {3.9775171395382757`*^9, 
+   3.9775171504203053`*^9}},ExpressionUUID->"e0792760-7d08-469c-bd15-\
+b84ab8afddcb"],
+
+Cell[CellGroupData[{
+
+Cell["Optional: Quit for a Fresh Kernel", "Subsection",
+ CellChangeTimes->{{3.977516486354595*^9, 3.9775164906642313`*^9}, {
+  3.977517157525331*^9, 3.977517176286113*^9}, {3.9775172141301403`*^9, 
+  3.977517225132*^9}, {3.977517520746587*^9, 3.977517523981988*^9}, {
+  3.977538215881567*^9, 
+  3.9775382663081083`*^9}},ExpressionUUID->"3b914edd-1ba5-4605-ab50-\
+f6cfd0be297b"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ StyleBox["Note, if you call ",
+  FontSlant->"Italic"],
+ StyleBox["Quit", "Input"],
+ StyleBox[" in a notebook, evaluation may hang. If you want to \
+\[OpenCurlyDoubleQuote]Evaluate Notebook,\[CloseCurlyDoubleQuote] mark the \
+following two cells \
+\[OpenCurlyDoubleQuote]Evaluatable\[CloseCurlyDoubleQuote]  in the Cell",
+  FontSlant->"Italic"],
+ Cell[BoxData[
+  FormBox["->", TraditionalForm]],ExpressionUUID->
+  "ea20fe35-b677-496a-bf21-7d93e1681fff"],
+ StyleBox["Property menu, call ",
+  FontSlant->"Italic"],
+ StyleBox["Quit", "Input"],
+ StyleBox[" and ",
+  FontSlant->"Italic"],
+ StyleBox["FrontEndTokenExecute", "Input"],
+ StyleBox[" once each, then comment out the cells, or mark them unevaluatable \
+again. Alternatively, you can quit the kernel via the Evaluation menu (last \
+item). At that point, you can \[OpenCurlyDoubleQuote]Evaluate Notebook\
+\[CloseCurlyDoubleQuote] in a clean environment, or evaluate cells \
+individually.",
+  FontSlant->"Italic"]
+}], "Item",
+ CellChangeTimes->{{3.977148448717927*^9, 3.977148601137877*^9}, {
+  3.9771487883591347`*^9, 3.977148838436544*^9}, {3.97715053773209*^9, 
+  3.977150607874874*^9}, {3.9773249732467318`*^9, 3.977324973635874*^9}, {
+  3.977325004140476*^9, 3.977325152474333*^9}, {3.977327554521559*^9, 
+  3.9773275834121027`*^9}, {3.977649691520117*^9, 3.977649743479376*^9}, {
+  3.97818795111021*^9, 3.9781880225966682`*^9}, {3.978357872471236*^9, 
+  3.978357883731669*^9}, {3.978383132160502*^9, 
+  3.9783831342035513`*^9}},ExpressionUUID->"81fdef78-2089-4910-9cec-\
+0edb66284188"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Quit", "[", "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.9775137220895033`*^9, 3.977513731036991*^9}, {
+   3.9775149251253233`*^9, 3.9775149394419107`*^9}, {3.977515019357979*^9, 
+   3.9775150305786533`*^9}, {3.977515069824033*^9, 3.977515077560625*^9}, {
+   3.977594997585329*^9, 3.977594998871601*^9}, {3.977644403029586*^9, 
+   3.9776444040906057`*^9}, {3.977649766507429*^9, 3.9776497799661713`*^9}, {
+   3.97791603441398*^9, 3.977916036805859*^9}, 3.977946305660872*^9, {
+   3.9782285739389553`*^9, 3.978228575035561*^9}, {3.9788972258407707`*^9, 
+   3.978897226880533*^9}},
+ CellLabel->"In[70]:=",ExpressionUUID->"29fa4ac9-c1ef-4696-97eb-6fb5b5e77774"],
+
+Cell[BoxData[
+ RowBox[{"FrontEndTokenExecute", "[", "\"\<DeleteGeneratedCells\>\"", 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.9775137220895033`*^9, 3.977513731036991*^9}, {
+   3.9775149251253233`*^9, 3.9775149394419107`*^9}, {3.977515019357979*^9, 
+   3.9775150305786533`*^9}, {3.977515069824033*^9, 3.977515077560625*^9}, {
+   3.977594997585329*^9, 3.977594998871601*^9}, {3.977644403029586*^9, 
+   3.9776444040906057`*^9}, {3.977649766507429*^9, 3.9776497799661713`*^9}, {
+   3.97791603441398*^9, 3.977916036805859*^9}, 3.977946305660872*^9, 
+   3.978021272664463*^9},
+ CellLabel->"In[1]:=",ExpressionUUID->"386c6876-de7a-46b4-a113-ab1aab14a3ba"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Download the Code", "Subsection",
+ CellChangeTimes->{{3.977517618928741*^9, 
+  3.977517621628845*^9}},ExpressionUUID->"f24ce5d6-daa5-46f7-bf16-\
+a5e41e79c5ad"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"RTbranch", "=", "\"\<main\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"RTbase", "=", 
+   RowBox[{"\"\<https://raw.githubusercontent.com/rebcabin/RelativityToolkit/\
+\>\"", "<>", "RTbranch", "<>", "\"\</\>\""}]}], ";"}], "\[IndentingNewLine]", 
+
+ RowBox[{
+  RowBox[{
+   RowBox[{"RTbust", "=", 
+    RowBox[{"\"\<?t=\>\"", "<>", 
+     RowBox[{"ToString", "[", 
+      RowBox[{"Round", "[", 
+       RowBox[{"AbsoluteTime", "[", "]"}], "]"}], "]"}]}]}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Force", " ", "fresh", " ", "download"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"RTrules", "=", 
+   RowBox[{"RTbase", "<>", "\"\<RelativityToolkit.wl\>\"", "<>", "RTbust"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"RTtests", "=", 
+   RowBox[{
+   "RTbase", "<>", "\"\<RelativityToolkit_RegressionTests.wl\>\"", "<>", 
+    "RTbust"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"RTviz", "=", 
+   RowBox[{
+   "RTbase", "<>", "\"\<RelativityToolkit_VisualShowcase.wl\>\"", "<>", 
+    "RTbust"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Get", "[", "RTrules", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.977515038890398*^9, 3.9775150428942947`*^9}, {
+   3.977515073427143*^9, 3.977515074303447*^9}, {3.977515161763281*^9, 
+   3.977515279675716*^9}, {3.977515331235067*^9, 3.9775154104989843`*^9}, {
+   3.9775154514034443`*^9, 3.977515475400744*^9}, {3.977516475447763*^9, 
+   3.977516662508048*^9}, {3.977516693802258*^9, 3.977516698343639*^9}, {
+   3.977595006595559*^9, 3.977595011881465*^9}, {3.977595190950871*^9, 
+   3.97759521657874*^9}, {3.9776649720307207`*^9, 3.9776649723921757`*^9}, {
+   3.978797246011898*^9, 3.978797344015057*^9}, 3.9788757483618603`*^9, {
+   3.98007514744363*^9, 3.980075151242429*^9}, {3.980075186662034*^9, 
+   3.980075186754345*^9}, {3.9910653489604187`*^9, 3.991065357638823*^9}, {
+   3.991065488347756*^9, 3.99106549878573*^9}, {3.991317510415225*^9, 
+   3.991317510871449*^9}},
+ CellLabel->"In[5]:=",ExpressionUUID->"4785ae05-6267-48dd-b220-83eabadbfd3b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"Relativity Toolkit version :\"\>",
+   "EchoLabel"], "  ", "\<\"1.13.1\"\>"}]], "Echo",
+ CellChangeTimes->{
+  3.991317514412459*^9},ExpressionUUID->"58806b9a-749d-4d5d-866d-\
+53143f1fd505"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"Relativity Connection Symbol :\"\>",
+   "EchoLabel"], "  ", "\[CapitalGamma]"}]], "Echo",
+ CellChangeTimes->{
+  3.991317514415378*^9},ExpressionUUID->"fe0bf659-543b-414a-aba8-\
+508fa928eeec"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Optional: See all Tests and Results from Prior Works", "Subsection",
+ CellChangeTimes->{{3.977516713085909*^9, 3.977516714381261*^9}, {
+  3.977517634865182*^9, 
+  3.9775176611658792`*^9}},ExpressionUUID->"95df7bba-7aca-400b-9cb9-\
+18f49b2b5c61"],
+
+Cell["\<\
+Make any of the following cells evaluatable if you wish. They\
+\[CloseCurlyQuote]re unevaluatable by default to keep this notebook trim.\
+\>", "Text",
+ CellChangeTimes->{{3.977535645458843*^9, 3.977535681965559*^9}, {
+  3.9777468300410233`*^9, 
+  3.97774683139891*^9}},ExpressionUUID->"668360f8-dbd7-4e34-94d7-\
+6dff6ecf8c27"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Get", "[", "RTtests", "]"}], ";"}]], "Input",
+ Evaluatable->False,
+ CellChangeTimes->{{3.977516719574458*^9, 3.977516727527837*^9}, {
+  3.977644416017683*^9, 3.97764441730005*^9}, {3.978797387761909*^9, 
+  3.9787973883428392`*^9}},
+ CellLabel->"In[12]:=",ExpressionUUID->"aa9281d4-3dc6-4e9e-9c62-b77ac6d68bff"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Get", "[", "RTviz", "]"}], 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"no", " ", "semicolon"}], ",", " ", 
+    RowBox[{"on", " ", "purpose"}]}], " ", "*)"}]}]], "Input",
+ Evaluatable->False,
+ CellChangeTimes->{{3.9775170055741653`*^9, 3.977517018975686*^9}},
+ CellLabel->"In[29]:=",ExpressionUUID->"27ef12a3-8124-46eb-a4dd-afaec4467878"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", 
+  RowBox[{"RTbase", "<>", "\"\<covariant_derivative.wl\>\""}], "]"}]], "Input",\
+
+ Evaluatable->False,
+ CellChangeTimes->{{3.9775167988307343`*^9, 3.977516834813776*^9}, 
+   3.977517089024683*^9},
+ CellLabel->"In[30]:=",ExpressionUUID->"76eed526-05c7-470a-98b4-78255c236f51"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", 
+  RowBox[{"RTbase", "<>", "\"\<law_of_gamma.wl\>\""}], "]"}]], "Input",
+ Evaluatable->False,
+ CellChangeTimes->{{3.977516845817925*^9, 3.97751686165248*^9}, 
+   3.977517064107336*^9},
+ CellLabel->"In[31]:=",ExpressionUUID->"d0ed2d29-bbc9-4a1f-9c01-ece9490406d6"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", 
+  RowBox[{"RTbase", "<>", "\"\<connections_to_christoffels.wl\>\""}], 
+  "]"}]], "Input",
+ Evaluatable->False,
+ CellChangeTimes->{{3.977516878704239*^9, 3.97751690957205*^9}},
+ CellLabel->"In[32]:=",ExpressionUUID->"522b6809-d6fb-4718-82f9-f7947a051ca3"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", 
+  RowBox[{"RTbase", "<>", "\"\<schwarzschild_from_scratch.wl\>\""}], 
+  "]"}]], "Input",
+ Evaluatable->False,
+ CellChangeTimes->{{3.978357903910434*^9, 3.978357943129884*^9}},
+ CellLabel->"In[33]:=",ExpressionUUID->"9ce3dce3-efb2-4513-ae43-d999922de227"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"CDSU2Spinor", "[", 
+    RowBox[{"psi_", ",", "var_", ",", "g_", ",", "W_"}], "]"}], ":=", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"gravitationalPart", ",", "gaugeCorrection", ",", "idx"}], 
+      "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Base", " ", "geometrical", " ", "derivative"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"gravitationalPart", "=", 
+       RowBox[{"CD", "[", 
+        RowBox[{"psi", ",", "var"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "Extract", " ", "spacetime", " ", "index", " ", "from", " ", "the", " ",
+         "differentiation", " ", "variable"}], "*)"}], "\[IndentingNewLine]", 
+      
+      RowBox[{"idx", "=", 
+       RowBox[{"var", "[", 
+        RowBox[{"[", "3", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"SU", 
+        RowBox[{"(", "2", ")"}], " ", "gauge", " ", "correction", " ", "via", 
+        " ", "matrix", " ", "multiplication"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"gaugeCorrection", "=", 
+       RowBox[{"g", "*", 
+        RowBox[{
+         RowBox[{"W", "[", "idx", "]"}], ".", "psi"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"gravitationalPart", "+", "gaugeCorrection"}]}]}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.99131757413171*^9, 3.991317627746849*^9}},
+ CellLabel->"In[13]:=",ExpressionUUID->"95d55a5b-e17a-4c3a-83ae-25f8581f4e82"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"commM", "[", 
+    RowBox[{"A_", ",", "B_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"A", ".", "B"}], "-", 
+    RowBox[{"B", ".", "A"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.991318450248179*^9, 3.991318453231505*^9}},
+ CellLabel->"In[15]:=",ExpressionUUID->"aefb230b-2ade-41f4-bbce-c2312fcd65bb"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"CDSU2Adjoint", "[", 
+    RowBox[{"V_", ",", "var_", ",", "g_", ",", "W_"}], "]"}], ":=", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"gravitationalPart", ",", "gaugeCorrection", ",", "idx"}], 
+      "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"gravitationalPart", "=", 
+       RowBox[{"CD", "[", 
+        RowBox[{"V", ",", "var"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"idx", "=", 
+       RowBox[{"var", "[", 
+        RowBox[{"[", "3", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"SU", 
+        RowBox[{"(", "2", ")"}], " ", "gauge", " ", "correction", " ", "via", 
+        " ", "the", " ", "Lie", " ", "bracket"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"gaugeCorrection", "=", 
+       RowBox[{"g", "*", 
+        RowBox[{"commM", "[", 
+         RowBox[{
+          RowBox[{"W", "[", "idx", "]"}], ",", "V"}], "]"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"gravitationalPart", "+", "gaugeCorrection"}]}]}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.9913176641394157`*^9, 3.99131769479385*^9}},
+ CellLabel->"In[14]:=",ExpressionUUID->"3f20ae89-9027-4acd-bb91-82460af5cea8"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Generators", " ", "of", " ", "SU", 
+    RowBox[{"(", "2", ")"}], " ", "as", " ", "defined", " ", "in", " ", 
+    "CheckingTheBases"}], "*)"}], 
+  RowBox[{
+   RowBox[{"T", "=", 
+    RowBox[{
+     RowBox[{"-", 
+      FractionBox["\[ImaginaryI]", "2"]}], 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"PauliMatrix", "[", "1", "]"}], ",", 
+       RowBox[{"PauliMatrix", "[", "2", "]"}], ",", 
+       RowBox[{"PauliMatrix", "[", "3", "]"}]}], "}"}]}]}], "\n"}]}]], "Input",\
+
+ CellChangeTimes->{{3.991318440204967*^9, 3.991318440205014*^9}, {
+  3.991318470986158*^9, 3.99131851520863*^9}},
+ CellLabel->"In[18]:=",ExpressionUUID->"889f3e70-77bc-48d2-8f4a-a03d2c37751b"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", 
+       RowBox[{"-", 
+        FractionBox["\[ImaginaryI]", "2"]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["\[ImaginaryI]", "2"]}], ",", "0"}], "}"}]}], "}"}], ",", 
+   
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", 
+       RowBox[{"-", 
+        FractionBox["1", "2"]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       FractionBox["1", "2"], ",", "0"}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["\[ImaginaryI]", "2"]}], ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", 
+       FractionBox["\[ImaginaryI]", "2"]}], "}"}]}], "}"}]}], "}"}]], "Output",\
+
+ CellChangeTimes->{{3.9913184997305737`*^9, 3.9913185160694313`*^9}},
+ CellLabel->"Out[18]=",ExpressionUUID->"c40519a4-e729-4c79-968e-3620c9981b68"]
+}, Open  ]],
+
+Cell[BoxData["W"], "Input",
+ CellChangeTimes->{{3.991318537589404*^9, 
+  3.991318560841652*^9}},ExpressionUUID->"c05581a4-4c09-4acb-a649-\
+703c643fe948"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Introduction", "Section",
+ CellChangeTimes->{{3.9807976826352158`*^9, 
+  3.980797684726654*^9}},ExpressionUUID->"cdd3c25d-ecef-442c-b415-\
+03ca567e7026"],
+
+Cell["\<\
+In physics, choosing a coordinate system or a phase reference is \
+\[OpenCurlyDoubleQuote]setting a gauge.\[CloseCurlyDoubleQuote] Changing this \
+choice\[LongDash]whether transforming spacetime coordinates or shifting the \
+phase of a field\[LongDash]often introduces inhomogeneous terms when taking \
+partial derivatives.\
+\>", "Text",
+ CellChangeTimes->{{3.980797690568597*^9, 3.9807976945653954`*^9}, {
+  3.980797742926313*^9, 
+  3.980797746128508*^9}},ExpressionUUID->"2c53c7d6-46af-4e52-9122-\
+d6f22d5879ba"],
+
+Cell[TextData[{
+ "Connection fields arise to maintain covariance of the physics under such \
+transformations. In general relativity, the Levi-Civita connection \
+(Christoffel symbols) corrects for the curvature of spacetime coordinates. In \
+electrodynamics, the vector potential ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["A", "\[Mu]"], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "1d48433e-b726-45a7-b018-7d02d076894f"],
+ "\:200b acts as the connection, correcting for local variations in the phase \
+reference."
+}], "Text",
+ CellChangeTimes->{{3.980797690568597*^9, 3.980797734762903*^9}, {
+  3.980797770437899*^9, 
+  3.980797774531369*^9}},ExpressionUUID->"9341a0c8-846d-45ce-8bbf-\
+e1bd4ed166e5"],
+
+Cell["\<\
+While apparent forces (like centrifugal and Coriolis) can be eliminated \
+globally by choosing a specific inertial gauge, fundamental forces (like \
+tidal gravity and electromagnetism) arise from the intrinsic curvature of \
+these connections and cannot be globally gauged away.\
+\>", "Text",
+ CellChangeTimes->{
+  3.980797690568597*^9},ExpressionUUID->"48c7fc59-f741-4335-965d-\
+e2791c943683"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Covariance and Internal Gauge", "Section",
+ CellChangeTimes->{{3.980797840815453*^9, 
+  3.9807978479596643`*^9}},ExpressionUUID->"fe66d1d1-6eb8-4dc1-922f-\
+48137d0acdf0"],
+
+Cell[TextData[{
+ "To see how a connection restores covariance, consider a scalar matter field \
+\[Psi] subjected to a local ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"U", "(", "1", ")"}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "777189c6-3ba6-4763-9b94-21b937c1dd3a"],
+ " phase change ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[CapitalLambda]", "(", 
+    SuperscriptBox["x", 
+     RowBox[{" ", "\[Mu]"}]], ")"}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "ec498af3-8afb-4d82-a145-f4abb46592f9"],
+ ":"
+}], "Text",
+ CellChangeTimes->{{3.98079785546911*^9, 
+  3.980797966228342*^9}},ExpressionUUID->"cf129f43-cbcf-4f9c-90cc-\
+2fb69b048fdc"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   OverscriptBox["\[Psi]", "_"], "=", 
+   RowBox[{
+    SuperscriptBox["\[ExponentialE]", 
+     RowBox[{" ", 
+      RowBox[{"\[ImaginaryI]", " ", "q", " ", "\[CapitalLambda]"}]}]], 
+    "\[Psi]"}]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.980797970921173*^9, 3.98079802747829*^9}, {
+  3.980798058118535*^9, 
+  3.980798058120255*^9}},ExpressionUUID->"9be1b03e-ee32-44a6-82b8-\
+4842395da3e2"],
+
+Cell[TextData[{
+ "where ",
+ Cell[BoxData[
+  FormBox["q", TraditionalForm]],ExpressionUUID->
+  "acfedfa2-3b3d-438a-9a75-c875fa0a34d4"],
+ " is a constant charge. The ordinary partial derivative produces an \
+inhomogeneous term via the product rule and the chain rule:"
+}], "Text",
+ CellChangeTimes->{{3.9807980840253267`*^9, 3.980798150103746*^9}, {
+  3.980798296087822*^9, 3.980798299459553*^9}, {3.991065663944849*^9, 
+  3.991065684294799*^9}},ExpressionUUID->"400f1eee-fb4f-424f-abfd-\
+06c8f9365a5f"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["\[PartialD]", "\[Mu]"], 
+    OverscriptBox["\[Psi]", "_"]}], "=", 
+   RowBox[{
+    SuperscriptBox["\[ExponentialE]", 
+     RowBox[{" ", 
+      RowBox[{"\[ImaginaryI]", " ", "q", " ", "\[CapitalLambda]"}]}]], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       SubscriptBox["\[PartialD]", "\[Mu]"], "\[Psi]"}], "+", 
+      RowBox[{"\[ImaginaryI]", " ", "q", " ", 
+       RowBox[{"(", 
+        RowBox[{
+         SubscriptBox["\[PartialD]", "\[Mu]"], "\[CapitalLambda]"}], ")"}], 
+       "\[Psi]"}]}], ")"}]}]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.9807983376536083`*^9, 
+  3.9807985757404013`*^9}},ExpressionUUID->"bfb4ead3-5455-4f28-b015-\
+4d8fe3c67ea4"],
+
+Cell[TextData[{
+ "The inhomogeneous term ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ImaginaryI]", " ", "q", " ", 
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["\[PartialD]", "\[Mu]"], "\[CapitalLambda]"}], ")"}], 
+    "\[Psi]"}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "e0aca944-bcfa-476a-aa35-25f3608da4c2"],
+ " breaks covariance. To restore it, introduce a gauge covariant derivative. \
+As with general relativity, add a correction to the partial derivative"
+}], "Text",
+ CellChangeTimes->{{3.980798623778428*^9, 3.980798792668687*^9}, {
+  3.980798876149948*^9, 3.9807988822291193`*^9}, {3.980798959617259*^9, 
+  3.980798979854354*^9}},ExpressionUUID->"945797e0-8291-4ea0-839c-\
+9f56b8340c49"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["D", "\[Mu]"], "\[Psi]"}], "\[Congruent]", 
+   RowBox[{
+    RowBox[{
+     SubscriptBox["\[PartialD]", "\[Mu]"], "\[Psi]"}], "-", 
+    RowBox[{"\[ImaginaryI]", " ", "q", " ", 
+     SubscriptBox["A", "\[Mu]"], "\[Psi]"}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.980798884553198*^9, 3.980798955706875*^9}, {
+  3.980798987318472*^9, 3.980798998727496*^9}, {3.980799535980069*^9, 
+  3.980799535980123*^9}, {3.9807997768941193`*^9, 
+  3.980799776896695*^9}},ExpressionUUID->"e936c478-d3db-4874-a4aa-\
+647476b176cf"],
+
+Cell["Requiring the connection to transform as ", "Text",
+ CellChangeTimes->{{3.9807990933162823`*^9, 
+  3.980799103729569*^9}},ExpressionUUID->"b95de9d6-8dc0-4e05-8cd6-\
+298737151dec"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   SubscriptBox[
+    OverscriptBox["A", "_"], "\[Mu]"], "=", 
+   RowBox[{
+    SubscriptBox["A", "\[Mu]"], "+", 
+    RowBox[{
+     SubscriptBox["\[PartialD]", "\[Mu]"], "\[CapitalLambda]"}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.9807990165812798`*^9, 3.980799085314687*^9}, {
+  3.980799789468281*^9, 
+  3.9807997894705343`*^9}},ExpressionUUID->"302016d3-0631-423d-92d9-\
+a316221982e2"],
+
+Cell[TextData[{
+ "gives us an operator ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["D", "\[Mu]"], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "042d6a06-0bd6-4e7d-840f-d8b40632031f"],
+ " that transforms covariantly with gauge, just as ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Del]", "\[Mu]"], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "d67cf8a6-c4ca-470c-9c33-855d2a2da6b1"],
+ " transforms covariantly with coordinates in relativity:"
+}], "Text",
+ CellChangeTimes->{{3.980799813798215*^9, 
+  3.98079989152064*^9}},ExpressionUUID->"8c27c023-005d-404e-95af-\
+93898fd6fbb8"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   StyleBox[
+    RowBox[{
+     SubscriptBox["D", "\[Mu]"], 
+     OverscriptBox["\[Psi]", "_"]}],
+    FontColor->RGBColor[0.14, 0.8, 0.14]], "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      SubscriptBox["\[PartialD]", "\[Mu]"], 
+      OverscriptBox["\[Psi]", "_"]}], "-", 
+     RowBox[{"\[ImaginaryI]", " ", "q", " ", 
+      OverscriptBox[
+       SubscriptBox["A", "\[Mu]"], "_"], 
+      OverscriptBox["\[Psi]", "_"]}]}], "=", "\[LineSeparator]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{" ", 
+         RowBox[{"\[ImaginaryI]", " ", "q", " ", "\[CapitalLambda]"}]}]], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          SubscriptBox["\[PartialD]", "\[Mu]"], "\[Psi]"}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", "q", " ", 
+          RowBox[{"(", 
+           RowBox[{
+            SubscriptBox["\[PartialD]", "\[Mu]"], "\[CapitalLambda]"}], ")"}],
+           "\[Psi]"}]}], ")"}]}], "-", 
+      RowBox[{"\[ImaginaryI]", " ", "q", " ", 
+       RowBox[{"(", 
+        RowBox[{
+         SubscriptBox["A", "\[Mu]"], "+", 
+         RowBox[{
+          SubscriptBox["\[PartialD]", "\[Mu]"], "\[CapitalLambda]"}]}], ")"}], 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{" ", 
+         RowBox[{"\[ImaginaryI]", " ", "q", " ", "\[CapitalLambda]"}]}]], 
+       "\[Psi]"}]}], "=", "\[LineSeparator]", 
+     RowBox[{
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{" ", 
+         RowBox[{"\[ImaginaryI]", " ", "q", " ", "\[CapitalLambda]"}]}]], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          SubscriptBox["\[PartialD]", "\[Mu]"], "\[Psi]"}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", "q", " ", 
+          SubscriptBox["A", "\[Mu]"], "\[Psi]"}]}], ")"}]}], "=", 
+      "\[LineSeparator]", 
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{" ", 
+         RowBox[{"\[ImaginaryI]", " ", "q", " ", "\[CapitalLambda]"}]}]], " ", 
+       StyleBox[
+        SubscriptBox["D", "\[Mu]"],
+        FontColor->RGBColor[0.14, 0.8, 0.14]], 
+       StyleBox["\[Psi]",
+        FontColor->RGBColor[0.14, 0.8, 0.14]]}]}]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.980798884553198*^9, 3.980798955706875*^9}, {
+  3.980798987318472*^9, 3.980798998727496*^9}, {3.9807991765359488`*^9, 
+  3.980799295612267*^9}, {3.9807994954270887`*^9, 3.980799507869485*^9}, {
+  3.980799541602888*^9, 3.980799563467677*^9}, {3.980799602495865*^9, 
+  3.98079974403161*^9}, {3.9807997986137*^9, 
+  3.980799798616951*^9}},ExpressionUUID->"0008a959-2338-416a-9bfe-\
+9de2a52f1f47"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Internal Gauge Spaces in the \[ScriptCapitalU]\[ScriptCapitalD] \
+Calculus", "Section",
+ CellChangeTimes->{{3.980799955701447*^9, 
+  3.980799988085701*^9}},ExpressionUUID->"0805bc51-0d29-4272-b26d-\
+d3b0e71efd43"],
+
+Cell["\<\
+In general relativity, we take covariant derivatives of tensors inhabiting \
+the tangent spaces of a curved manifold. The connection \[CapitalGamma] \
+accounts for the twisting of basis vectors.\
+\>", "Text",
+ CellChangeTimes->{{3.980799993919921*^9, 
+  3.980800004055119*^9}},ExpressionUUID->"31bce255-0ce5-4ca7-81ac-\
+5b502d288423"],
+
+Cell["\<\
+In gauge theories like electrodynamics, the connections operate on internal \
+spaces (such as the U(1) phase) attached, extrinsically to the spacetime \
+itself, to each point in spacetime. The objective of this notebook is to \
+update the \[ScriptCapitalU]\[ScriptCapitalD] calculus to compute derivatives \
+for objects that possess both spacetime indices and internal gauge charges \
+simultaneously.\
+\>", "Text",
+ CellChangeTimes->{{3.980799993919921*^9, 
+  3.980800064091989*^9}},ExpressionUUID->"73da4bf9-b8e2-48a8-9fb8-\
+e480dbf1111b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Covariant Derivatives, Revisited", "Section",
+ CellChangeTimes->{{3.978358251530368*^9, 
+  3.978358274502495*^9}},ExpressionUUID->"7f6b77f4-b0fc-4a67-b903-\
+969955fdadc1"],
+
+Cell[TextData[{
+ "In GR, the canonical example is the covariant derivative of an arbitrary \
+contravariant vector ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["A", 
+    RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], TraditionalForm]],ExpressionUUID->
+  "a18ef1ef-909d-46ca-af3d-a413ac2c6455"],
+ " with respect to geometrical coordinates. Here it is in \[ScriptCapitalU]\
+\[ScriptCapitalD], with ",
+ StyleBox["CD", "Input"],
+ " standing for \[OpenCurlyDoubleQuote]covariant derivative:\
+\[CloseCurlyDoubleQuote]"
+}], "Text",
+ CellChangeTimes->{{3.978645943294868*^9, 3.978645997660583*^9}, {
+  3.9787915036557417`*^9, 3.978791531715695*^9}, {3.979348896909027*^9, 
+  3.979348928838019*^9}, {3.980087977109717*^9, 3.9800880480484953`*^9}, {
+  3.980088078321742*^9, 3.980088104515327*^9}, {3.980637238429069*^9, 
+  3.980637238856543*^9}, {3.980800097719336*^9, 3.980800126279673*^9}, {
+  3.991310413145749*^9, 
+  3.99131046206717*^9}},ExpressionUUID->"4f010f30-76ff-4c9d-9e45-\
+977a9562d116"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"example", "=", 
+      RowBox[{"HoldForm", "[", 
+       RowBox[{"CD", "[", 
+        RowBox[{
+         RowBox[{"A", "[", 
+          RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}], ",", 
+         RowBox[{"x", "[", 
+          RowBox[{"\[ScriptCapitalU]", "[", "\[Nu]", "]"}], "]"}]}], "]"}], 
+       "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"Echo", "[", 
+     RowBox[{
+      RowBox[{"TensorForm", "@@", "example"}], ",", 
+      RowBox[{"example", "\"\<\>\""}]}], "]"}]}], "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.978358547373548*^9, 3.978358772499927*^9}, {
+  3.978359072474093*^9, 3.978359157811211*^9}, {3.9783592724273376`*^9, 
+  3.978359272556822*^9}, {3.9783593063094587`*^9, 3.9783593921632147`*^9}, {
+  3.978383680431888*^9, 3.978383735895418*^9}, {3.980800170248663*^9, 
+  3.980800253393353*^9}},
+ CellLabel->"In[34]:=",ExpressionUUID->"78497388-807e-47b1-a2f3-54ab4ce22561"],
+
+Cell[TextData[{
+ "The connection coefficients \[CapitalGamma] account for twisting and \
+turning of basis vectors in the tangent spaces as the vector ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["A", 
+    RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], TraditionalForm]],ExpressionUUID->
+  "dd3e6e84-9f68-483f-906e-506409ee1c30"],
+ " is parallel-transported geometrically. In GR, this twisting and turning \
+causes geodesics to converge or diverge, thus causing tidal forces. Twisting \
+and turning also drives single geodesics, giving rise to orbits, \
+gravitational lensing, gravitational waves, and so on."
+}], "Text",
+ CellChangeTimes->{{3.978645943294868*^9, 3.978646017572369*^9}, {
+  3.978646073037752*^9, 3.978646096573864*^9}, {3.978791550457979*^9, 
+  3.9787915716892157`*^9}, {3.978791607811911*^9, 3.978791645252721*^9}, {
+  3.9789947228843813`*^9, 3.9789947833892727`*^9}, {3.979346935639179*^9, 
+  3.9793469359737883`*^9}, {3.979348792711174*^9, 3.979348826305972*^9}, {
+  3.980088125045064*^9, 
+  3.98008817900523*^9}},ExpressionUUID->"37424616-b889-4f35-aa46-\
+5f5a9d34df7f"],
+
+Cell[TextData[StyleBox["Emphasis: Geodesic deviation is indistinguishable \
+from tidal force. It\[CloseCurlyQuote]s not an apparent force: its numerical \
+values may depend on gauge choice, but we can\[CloseCurlyQuote]t get rid of \
+it globally by gauge choice.",
+ FontSlant->"Italic"]], "Item",
+ CellChangeTimes->{{3.978645943294868*^9, 3.978646017572369*^9}, {
+  3.978646073037752*^9, 3.978646096573864*^9}, {3.978791550457979*^9, 
+  3.9787915716892157`*^9}, {3.978791607811911*^9, 3.9787916688688183`*^9}, {
+  3.978893726055107*^9, 3.978893734728683*^9}, {3.978994793962654*^9, 
+  3.978994807936285*^9}, {3.979348947568865*^9, 3.979348965248041*^9}, {
+  3.980088203867462*^9, 
+  3.980088206557819*^9}},ExpressionUUID->"a0d3e19d-b357-44b9-be80-\
+c725fc844522"],
+
+Cell[TextData[{
+ "The derivative above transforms like a tensor, ensuring physics is ",
+ StyleBox["locally Lorentz invariant",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ ". This invariance invites Noether\[CloseCurlyQuote]s theorem again, \
+implying a conserved quantity. In GR, this conserved quantity is ",
+ StyleBox["spin current",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ ", from symmetries of non-coordinate bases or ",
+ StyleBox["tetrads",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " (see the Appendix). "
+}], "Text",
+ CellChangeTimes->{{3.978645943294868*^9, 3.97864602352232*^9}, {
+   3.97864610862702*^9, 3.9786461676375427`*^9}, {3.978738857168982*^9, 
+   3.978738864834247*^9}, {3.9787916844234667`*^9, 3.978791699695005*^9}, {
+   3.978893751507414*^9, 3.978893784918326*^9}, {3.978994819214058*^9, 
+   3.9789948358117647`*^9}, {3.9793489792813187`*^9, 
+   3.9793489931010923`*^9}, {3.980788210194305*^9, 3.980788241301305*^9}, 
+   3.98080030687964*^9},ExpressionUUID->"9ad9e61c-cea4-41a0-a521-\
+e599c7429130"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["A New CD", "Section",
+ CellChangeTimes->{{3.978646468171488*^9, 
+  3.978646472312533*^9}},ExpressionUUID->"c8c2732a-482b-40dd-ad69-\
+34c9e0e28e1c"],
+
+Cell[TextData[{
+ "The following new overload of ",
+ StyleBox["CD", "Input"],
+ " computes covariant derivatives for Abelian (commutative) gauges like \
+scalar phase. We\[CloseCurlyQuote]ll get to non-Abelian gauges like ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"S", "\[VeryThinSpace]", 
+    RowBox[{"O", "(", "3", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "b095c076-44b2-4e1c-a2e7-520484aa96ed"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"S", "\[VeryThinSpace]", 
+    RowBox[{"U", "(", "2", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "0bb64d2a-2e5e-49d7-8c98-59d641060033"],
+ " in future notebooks."
+}], "Text",
+ CellChangeTimes->{{3.978795270483778*^9, 3.978795277854451*^9}, {
+   3.978795415257291*^9, 3.9787954500045643`*^9}, {3.978821069299505*^9, 
+   3.978821143212737*^9}, {3.978821224035911*^9, 3.978821242453227*^9}, {
+   3.978893877885006*^9, 3.9788939047268047`*^9}, {3.979349284780232*^9, 
+   3.9793493096019793`*^9}, {3.9793493397252274`*^9, 3.979349346486093*^9}, {
+   3.980088358906061*^9, 3.980088362877892*^9}, {3.980637365209215*^9, 
+   3.9806374027087173`*^9}, 3.980788069578017*^9, {3.9808003479967403`*^9, 
+   3.980800427093316*^9}},ExpressionUUID->"9e34077f-ed2e-4587-87ba-\
+5f5fa8adeb8f"],
+
+Cell[CellGroupData[{
+
+Cell["Gauge Covariant Derivative", "Subsection",
+ CellChangeTimes->{{3.978795468371107*^9, 
+  3.978795488321023*^9}},ExpressionUUID->"94acbd51-3b62-4f9c-a4df-\
+f9e4ff0aa53d"],
+
+Cell[CellGroupData[{
+
+Cell["Inputs", "Subsubsection",
+ CellChangeTimes->{{3.978795503910904*^9, 
+  3.9787955045961237`*^9}},ExpressionUUID->"ef67580c-d7d0-4644-b9c2-\
+f49bb71314c8"],
+
+Cell[TextData[{
+ StyleBox["expr", "Input"],
+ ": The field being differentiated, scalar or tensor"
+}], "ItemNumbered",
+ CellChangeTimes->{{3.978795528199066*^9, 
+  3.978795548423512*^9}},ExpressionUUID->"85859702-2d3f-440a-9c1c-\
+5c2d0a618c56"],
+
+Cell[TextData[{
+ StyleBox["var", "Input"],
+ ": the coordinate function, e.g., ",
+ StyleBox["x[\[ScriptCapitalU][\[Mu]]]", "Input"],
+ "; the differentiation variable"
+}], "ItemNumbered",
+ CellChangeTimes->{{3.97879555492418*^9, 3.978795614319105*^9}, {
+   3.97879576904465*^9, 3.978795773539029*^9}, 
+   3.991310889825708*^9},ExpressionUUID->"0ebc50f6-8428-4da3-99aa-\
+009f03b3365b"],
+
+Cell[TextData[{
+ StyleBox["q", "Input"],
+ ": the coupling constant or \[OpenCurlyDoubleQuote]charge\
+\[CloseCurlyDoubleQuote]"
+}], "ItemNumbered",
+ CellChangeTimes->{{3.978795636372712*^9, 
+  3.978795645409*^9}},ExpressionUUID->"77fc3235-4095-4d8d-96a1-e8b030336e52"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ StyleBox["A", "Input"],
+ ": the gauge-field connection symbol. \[CapitalGamma] is kept implicitly as \
+the spacetime connection for all theories."
+}], "ItemNumbered",
+ CellChangeTimes->{{3.9787956548435926`*^9, 3.9787956871354723`*^9}, {
+  3.9789949968930073`*^9, 3.978995008129044*^9}, {3.980800444239386*^9, 
+  3.980800453018656*^9}},ExpressionUUID->"04154e59-9bc7-4076-b83d-\
+31acad96ae89"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"CD", "[", 
+    RowBox[{"expr_", ",", "var_", ",", "q_", ",", "A_"}], "]"}], ":=", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"gravitationalPart", ",", "gaugeCorrection", ",", "idx"}], 
+      "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{
+      "Get", " ", "coordinate", " ", "covariant", " ", "derivative", " ", 
+       "via", " ", "existing", " ", "CD", " ", 
+       RowBox[{"overloads", "."}]}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{
+       RowBox[{"\[PartialD]", " ", 
+        RowBox[{"+", " ", "Christoffels"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{"if", " ", "expr", " ", "is", " ", "a", " ", "tensor"}], 
+        ")"}]}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{
+       RowBox[{"If", " ", "expr", " ", "is", " ", "a", " ", "scalar"}], ",", 
+       " ", 
+       RowBox[{"just", " ", "return", " ", 
+        RowBox[{"\[PartialD]", "."}]}]}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"gravitationalPart", "=", 
+       RowBox[{"CD", "[", 
+        RowBox[{"expr", ",", "var"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "Extract", " ", "the", " ", "index", " ", "from", " ", "the", " ", 
+        "differentiation", " ", 
+        RowBox[{"variable", "."}]}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"var", " ", "is", " ", "some", " ", 
+         RowBox[{"x", "[", 
+          RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}]}], ";", " ", 
+        RowBox[{"we", " ", "need", " ", "\[Mu]"}]}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"idx", "=", 
+       RowBox[{"var", "[", 
+        RowBox[{"[", 
+         RowBox[{"1", ",", "1"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"Construct", " ", "the", " ", "gauge", " ", "correction"}], ",",
+         " ", 
+        RowBox[{"e", ".", "g", "."}], ",", " ", 
+        RowBox[{
+         RowBox[{"-", "i"}], " ", "q", " ", 
+         SubscriptBox["A", "\[Mu]"], " ", "*", " ", "expr"}]}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Note", ":", " ", 
+        RowBox[{"This", " ", "A", " ", "has", " ", "a", " ", "DOWN", " ", 
+         RowBox[{"(", "Covariant", ")"}], " ", "index", " ", "matching", " ", 
+         "the", " ", "derivative"}]}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"gaugeCorrection", "=", 
+       RowBox[{
+        RowBox[{"-", "\[ImaginaryI]"}], " ", "q", " ", 
+        RowBox[{"A", "[", 
+         RowBox[{"\[ScriptCapitalD]", "[", "idx", "]"}], "]"}], "*", 
+        "expr"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", "Add", "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"gravitationalPart", "+", "gaugeCorrection"}]}]}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.978646744556492*^9, 3.978646885622224*^9}, 
+   3.978724934490802*^9, {3.978795290664665*^9, 3.9787954073020678`*^9}, 
+   3.9787954931896*^9, {3.9787956971832857`*^9, 3.978795753281424*^9}, {
+   3.98080046313244*^9, 3.9808005578038263`*^9}, {3.9913109357638493`*^9, 
+   3.991310941078394*^9}},ExpressionUUID->"3de2c0a4-4890-4dcd-8310-\
+578ba58e364c"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Electrodynamics Demos", "Section",
+ CellChangeTimes->{{3.978700005346057*^9, 3.9787000089781*^9}, {
+   3.9787963301955833`*^9, 3.9787963317746277`*^9}, 3.9788004955698223`*^9, 
+   3.978821216010556*^9},ExpressionUUID->"2c02b0be-4c78-4b2a-a1b3-\
+4a70d6e26bf1"],
+
+Cell[CellGroupData[{
+
+Cell["Covariance of the Covariant Derivative", "Subsection",
+ CellChangeTimes->{{3.978823576434066*^9, 3.978823591975399*^9}, {
+  3.9788236656529293`*^9, 3.978823667365944*^9}, {3.9788607083047037`*^9, 
+  3.978860710361669*^9}},ExpressionUUID->"26cab6eb-fabb-4147-9085-\
+2e72df92e4fa"],
+
+Cell["\<\
+Above, we subjected \[Psi] to gauge transformation manually. Automate that \
+calculation:\
+\>", "Text",
+ CellChangeTimes->{{3.978820844121111*^9, 3.97882093662414*^9}, {
+   3.978821545485203*^9, 3.978821615299986*^9}, {3.978822440304517*^9, 
+   3.978822451496654*^9}, {3.97889393859801*^9, 3.9788939593450127`*^9}, {
+   3.978995036342866*^9, 3.97899503858642*^9}, {3.9793493785568047`*^9, 
+   3.979349410480792*^9}, {3.9808005731367903`*^9, 3.980800630329091*^9}, 
+   3.9913109605697412`*^9},ExpressionUUID->"db673d5e-f1b1-4938-a6c8-\
+a394f4250e7e"],
+
+Cell[BoxData[
+ RowBox[{"(", 
+  RowBox[{"cde", "=", 
+   RowBox[{"CD", "[", 
+    RowBox[{"\[Psi]", ",", 
+     RowBox[{"x", "[", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}], ",", "q", ",", 
+     "A"}], "]"}]}], ")"}]], "Input",
+ CellChangeTimes->{{3.978646926181177*^9, 3.978646943909356*^9}, {
+   3.97864698544555*^9, 3.97864700656507*^9}, 3.97880072568736*^9, {
+   3.978818102147591*^9, 3.978818102997529*^9}, {3.978820978904854*^9, 
+   3.978820983247849*^9}, 3.978821610399053*^9},
+ CellLabel->"In[36]:=",ExpressionUUID->"e8d9c61f-9eb0-4945-ad72-568d5242b5c5"],
+
+Cell["Starting with the gauge transformations", "Text",
+ CellChangeTimes->{{3.978820911086568*^9, 3.978820944821334*^9}, {
+   3.978822642442547*^9, 3.9788226595359287`*^9}, {3.9789950515919724`*^9, 
+   3.978995052535986*^9}, 
+   3.979349421152651*^9},ExpressionUUID->"bfcbf30b-9a8f-4a6b-b946-\
+5c4170da5fd0"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   OverscriptBox["\[Psi]", "_"], "=", 
+   RowBox[{
+    RowBox[{
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{
+       "i", "\[VeryThinSpace]", "q", "\[VeryThinSpace]", 
+        "\[CapitalLambda]"}]}]], "\[Psi]", "    ", "and", "    ", 
+     SubscriptBox[
+      OverscriptBox["A", "_"], 
+      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]]}], "=", 
+    RowBox[{
+     SubscriptBox["A", 
+      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], "+", 
+     RowBox[{
+      SubscriptBox["\[PartialD]", "\[Mu]"], "\[CapitalLambda]", " "}]}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellChangeTimes->{{3.978637538672182*^9, 3.97863778411996*^9}, {
+   3.9786379712287197`*^9, 3.9786379796646557`*^9}, {3.978821290744693*^9, 
+   3.978821330476513*^9}, {3.978822473550243*^9, 3.978822480144888*^9}, {
+   3.978822548622191*^9, 3.978822571486229*^9}, 3.978822679099642*^9, {
+   3.978822842709276*^9, 3.978822852781521*^9}, {3.979349441948009*^9, 
+   3.979349443572904*^9}},ExpressionUUID->"bcfea902-d337-4bda-b9ad-\
+532a59a7d4c0"],
+
+Cell[BoxData[
+ RowBox[{"gaugeTransforms", "=", 
+  RowBox[{"{", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"\[Psi]", "->", 
+     RowBox[{
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+       "\[ImaginaryI]", "\[VeryThinSpace]", "q", "\[VeryThinSpace]", 
+        "\[CapitalLambda]"}]], "\[Psi]"}]}], ",", 
+    RowBox[{"(*", " ", 
+     RowBox[{"RHS", " ", "=", " ", 
+      OverscriptBox["\[Psi]", "_"]}], " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"A", "[", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Mu]_", "]"}], "]"}], ":>", 
+     RowBox[{
+      RowBox[{"A", "[", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[Mu]", "]"}], "]"}], "+", 
+      RowBox[{"Partials", "[", "\[VeryThinSpace]", 
+       RowBox[{"\[CapitalLambda]", ",", 
+        RowBox[{"x", "[", 
+         RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}]}], 
+       "]"}]}]}]}], 
+   RowBox[{"(*", " ", 
+    RowBox[{"RHS", " ", "=", " ", 
+     OverscriptBox["A", "_"]}], " ", "*)"}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.978821001702631*^9, 3.978821044361678*^9}, {
+   3.978821351660639*^9, 3.9788214177368813`*^9}, {3.978821448541462*^9, 
+   3.97882146930516*^9}, {3.978821639276532*^9, 3.978821662429945*^9}, {
+   3.978822191621005*^9, 3.9788221929215384`*^9}, 3.978822231151826*^9, {
+   3.978823334810932*^9, 3.978823335460462*^9}, 3.978825160269917*^9, {
+   3.991311002481147*^9, 3.9913110483350677`*^9}, {3.991311127904272*^9, 
+   3.991311133000822*^9}},ExpressionUUID->"727a63da-aa90-45dd-adc5-\
+0ffe24da003b"],
+
+Cell["prove that the covariant derivative", "Text",
+ CellChangeTimes->{{3.978822728959449*^9, 3.978822748830817*^9}, {
+  3.978822863916007*^9, 
+  3.978822865933402*^9}},ExpressionUUID->"50c162a4-95b1-4c2d-9f84-\
+dcfd4b83f679"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["D", "\[Mu]"], "\[Psi]"}], "\[Congruent]", 
+   RowBox[{
+    RowBox[{
+     SubscriptBox["\[PartialD]", "\[Mu]"], "\[Psi]"}], "-", 
+    RowBox[{"i", "\[VeryThinSpace]", "q", "\[VeryThinSpace]", 
+     SubscriptBox["A", "\[Mu]"], "\[Psi]"}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellChangeTimes->{{3.9786435032056303`*^9, 3.978643606837364*^9}, {
+  3.978822966772187*^9, 
+  3.97882296838054*^9}},ExpressionUUID->"7eeea367-8db9-4bb8-83e0-\
+0b1addaa1107"],
+
+Cell["transforms exactly as does \[Psi]", "Text",
+ CellChangeTimes->{{3.978822755950194*^9, 3.9788227570842133`*^9}, {
+  3.978822823242772*^9, 3.978822836885271*^9}, {3.980800658140978*^9, 
+  3.9808006645445232`*^9}},ExpressionUUID->"73ecf68b-5a23-4059-bef3-\
+42897e2d257f"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["D", "\[Mu]"], 
+    OverscriptBox["\[Psi]", "_"]}], "=", 
+   RowBox[{
+    SuperscriptBox["\[ExponentialE]", 
+     RowBox[{"\[VeryThinSpace]", 
+      RowBox[{
+      "i", "\[VeryThinSpace]", "q", "\[VeryThinSpace]", 
+       "\[CapitalLambda]"}]}]], 
+    SubscriptBox["D", "\[Mu]"], "\[Psi]"}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellChangeTimes->{{3.9786436192725773`*^9, 3.9786437727905197`*^9}, {
+  3.978643806573044*^9, 3.978643946308076*^9}, {3.978644002327197*^9, 
+  3.978644220022155*^9}, {3.978644291740561*^9, 3.9786443538434763`*^9}, {
+  3.978644388511799*^9, 3.978644510127365*^9}, {3.978822775213642*^9, 
+  3.978822798371068*^9}},ExpressionUUID->"19bf54b0-a557-49f3-bd18-\
+9d2c3b9dbd1d"],
+
+Cell[TextData[{
+ "Need one rule for the charge constant. Everything else is already in the \
+toolkit\[CloseCurlyQuote]s ",
+ StyleBox["differentiationRules", "Input"],
+ ":"
+}], "Text",
+ CellChangeTimes->{{3.978822882032498*^9, 3.9788229273306627`*^9}, {
+  3.978823009564211*^9, 3.978823010008813*^9}, {3.9793494700351887`*^9, 
+  3.979349481993554*^9}, {3.9808006718764544`*^9, 
+  3.98080069246719*^9}},ExpressionUUID->"63449289-cd0b-41a0-9449-\
+cf2944636b07"],
+
+Cell[BoxData[
+ RowBox[{"constantRules", " ", "=", " ", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"Partials", "[", 
+     RowBox[{"q", ",", 
+      RowBox[{"x", "[", 
+       RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]_", "]"}], "]"}]}], "]"}], " ",
+     ":>", " ", "0"}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.9788220405709257`*^9, 3.9788220914844437`*^9}},
+ CellLabel->"In[38]:=",ExpressionUUID->"3f172635-6ee5-4a70-8a61-eb7d220f695e"],
+
+Cell[BoxData[
+ RowBox[{"transformedCde", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"cde", " ", "/.", " ", "gaugeTransforms"}], " ", "//.", " ", 
+       "differentiationRules"}], "/.", "constantRules"}], ")"}], "//", 
+    "Expand"}], "//", "Simplify"}]}]], "Input",
+ CellChangeTimes->{{3.978822102593217*^9, 3.978822112777665*^9}, {
+   3.9788222776342163`*^9, 3.9788222792555733`*^9}, {3.9788223692243032`*^9, 
+   3.97882240547611*^9}, 3.978823022815748*^9, {3.978823148683112*^9, 
+   3.97882316041686*^9}, {3.978823349405294*^9, 3.9788233500015306`*^9}, {
+   3.978858170112883*^9, 3.97885818491053*^9}, {3.980088454761086*^9, 
+   3.9800884587628*^9}},
+ CellLabel->"In[39]:=",ExpressionUUID->"b0ec1902-d500-41fa-8f61-43ad9f584e95"],
+
+Cell[BoxData[
+ RowBox[{"transformedCde", "===", 
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{
+    "\[ImaginaryI]", "\[VeryThinSpace]", "q", "\[VeryThinSpace]", 
+     "\[CapitalLambda]"}]], "cde"}]}]], "Input",
+ CellChangeTimes->{{3.978823164654051*^9, 3.97882321873451*^9}},
+ CellLabel->"In[40]:=",ExpressionUUID->"799324fc-d50c-48e5-bdb5-66f0d5e3b2d1"],
+
+Cell[TextData[StyleBox["QED\[NonBreakingSpace]\[FilledSquare]",
+ FontColor->RGBColor[0.14, 0.8, 0.14]]], "Text",
+ CellChangeTimes->{{3.978823232236299*^9, 
+  3.978823321181185*^9}},ExpressionUUID->"ad7c97ba-d85c-4acc-97c1-\
+ef3e695d61dd"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Invariance of the Field-Strength Tensor", "Subsection",
+ CellChangeTimes->{{3.978823650174912*^9, 3.9788236824567013`*^9}, {
+  3.978823896569426*^9, 
+  3.978823898592578*^9}},ExpressionUUID->"13a5b2c2-e39a-477b-935b-\
+59de3331ef7e"],
+
+Cell[TextData[{
+ "The field-strength tensor, ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["F", 
+    RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Nu]"}]], TraditionalForm]],
+  ExpressionUUID->"9a78e8c4-fc08-4a8e-92f9-ce12438ddaad"],
+ ", aka ",
+ StyleBox["Faraday", "Input"],
+ ", is defined as follows"
+}], "Text",
+ CellChangeTimes->{{3.978824061078446*^9, 
+  3.978824098440377*^9}},ExpressionUUID->"8f3ecd75-5900-473e-ad73-\
+516a0e7c21fe"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"F", "[", 
+   RowBox[{"\[Mu]", ",", "\[Nu]"}], "]"}], "=", 
+  RowBox[{
+   RowBox[{"Partials", "[", 
+    RowBox[{
+     RowBox[{"A", "[", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}], "]"}], ",", " ", 
+     RowBox[{"x", "[", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}]}], "]"}], " ", "-",
+    " ", 
+   RowBox[{"Partials", "[", 
+    RowBox[{
+     RowBox[{"A", "[", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Mu]", "]"}], "]"}], ",", " ", 
+     RowBox[{"x", "[", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Nu]", "]"}], "]"}]}], 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.978823709235116*^9, 3.9788237415322437`*^9}, {
+  3.978824044627816*^9, 3.978824051061049*^9}, {3.978824190166666*^9, 
+  3.9788241975067244`*^9}},
+ CellLabel->"In[41]:=",ExpressionUUID->"097fd1ac-3cb5-4783-9706-68f9adb7f946"],
+
+Cell[TextData[{
+ "usually presented as ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubscriptBox["\[PartialD]", "\[Mu]"], 
+     SubscriptBox["A", 
+      RowBox[{"\[VeryThinSpace]", "\[Nu]"}]]}], "-", 
+    RowBox[{
+     SubscriptBox["\[PartialD]", "\[Nu]"], 
+     SubscriptBox["A", 
+      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]]}]}], TraditionalForm]],
+  ExpressionUUID->"e0b7b22c-4b20-45e1-9116-61a69b483886"],
+ " to make the indices line up (Wolfram alphabetizes the output, putting the ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Mu]", ",", "\[Nu]"}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "bb5037ef-cd38-4fba-b18e-10ffe896b75a"],
+ " term before the ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Nu]", ",", "\[Mu]"}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "f56d9562-c734-4603-9381-5befcb8889ff"],
+ " term)."
+}], "Text",
+ CellChangeTimes->{{3.978824215276784*^9, 3.978824267149712*^9}, {
+  3.979349527991433*^9, 3.979349529193584*^9}, {3.980800712383025*^9, 
+  3.98080071364931*^9}, {3.991311144239114*^9, 
+  3.9913111899021797`*^9}},ExpressionUUID->"686c6855-f4f0-4413-b371-\
+5d14d6d91172"],
+
+Cell["Now, subject it to the gauge transform:", "Text",
+ CellChangeTimes->{{3.9788242749841127`*^9, 
+  3.9788242924403057`*^9}},ExpressionUUID->"bf1fd84a-386a-4f24-b9a9-\
+614cbd977b06"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"F", "[", 
+   RowBox[{"\[Mu]", ",", "\[Nu]"}], "]"}], "/.", " ", 
+  "gaugeTransforms"}]], "Input",
+ CellLabel->"In[42]:=",ExpressionUUID->"41f7d312-8c5c-4141-b7fe-24720dee4831"],
+
+Cell[TextData[{
+ "See that it doesn\[CloseCurlyQuote]t change by invoking the toolkit\
+\[CloseCurlyQuote]s ",
+ StyleBox["ExpandDerivatives", "Input"],
+ ":"
+}], "Text",
+ CellChangeTimes->{{3.978824312009261*^9, 
+  3.978824333879499*^9}},ExpressionUUID->"91ab7ee2-27ab-479b-9a7a-\
+fcd44e4d6e2e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{"F", "[", 
+     RowBox[{"\[Mu]", ",", "\[Nu]"}], "]"}], "/.", " ", "gaugeTransforms"}], 
+   ")"}], " ", "//", " ", "ExpandDerivatives", " "}]], "Input",
+ CellChangeTimes->{{3.978823798335211*^9, 3.9788238192571917`*^9}, 
+   3.978823885830079*^9, {3.9800885293613997`*^9, 3.9800885334193583`*^9}},
+ CellLabel->"In[43]:=",ExpressionUUID->"3e9266b1-4af3-4050-81a7-4a26104483a3"],
+
+Cell["QED\[NonBreakingSpace]\[FilledSquare]", "Text",
+ CellChangeTimes->{{3.978823232236299*^9, 3.978823321181185*^9}},
+ FontColor->RGBColor[
+  0.14, 0.8, 0.14],ExpressionUUID->"e0e8b96a-c1ba-4281-b112-8fab9afc7dd6"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Charged Vector Field Covariance Demo", "Section",
+ CellChangeTimes->{{3.9787963383682137`*^9, 3.97879634402703*^9}, {
+  3.9788180610060997`*^9, 3.978818067081018*^9}, {3.978825674286153*^9, 
+  3.978825699794757*^9}, {3.9788558949345093`*^9, 3.978855894989732*^9}, {
+  3.978894667100854*^9, 3.978894674216569*^9}, {3.98079009608917*^9, 
+  3.980790097405974*^9}},ExpressionUUID->"8ac3c528-684d-4beb-ab6b-\
+4d1874e0ecab"],
+
+Cell[TextData[{
+ "In this demo, we differentiate a generic charged contravariant vector field \
+",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["V", "\[Alpha]"], TraditionalForm]],ExpressionUUID->
+  "66e09a46-0119-4e94-ab54-43ebd6ef4b93"],
+ " coupled to the electromagnetic gauge field ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["A", "\[Mu]"], TraditionalForm]],ExpressionUUID->
+  "1b840de4-23e6-46d4-b699-c3df38d02ebf"],
+ "\:200b by a scalar charge ",
+ Cell[BoxData[
+  FormBox["q", TraditionalForm]],ExpressionUUID->
+  "1b6af533-348c-48f6-bc16-c67338674391"],
+ ". "
+}], "Text",
+ CellChangeTimes->{{3.980790103713993*^9, 3.980790140002733*^9}, 
+   3.980803128974782*^9},ExpressionUUID->"9816424a-5ce2-45da-924a-\
+3c236946ff2e"],
+
+Cell[TextData[{
+ "Because ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["V", "\[Alpha]"], TraditionalForm]],ExpressionUUID->
+  "c8214d04-742b-41e6-a76d-b50e4a0a83c6"],
+ " is a hybrid mathematical object\[LongDash]possessing both internal phase \
+and a geometrical spacetime index\[LongDash]its covariant derivative requires \
+two distinct corrections. ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["A", "\[Mu]"], TraditionalForm]],ExpressionUUID->
+  "722d10ff-7c40-46c2-a129-c6d5d3aef133"],
+ "\:200b acts as the connection for the internal phase, while the Christoffel \
+symbols \[CapitalGamma] act as the connection for the curved spacetime \
+geometry."
+}], "Text",
+ CellChangeTimes->{
+  3.980790103713993*^9, {3.980790147112035*^9, 
+   3.9807901814173813`*^9}},ExpressionUUID->"13081e29-07c9-46d0-bb62-\
+48248dc7ce65"],
+
+Cell[TextData[{
+ "We did not need a geometrical correction in the previous electrodynamics \
+demo because we were differentiating a scalar matter field \[Psi], which has \
+no geometric indices. Here, the vector ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["V", 
+    RowBox[{" ", "\[Alpha]"}]], TraditionalForm]],ExpressionUUID->
+  "e886d3c1-6f60-4e0b-95e9-54d15902735f"],
+ " suffers both gauge transformation and geometrical coordinate \
+transformation."
+}], "Text",
+ CellChangeTimes->{
+  3.980790103713993*^9, {3.980790147112035*^9, 3.980790242196897*^9}, 
+   3.9807902740529222`*^9, {3.9808007823289213`*^9, 
+   3.980800861252989*^9}},ExpressionUUID->"5f35ccb6-a328-4ea6-b93d-\
+d90cf89a62b1"],
+
+Cell[TextData[{
+ "Proceed just as above, with ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["V", 
+    RowBox[{"\[VeryThinSpace]", "\[Alpha]"}]], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "1ef5e72e-ef80-4783-8db2-f92c9468edec"],
+ " taking the place of \[Psi]\[VeryThinSpace]:"
+}], "Text",
+ CellChangeTimes->{
+  3.980790103713993*^9, {3.980790147112035*^9, 3.980790242196897*^9}, 
+   3.980790277799527*^9, {3.991311295196321*^9, 
+   3.9913113190586977`*^9}},ExpressionUUID->"16ab20df-a91c-46bb-a31a-\
+cd0762ecedd1"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"vsd", "=", 
+    RowBox[{"CD", "[", 
+     RowBox[{
+      RowBox[{"V", "[", 
+       RowBox[{"\[ScriptCapitalU]", "[", "\[Alpha]", "]"}], "]"}], ",", 
+      RowBox[{"x", "[", 
+       RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}], ",", "q", ",",
+       "A"}], "]"}]}], ")"}], "//", "TensorForm"}]], "Input",
+ CellChangeTimes->{{3.978646926181177*^9, 3.978646944946294*^9}, {
+   3.9786470457728977`*^9, 3.978647062184148*^9}, {3.9788243635656977`*^9, 
+   3.978824398969141*^9}, 3.978824990560746*^9, {3.9807903615773573`*^9, 
+   3.980790383251832*^9}},
+ CellLabel->"In[44]:=",ExpressionUUID->"67be8f28-c827-4885-9074-9540eca97413"],
+
+Cell["The mixed gauge transforms are just as above:", "Text",
+ CellChangeTimes->{{3.9913113796474237`*^9, 
+  3.9913113957867527`*^9}},ExpressionUUID->"72c8e720-2b5a-4abb-97fb-\
+0938398da6e4"],
+
+Cell[BoxData[
+ RowBox[{"mixedGaugeTransforms", " ", "=", " ", 
+  RowBox[{"{", "\n", "    ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"V", "[", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Alpha]_", "]"}], "]"}], " ", ":>", 
+     " ", 
+     RowBox[{
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+       "\[ImaginaryI]", "\[VeryThinSpace]", "q", " ", "\[CapitalLambda]"}]], " ", 
+      RowBox[{"V", "[", 
+       RowBox[{"\[ScriptCapitalU]", "[", "\[Alpha]", "]"}], "]"}]}]}], ",", 
+    "\n", "    ", 
+    RowBox[{
+     RowBox[{"A", "[", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Mu]_", "]"}], "]"}], " ", ":>", 
+     " ", 
+     RowBox[{
+      RowBox[{"A", "[", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[Mu]", "]"}], "]"}], " ", "+", " ", 
+      RowBox[{"Partials", "[", 
+       RowBox[{"\[CapitalLambda]", ",", " ", 
+        RowBox[{"x", "[", 
+         RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}]}], 
+       "]"}]}]}]}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.9788250296307173`*^9, 3.9788251409065733`*^9}, {
+   3.97882518727766*^9, 3.978825266663143*^9}, {3.980790521003469*^9, 
+   3.98079057031083*^9}, 3.991311340358344*^9},
+ CellLabel->"In[66]:=",ExpressionUUID->"87e77b04-886b-4005-9b7f-8bcbdf3df423"],
+
+Cell[BoxData[
+ RowBox[{"transformedVsd", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"vsd", "/.", "mixedGaugeTransforms"}], "//.", 
+       "differentiationRules"}], "/.", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Partials", "[", 
+         RowBox[{"q", ",", " ", "_"}], "]"}], " ", ":>", " ", "0"}], "}"}]}], 
+     ")"}], "//", "Expand"}], "//", "TensorForm"}]}]], "Input",
+ CellChangeTimes->{{3.978825319599626*^9, 3.978825372620346*^9}, 
+   3.9788254079838676`*^9, {3.978825509394045*^9, 3.978825543637789*^9}, {
+   3.978825916745536*^9, 3.978825920709778*^9}, {3.980088870225731*^9, 
+   3.980088875005691*^9}, {3.980790589615489*^9, 3.9807905971707067`*^9}},
+ CellLabel->"In[46]:=",ExpressionUUID->"a1d8f2a1-295b-4ac3-9be9-af9abb589110"],
+
+Cell[BoxData[
+ RowBox[{"expectedVsd", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"vsd", " ", 
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{
+      "\[ImaginaryI]", "\[VeryThinSpace]", "q", " ", "\[CapitalLambda]"}]]}], 
+    "//", "Expand"}], "//", "TensorForm"}]}]], "Input",
+ CellChangeTimes->{{3.978825436991612*^9, 3.9788254378099117`*^9}, {
+   3.978825479842869*^9, 3.978825494110771*^9}, {3.978825553180427*^9, 
+   3.9788255611971493`*^9}, {3.9788259259791727`*^9, 3.978825927892708*^9}, {
+   3.980790609464918*^9, 3.980790620786001*^9}, 3.991311413157868*^9},
+ CellLabel->"In[67]:=",ExpressionUUID->"60d3c2b9-2556-487c-adfe-c71e59d95199"],
+
+Cell[BoxData[
+ RowBox[{"transformedVsd", "===", "expectedVsd"}]], "Input",
+ CellChangeTimes->{{3.978825566065806*^9, 3.9788255784436274`*^9}, {
+  3.9807906707890787`*^9, 3.980790676170329*^9}},
+ CellLabel->"In[68]:=",ExpressionUUID->"4a9c6c49-52c0-4f57-ac31-6831ea351986"],
+
+Cell["QED\[NonBreakingSpace]\[FilledSquare]", "Text",
+ CellChangeTimes->{{3.978823232236299*^9, 3.978823321181185*^9}},
+ FontColor->RGBColor[
+  0.14, 0.8, 0.14],ExpressionUUID->"d299654d-7a6d-4c80-884c-bbebb9301178"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Geometrical GR Demos", "Section",
+ CellChangeTimes->{{3.9786994068137197`*^9, 3.9786994131830473`*^9}, {
+  3.978795802230837*^9, 3.9787958048569098`*^9}, {3.978895745408906*^9, 
+  3.9788957493236227`*^9}},ExpressionUUID->"e5710a23-61f4-493f-86ed-\
+e18bd8ca10ce"],
+
+Cell[CellGroupData[{
+
+Cell["Geometrical Covariant Derivative of a Scalar Function \
+\[CapitalLambda]", "Subsection",
+ CellChangeTimes->{{3.978893209749408*^9, 3.978893224927899*^9}, {
+  3.9788957134832897`*^9, 3.9788957145552473`*^9}, {3.979349737913785*^9, 
+  3.9793497399086857`*^9}},ExpressionUUID->"6c60e6b7-8cf1-438e-87ce-\
+3b1bf96b643e"],
+
+Cell["\<\
+equal to its ordinary partial derivative, rendered in comma notation\
+\>", "Text",
+ CellChangeTimes->{{3.978895733267252*^9, 3.9788957630844383`*^9}, 
+   3.9789952887631893`*^9},ExpressionUUID->"5b56050f-4b40-470e-8084-\
+e8d3379a6655"],
+
+Cell[BoxData[
+ RowBox[{"CD", "[", 
+  RowBox[{"\[CapitalLambda]", ",", 
+   RowBox[{"x", "[", 
+    RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}]}], "]"}]], "Input",\
+
+ CellChangeTimes->{{3.978893227960505*^9, 3.978893244210726*^9}},
+ CellLabel->"In[49]:=",ExpressionUUID->"04154f17-bcae-430a-8df6-946f27ca396e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Geometrical Covariant Derivative of a Contravariant Vector ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["V", 
+    RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], TraditionalForm]],ExpressionUUID->
+  "cd29982d-4da8-4701-b47c-e4f452998932"]
+}], "Subsection",
+ CellChangeTimes->{{3.978722966316712*^9, 3.978722999740416*^9}, 
+   3.9787231009581213`*^9, {3.978725130360669*^9, 3.978725131663802*^9}, {
+   3.978795851140572*^9, 3.978795866832985*^9}, 3.9787959818547487`*^9, {
+   3.979349747141242*^9, 
+   3.979349747626672*^9}},ExpressionUUID->"fba5a714-f09d-4338-93fc-\
+ddbbeef6f9dd"],
+
+Cell["\<\
+equal to its partial derivative plus the correction proportional to the \
+geometrical connection \[CapitalGamma]\
+\>", "Text",
+ CellChangeTimes->{{3.97934975624529*^9, 
+  3.9793497791821127`*^9}},ExpressionUUID->"7b532589-5e45-4982-bc2f-\
+7f35b0b08efc"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"CD", "[", 
+   RowBox[{
+    RowBox[{"V", "[", 
+     RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}], ",", 
+    RowBox[{"x", "[", 
+     RowBox[{"\[ScriptCapitalU]", "[", "\[Nu]", "]"}], "]"}]}], "]"}], "//", 
+  "TensorForm"}]], "Input",
+ CellChangeTimes->{{3.978646926181177*^9, 3.9786469794424543`*^9}, {
+   3.978699513903988*^9, 3.978699517498158*^9}, 3.9787000545314837`*^9},
+ CellLabel->"In[50]:=",ExpressionUUID->"0d0ef4cc-59dc-47c8-833f-846ca49cf214"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Geometrical Covariant Derivative of a ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"(", 
+    RowBox[{"2", ",", "0"}], ")"}], TraditionalForm]],ExpressionUUID->
+  "87935a7a-8769-4d23-b78c-610fa4d7d2d5"],
+ " Tensor"
+}], "Subsection",
+ CellChangeTimes->{{3.978723020029056*^9, 3.978723048257453*^9}, {
+   3.9787958329993258`*^9, 3.978795870427258*^9}, 3.978795984887789*^9, 
+   3.979349805882736*^9},ExpressionUUID->"86c5371d-10c4-4420-89e3-\
+f1271f038bfd"],
+
+Cell["now we get two corrections, one for each index", "Text",
+ CellChangeTimes->{{3.9793497876187553`*^9, 
+  3.9793497982119703`*^9}},ExpressionUUID->"58d0eca9-7435-4673-af4f-\
+840a6933385b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"CD", "[", 
+   RowBox[{
+    RowBox[{"T", "[", 
+     RowBox[{
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], ",", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Nu]", "]"}]}], "]"}], ",", 
+    RowBox[{"x", "[", 
+     RowBox[{"\[ScriptCapitalU]", "[", "\[Rho]", "]"}], "]"}]}], "]"}], "//", 
+  "TensorForm"}]], "Input",
+ CellChangeTimes->{{3.978722557434629*^9, 3.978722614510888*^9}},
+ CellLabel->"In[51]:=",ExpressionUUID->"0f14565c-7c38-416a-b963-cef34cc175a5"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Geometrical Covariant Derivative of a ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"(", 
+    RowBox[{"1", ",", "1"}], ")"}], TraditionalForm]],ExpressionUUID->
+  "c182bb48-6828-4c54-9765-29069c483871"],
+ " Tensor"
+}], "Subsection",
+ CellChangeTimes->{{3.978723020029056*^9, 3.978723065394462*^9}, {
+   3.978795856858921*^9, 3.9787958753289633`*^9}, 3.978795987256597*^9, 
+   3.9793498093961153`*^9},ExpressionUUID->"a2ea2732-42a8-4fd1-84c7-\
+94c0217819ec"],
+
+Cell["ditto, with a sign change", "Text",
+ CellChangeTimes->{{3.979349812588862*^9, 
+  3.979349819692924*^9}},ExpressionUUID->"0bfa2ffc-548e-4e48-9a8c-\
+83f9bd2e8669"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"CD", "[", 
+   RowBox[{
+    RowBox[{"T", "[", 
+     RowBox[{
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], ",", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}]}], "]"}], ",", 
+    RowBox[{"x", "[", 
+     RowBox[{"\[ScriptCapitalU]", "[", "\[Rho]", "]"}], "]"}]}], "]"}], "//", 
+  "TensorForm"}]], "Input",
+ CellChangeTimes->{{3.978722557434629*^9, 3.978722614510888*^9}, {
+  3.978722815581492*^9, 3.978722817901774*^9}},
+ CellLabel->"In[52]:=",ExpressionUUID->"e0ff2384-1986-4fe0-b697-b0892cbf2351"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Geometrical Covariant Derivative of the Covariant Metric", "Subsection",
+ CellChangeTimes->{{3.978723075447353*^9, 3.978723097320726*^9}, {
+   3.978795859359416*^9, 3.9787958830507383`*^9}, 3.978795991209485*^9, 
+   3.9793498261165657`*^9},ExpressionUUID->"daa888d7-1f81-4b3d-bcbd-\
+1f836fc32d72"],
+
+Cell["Two negative signs, one for each covariant index", "Text",
+ CellChangeTimes->{{3.979349831969532*^9, 
+  3.9793498464946747`*^9}},ExpressionUUID->"2330fefb-0445-4965-9dc5-\
+9798d5e0d280"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"cdg", "=", 
+    RowBox[{"CD", "[", 
+     RowBox[{
+      RowBox[{"g", "[", 
+       RowBox[{
+        RowBox[{"\[ScriptCapitalD]", "[", "\[Mu]", "]"}], ",", 
+        RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}]}], "]"}], ",", 
+      RowBox[{"x", "[", 
+       RowBox[{"\[ScriptCapitalU]", "[", "\[Rho]", "]"}], "]"}]}], "]"}]}], 
+   ")"}], "//", "TensorForm"}]], "Input",
+ CellChangeTimes->{{3.9787227535882607`*^9, 3.978722761097104*^9}, {
+  3.978722836428891*^9, 3.978722842838008*^9}, {3.978724835549759*^9, 
+  3.978724850041938*^9}},
+ CellLabel->"In[53]:=",ExpressionUUID->"afc099c9-f5c1-42c7-b6c7-26df7bc60634"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Metric Compatibility, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[Del]", "g"}], "=", "0"}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "5115f227-7c52-40ba-9d69-46a5f8e57aaf"]
+}], "Subsection",
+ CellChangeTimes->{{3.978724421051444*^9, 3.978724452354293*^9}, {
+   3.978724585756415*^9, 3.97872459014424*^9}, {3.9787249870275803`*^9, 
+   3.978724987675819*^9}, {3.9787305570246077`*^9, 3.97873066121562*^9}, {
+   3.9787307307016373`*^9, 3.978730773596877*^9}, 3.978732898964694*^9, {
+   3.978737301095892*^9, 3.978737355871677*^9}, 3.978795900279101*^9, {
+   3.9787959783127203`*^9, 
+   3.978796006164027*^9}},ExpressionUUID->"36906ab5-5174-4fb2-9cd8-\
+7beb95aae06e"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[Del]", "g"}], "=", "0"}], TraditionalForm]],ExpressionUUID->
+  "c3a94c61-159e-453c-9118-0f5a0195d515"],
+ " was an axiom in earlier notebooks, and it yielded the Christoffel symbols \
+in the ",
+ StyleBox["Fundamental Theorem of Riemannian Geometry",
+  FontSlant->"Italic"],
+ ". Here, we do the opposite, showing that the Christoffel symbols imply \
+metric compatibility. Thus, in a torsion-free manifold, metric compatibility \
+is both necessary and sufficient for the Christoffel symbols."
+}], "Text",
+ CellChangeTimes->{{3.978724421051444*^9, 3.978724452354293*^9}, {
+   3.978724585756415*^9, 3.97872459014424*^9}, {3.9787249870275803`*^9, 
+   3.978724987675819*^9}, {3.9787305570246077`*^9, 3.97873066121562*^9}, {
+   3.9787307307016373`*^9, 3.978730773596877*^9}, 3.978732898964694*^9, {
+   3.978737301095892*^9, 3.978737355871677*^9}, {3.978795912867682*^9, 
+   3.978795961568068*^9}, {3.978796025215447*^9, 3.978796030724938*^9}, {
+   3.978995315215734*^9, 3.978995324627754*^9}, {3.9808027619973917`*^9, 
+   3.980802769453281*^9}},ExpressionUUID->"105c2b56-4f50-4673-b271-\
+481010de5f68"],
+
+Cell[TextData[{
+ StyleBox["In abstract geometrical contexts, as opposed to coordinate-basis \
+contexts, the Christoffel symbols are called the ",
+  FontSlant->"Italic"],
+ StyleBox["Levi-Civita Connection",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ StyleBox["., often written ",
+  FontSlant->"Italic"],
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", GridBox[{
+      {"\[Lambda]"},
+      {
+       RowBox[{"\[Mu]", " ", "\[Nu]"}]}
+     }], "}"}], TraditionalForm]],ExpressionUUID->
+  "cd8ae890-8104-42ef-bd1b-0e86acb1cbbc"],
+ "."
+}], "Item",
+ CellChangeTimes->{{3.978723120871808*^9, 3.97872312087333*^9}, {
+   3.978723165469028*^9, 3.978723207620385*^9}, 3.9787233650029182`*^9, {
+   3.9787235792374363`*^9, 3.978723603081081*^9}, {3.9787239349292383`*^9, 
+   3.978724069870165*^9}, 3.9787242757312603`*^9, {3.9787243954582853`*^9, 
+   3.978724398922227*^9}, {3.978724456929924*^9, 3.978724457518743*^9}, {
+   3.978724523827444*^9, 3.9787245477064877`*^9}, 3.9787246249191*^9, {
+   3.978725638889288*^9, 3.978725677128771*^9}, {3.978727610826126*^9, 
+   3.97872761221317*^9}, {3.978727655027277*^9, 3.978727669703785*^9}, {
+   3.978727704673315*^9, 3.978727710245927*^9}, {3.978727741834342*^9, 
+   3.978727786420486*^9}, {3.9787307808582687`*^9, 3.978730808044546*^9}, {
+   3.978731256781562*^9, 3.978731305851647*^9}, {3.978732902083425*^9, 
+   3.9787329069000053`*^9}, 3.978737338405304*^9, {3.978737369537401*^9, 
+   3.978737378670127*^9}, {3.979349884378233*^9, 
+   3.9793498846764193`*^9}},ExpressionUUID->"7f41e3cb-db30-41e5-8596-\
+fcad1fe1e3e1"],
+
+Cell[TextData[{
+ StyleBox["Christoffel symbols were derived in ",
+  FontSlant->"Italic"],
+ StyleBox[ButtonBox["Covariant Derivatives and Connections in the \
+\[ScriptCapitalU]\[ScriptCapitalD] Calculus",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[", assuming both torsion freedom (symmetry in lower two indices of \
+\[CapitalGamma]), and metric compatibility.",
+  FontSlant->"Italic"]
+}], "Item",
+ CellChangeTimes->{{3.978730709516233*^9, 3.978730720985425*^9}, {
+   3.978730817298769*^9, 3.978730819268317*^9}, {3.978796058572641*^9, 
+   3.978796059319714*^9}, 
+   3.980088957108927*^9},ExpressionUUID->"7d7c228b-22ed-4a27-aaec-\
+7b9c5c83d43d"],
+
+Cell[TextData[{
+ StyleBox["If we allow torsion, as in Einstein-Cartan theory or as in the \
+Appendix, the present tautology is not valid. In such cases, we must \
+introduce the ",
+  FontSlant->"Italic"],
+ StyleBox["contortion tensor",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ StyleBox[" ",
+  FontSlant->"Italic"],
+ Cell[BoxData[
+  FormBox["K", TraditionalForm]],ExpressionUUID->
+  "6158871f-67e4-44e0-9834-338cd6280095"]
+}], "Item",
+ CellChangeTimes->{{3.9787310877075768`*^9, 3.978731131601782*^9}, {
+  3.978731165541348*^9, 3.978731191812948*^9}, {3.978732930240844*^9, 
+  3.978732932414803*^9}, {3.978737257574294*^9, 3.9787372858020067`*^9}, {
+  3.978737400260751*^9, 3.978737439535802*^9}, {3.978796072143055*^9, 
+  3.978796073791698*^9}, {3.9807882224313602`*^9, 
+  3.980788225138115*^9}},ExpressionUUID->"7c5421be-db30-4601-a65b-\
+ef399811fb4b"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   SubscriptBox[
+    SuperscriptBox["\[CapitalGamma]", 
+     RowBox[{"\[VeryThinSpace]", "\[Lambda]"}]], 
+    RowBox[{"\[VeryThinSpace]", 
+     RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Nu]"}]}]], "=", 
+   RowBox[{
+    RowBox[{"{", GridBox[{
+       {"\[Lambda]"},
+       {
+        RowBox[{"\[Mu]", " ", "\[Nu]"}]}
+      }], "}"}], "+", 
+    SubscriptBox[
+     SuperscriptBox["K", 
+      RowBox[{"\[VeryThinSpace]", "\[Lambda]"}]], 
+     RowBox[{"\[VeryThinSpace]", 
+      RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Nu]"}]}]]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.978731208824177*^9, 3.978731247795663*^9}, {
+  3.978731311075004*^9, 
+  3.978731346983602*^9}},ExpressionUUID->"147f6684-e8f8-4693-bff8-\
+f251da64a915"],
+
+Cell[TextData[StyleBox["We do not develop this case further in this notebook.",
+ FontSlant->"Italic"]], "ItemParagraph",
+ CellChangeTimes->{{3.978731364477957*^9, 3.978731370652232*^9}, {
+  3.978732129803801*^9, 
+  3.978732139620892*^9}},ExpressionUUID->"f41b70a3-f7a4-4363-9c7e-\
+2bc0073510e7"],
+
+Cell["For pedagogy, clear the definitions loaded from the toolkit:", "Text",
+ CellChangeTimes->{{3.978796280777298*^9, 
+  3.97879629869436*^9}},ExpressionUUID->"f635d244-440e-4e40-a62c-\
+3292fd375cf3"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ClearAll", "[", 
+   RowBox[{
+   "ruleLeviCivita", ",", "cdgWithLeviCivitaConnection", ",", 
+    "metricDifferentiationRules"}], "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.978723120871808*^9, 3.97872312087333*^9}, {
+   3.978723165469028*^9, 3.978723207620385*^9}, 3.9787233650029182`*^9, {
+   3.9787235792374363`*^9, 3.978723603081081*^9}, {3.9787239349292383`*^9, 
+   3.978724069870165*^9}, 3.9787242757312603`*^9, {3.9787243954582853`*^9, 
+   3.978724398922227*^9}, {3.978724456929924*^9, 3.978724457518743*^9}, {
+   3.978724523827444*^9, 3.9787245477064877`*^9}, {3.978724603336814*^9, 
+   3.978724620265463*^9}, {3.978725159783496*^9, 3.9787251624376297`*^9}, {
+   3.978725557829463*^9, 3.978725560561248*^9}, 3.978737776623622*^9, {
+   3.978796260596759*^9, 3.9787962614802923`*^9}, 3.980088990085904*^9},
+ CellLabel->"In[54]:=",ExpressionUUID->"6783fea4-0f1f-46d1-9eb3-d2cce16cb322"],
+
+Cell[TextData[{
+ "Start with the covariant derivative of the metric, ",
+ StyleBox["cdg", "Input"],
+ ", from above"
+}], "Text",
+ CellChangeTimes->{{3.978723120871808*^9, 3.97872312087333*^9}, {
+   3.978723165469028*^9, 3.978723207620385*^9}, 3.9787233650029182`*^9, {
+   3.9787235792374363`*^9, 3.978723603081081*^9}, {3.9787239349292383`*^9, 
+   3.978724069870165*^9}, 3.9787242757312603`*^9, {3.9787243954582853`*^9, 
+   3.978724398922227*^9}, {3.978724456929924*^9, 3.978724457518743*^9}, {
+   3.978724523827444*^9, 3.9787245477064877`*^9}, {3.978724603336814*^9, 
+   3.978724620265463*^9}, {3.978724739428273*^9, 3.9787247700782423`*^9}, {
+   3.978724890793879*^9, 3.978724897068433*^9}, {3.978737471896494*^9, 
+   3.978737473451466*^9}},ExpressionUUID->"a921b960-7e41-44d3-8bfc-\
+9af78e43d85b"],
+
+Cell[TextData[{
+ "Fetch the Levi-Civita connection via a new ",
+ StyleBox["ruleLeviCivita", "Input"],
+ ", added to Relativity Toolkit v1.9.0:"
+}], "Text",
+ CellChangeTimes->{{3.978723120871808*^9, 3.97872312087333*^9}, {
+   3.978723165469028*^9, 3.978723207620385*^9}, 3.9787233650029182`*^9, {
+   3.9787235792374363`*^9, 3.978723603081081*^9}, {3.9787239349292383`*^9, 
+   3.978724069870165*^9}, 3.9787242757312603`*^9, {3.9787243954582853`*^9, 
+   3.978724398922227*^9}, {3.978724456929924*^9, 3.978724457518743*^9}, {
+   3.978724523827444*^9, 3.9787245477064877`*^9}, 3.9787246249191*^9, {
+   3.978725638889288*^9, 3.978725677128771*^9}, {3.978727610826126*^9, 
+   3.97872761221317*^9}, {3.978727655027277*^9, 3.978727669703785*^9}, {
+   3.978727704673315*^9, 3.978727726175351*^9}, {3.978728539411619*^9, 
+   3.978728617328974*^9}, {3.97873086678955*^9, 3.978730878264001*^9}, {
+   3.9787374772589073`*^9, 3.978737507635295*^9}, {3.97899540083895*^9, 
+   3.9789954019237223`*^9}, {3.979349941006268*^9, 
+   3.979349944751506*^9}},ExpressionUUID->"36ccf3bb-d1d5-4244-bd4d-\
+d4d89e71386c"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   SubscriptBox[
+    SuperscriptBox["\[CapitalGamma]", 
+     RowBox[{"\[VeryThinSpace]", "\[Lambda]"}]], 
+    RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Rho]"}]], "=", 
+   RowBox[{
+    FractionBox["1", "2"], 
+    RowBox[{
+     SuperscriptBox["g", 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{"\[Lambda]", "\[VeryThinSpace]", "\[Sigma]"}]}]], "(", 
+     RowBox[{
+      SubscriptBox["g", 
+       RowBox[{"\[VeryThinSpace]", 
+        RowBox[{
+         RowBox[{"\[Sigma]", "\[VeryThinSpace]", "\[Rho]"}], 
+         "\[VeryThinSpace]", ",", "\[VeryThinSpace]", "\[Mu]"}]}]], "+", 
+      SubscriptBox["g", 
+       RowBox[{"\[VeryThinSpace]", 
+        RowBox[{
+         RowBox[{"\[Sigma]", "\[VeryThinSpace]\[VeryThinSpace]", "\[Mu]"}], "\[InvisibleComma]", 
+         RowBox[{",", "\[VeryThinSpace]", "\[Rho]"}]}]}]], "-", 
+      SubscriptBox["g", 
+       RowBox[{"\[VeryThinSpace]", 
+        RowBox[{
+         RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Rho]"}], "\[InvisibleComma]", 
+         RowBox[{",", "\[VeryThinSpace]", "\[Sigma]"}]}]}]]}], ")"}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.9787256859222937`*^9, 3.9787258490140142`*^9}, {
+  3.9787262341089*^9, 3.9787262443556232`*^9}, {3.978726300816777*^9, 
+  3.978726306012745*^9}, {3.978726588629328*^9, 3.978726596321744*^9}, {
+  3.9787266997935057`*^9, 
+  3.9787266997998*^9}},ExpressionUUID->"0943092d-7233-41c9-bc8f-d42d615c619a"],
+
+Cell[BoxData[
+ RowBox[{"ruleLeviCivita", "=", 
+  RowBox[{
+   RowBox[{"\[CapitalGamma]", "[", 
+    RowBox[{
+     RowBox[{"\[ScriptCapitalU]", "[", "\[Lambda]_", "]"}], ",", 
+     RowBox[{"\[ScriptCapitalD]", "[", "a_", "]"}], ",", 
+     RowBox[{"\[ScriptCapitalD]", "[", "b_", "]"}]}], "]"}], ":>", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\[Sigma]", "=", 
+       RowBox[{"Unique", "[", "\"\<\[Sigma]\>\"", "]"}]}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      FractionBox["1", "2"], 
+      RowBox[{"g", "[", 
+       RowBox[{
+        RowBox[{"\[ScriptCapitalU]", "[", "\[Lambda]", "]"}], ",", 
+        RowBox[{"\[ScriptCapitalU]", "[", "\[Sigma]", "]"}]}], "]"}], "*", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"Partials", "[", 
+         RowBox[{
+          RowBox[{"g", "[", 
+           RowBox[{
+            RowBox[{"\[ScriptCapitalD]", "[", "\[Sigma]", "]"}], ",", 
+            RowBox[{"\[ScriptCapitalD]", "[", "b", "]"}]}], "]"}], ",", 
+          RowBox[{"x", "[", 
+           RowBox[{"\[ScriptCapitalU]", "[", "a", "]"}], "]"}]}], "]"}], "+", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Partials", "[", 
+         RowBox[{
+          RowBox[{"g", "[", 
+           RowBox[{
+            RowBox[{"\[ScriptCapitalD]", "[", "\[Sigma]", "]"}], ",", 
+            RowBox[{"\[ScriptCapitalD]", "[", "a", "]"}]}], "]"}], ",", 
+          RowBox[{"x", "[", 
+           RowBox[{"\[ScriptCapitalU]", "[", "b", "]"}], "]"}]}], "]"}], "-", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Partials", "[", 
+         RowBox[{
+          RowBox[{"g", "[", 
+           RowBox[{
+            RowBox[{"\[ScriptCapitalD]", "[", "a", "]"}], ",", 
+            RowBox[{"\[ScriptCapitalD]", "[", "b", "]"}]}], "]"}], ",", 
+          RowBox[{"x", "[", 
+           RowBox[{"\[ScriptCapitalU]", "[", "\[Sigma]", "]"}], "]"}]}], 
+         "]"}]}], ")"}]}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.978723120871808*^9, 3.97872312087333*^9}, {
+   3.978723165469028*^9, 3.978723207620385*^9}, 3.9787233650029182`*^9, {
+   3.9787235792374363`*^9, 3.978723603081081*^9}, {3.9787239349292383`*^9, 
+   3.978724069870165*^9}, 3.9787242757312603`*^9, {3.9787243954582853`*^9, 
+   3.978724398922227*^9}, {3.978724456929924*^9, 3.978724457518743*^9}, {
+   3.978724523827444*^9, 3.9787245477064877`*^9}, {3.9787246249191*^9, 
+   3.978724627012993*^9}, {3.9787263238065643`*^9, 3.978726334187682*^9}, {
+   3.978726389072872*^9, 3.9787263916461477`*^9}, {3.978726422052228*^9, 
+   3.978726495051648*^9}, {3.978726725948238*^9, 3.9787267404234657`*^9}, {
+   3.978726803673094*^9, 3.978726851311077*^9}, {3.9787270264194717`*^9, 
+   3.9787270342541447`*^9}, {3.978728078699913*^9, 3.9787281016729527`*^9}},
+ CellLabel->"In[55]:=",ExpressionUUID->"36779bb3-2b03-4dd8-958c-cd56c771e644"],
+
+Cell[TextData[{
+ "In ",
+ StyleBox["cdg", "Input"],
+ ", replace \[CapitalGamma] with its definition via this rule, then ",
+ StyleBox["Expand", "Input"],
+ " to expose terms to further processing "
+}], "Text",
+ CellChangeTimes->{{3.978723120871808*^9, 3.97872312087333*^9}, {
+   3.978723165469028*^9, 3.978723207620385*^9}, 3.9787233650029182`*^9, {
+   3.9787235792374363`*^9, 3.978723603081081*^9}, {3.9787239349292383`*^9, 
+   3.978724069870165*^9}, 3.9787242757312603`*^9, {3.9787243954582853`*^9, 
+   3.978724398922227*^9}, {3.978724456929924*^9, 3.978724457518743*^9}, {
+   3.978724523827444*^9, 3.9787245477064877`*^9}, {3.9787246249191*^9, 
+   3.9787246300852633`*^9}, {3.9787268953354063`*^9, 
+   3.9787269176847897`*^9}, {3.978728265106188*^9, 3.978728286317178*^9}, {
+   3.978728321933515*^9, 3.978728336532419*^9}, 3.978728443511554*^9, {
+   3.978728687590288*^9, 3.978728704287961*^9}, {3.978737526638831*^9, 
+   3.9787375639468727`*^9}, {3.979349968315227*^9, 
+   3.979349973413467*^9}},ExpressionUUID->"faf273fe-15ca-4136-b35a-\
+92bc78a2c86c"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"cdg", "/.", " ", "ruleLeviCivita"}], ")"}], "//", 
+  "Expand"}]], "Input",
+ CellChangeTimes->{3.991311590039466*^9},
+ CellLabel->"In[69]:=",ExpressionUUID->"8654605e-3048-4c1b-b3d2-7c381289a803"],
+
+Cell[TextData[{
+ "Apply ",
+ StyleBox["TensorForm", "Input"],
+ " to replace noisy symbols with human-readable ones (",
+ StyleBox["TensorForm", "Input"],
+ " is a \[ScriptCapitalU]\[ScriptCapitalD]-exit function\[LongDash]its output \
+is for human consumption and is no longer amenable to \[ScriptCapitalU]\
+\[ScriptCapitalD] processing):"
+}], "Text",
+ CellChangeTimes->{{3.991311619641858*^9, 
+  3.9913117373713837`*^9}},ExpressionUUID->"5ee95425-83d8-4898-8ace-\
+3da463912aca"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"cdgWithLeviCivitaConnection", "=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"cdg", "/.", " ", "ruleLeviCivita"}], ")"}], "//", "Expand"}]}],
+    ")"}], "//", "TensorForm"}]], "Input",
+ CellChangeTimes->{{3.978723120871808*^9, 3.97872312087333*^9}, {
+   3.978723165469028*^9, 3.978723207620385*^9}, 3.9787233650029182`*^9, {
+   3.9787235792374363`*^9, 3.978723603081081*^9}, {3.9787239349292383`*^9, 
+   3.978724069870165*^9}, 3.9787242757312603`*^9, {3.9787243954582853`*^9, 
+   3.978724398922227*^9}, {3.978724456929924*^9, 3.978724457518743*^9}, {
+   3.978724523827444*^9, 3.9787245477064877`*^9}, {3.9787246249191*^9, 
+   3.978724631886629*^9}, {3.978724878848732*^9, 3.9787248796952744`*^9}, 
+   3.978725021183999*^9, {3.9787282948570547`*^9, 3.978728313444254*^9}, {
+   3.9787283470714912`*^9, 3.978728348381463*^9}, {3.978728402149639*^9, 
+   3.978728404412794*^9}, {3.978737727053822*^9, 3.97873777095221*^9}, {
+   3.978820709711932*^9, 3.9788207168606367`*^9}, {3.98008903185327*^9, 
+   3.980089036396756*^9}},
+ CellLabel->"In[56]:=",ExpressionUUID->"acb72e02-8c20-4128-a0c6-2237819d9c8c"],
+
+Cell[TextData[{
+ "Now consider the following new ",
+ StyleBox["metricDifferentiationRules", "Input"],
+ " in the toolkit:"
+}], "Text",
+ CellChangeTimes->{{3.978723120871808*^9, 3.97872312087333*^9}, {
+   3.978723165469028*^9, 3.978723207620385*^9}, 3.9787233650029182`*^9, {
+   3.9787235792374363`*^9, 3.978723603081081*^9}, {3.9787239349292383`*^9, 
+   3.978724069870165*^9}, 3.9787242757312603`*^9, {3.9787243954582853`*^9, 
+   3.978724398922227*^9}, {3.978724456929924*^9, 3.978724457518743*^9}, {
+   3.978724523827444*^9, 3.9787245477064877`*^9}, {3.9787246249191*^9, 
+   3.978724655016555*^9}, {3.978728805218172*^9, 3.978728826363542*^9}, {
+   3.9787290126709223`*^9, 3.978729047982644*^9}, {3.978729271939196*^9, 
+   3.9787292731615953`*^9}, {3.9787375737628603`*^9, 3.978737674891205*^9}, {
+   3.978820731321836*^9, 3.978820758089657*^9}, 
+   3.97934998775746*^9},ExpressionUUID->"93bf4fa2-f4b4-4f0a-ab4d-\
+717ffc4f10c4"],
+
+Cell["They include", "Text",
+ CellChangeTimes->{{3.978729275710746*^9, 
+  3.978729280712111*^9}},ExpressionUUID->"40dbd394-2584-40db-bbf7-\
+581c6f61fb47"],
+
+Cell[TextData[{
+ "metric symmetry: ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["g", 
+     RowBox[{"\[VeryThinSpace]", 
+      RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Nu]"}]}]], "=", 
+    SubscriptBox["g", 
+     RowBox[{"\[VeryThinSpace]", 
+      RowBox[{"\[Nu]", "\[VeryThinSpace]", "\[Mu]"}]}]]}], TraditionalForm]],
+  ExpressionUUID->"14cefe90-6ebc-486c-9ed5-cbeeaee1d1fb"],
+ ", required by standard general relativity"
+}], "Item",
+ CellChangeTimes->{{3.978729275710746*^9, 3.97872936944556*^9}, {
+   3.9787961972639*^9, 3.97879620526226*^9}, 
+   3.979350002342268*^9},ExpressionUUID->"88693217-3b4c-45da-b013-\
+583c59e317d0"],
+
+Cell[TextData[{
+ "metric contraction to the Kronecker delta: ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubscriptBox["g", 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{"\[Lambda]", "\[VeryThinSpace]", "\[Nu]"}]}]], 
+     SuperscriptBox["g", 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{"\[Lambda]", "\[VeryThinSpace]", "\[Mu]"}]}]]}], "=", 
+    SubsuperscriptBox["\[Delta]", 
+     RowBox[{"\[VeryThinSpace]", "\[Nu]"}], 
+     RowBox[{"\[VeryThinSpace]", "\[Mu]"}]]}], TraditionalForm]],
+  ExpressionUUID->"2171b675-1bd9-4c06-92fa-463aaddec177"],
+ " (gUpUp is inverse of gDownDown)"
+}], "Item",
+ CellChangeTimes->{{3.978729394868044*^9, 3.978729442918882*^9}, {
+  3.979350007366852*^9, 
+  3.979350020373356*^9}},ExpressionUUID->"bd14ede0-061e-4c02-a68f-\
+d891fb0004d6"],
+
+Cell[TextData[{
+ "contraction of Kronecker delta on derivatives, for the chain rule: ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubsuperscriptBox["\[Delta]", 
+      RowBox[{"\[VeryThinSpace]", "\[Nu]"}], 
+      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], 
+     SubscriptBox["\[PartialD]", "\[Mu]"]}], "=", 
+    SubscriptBox["\[PartialD]", "\[Nu]"]}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "55969c1e-044a-49ca-bd54-270d5ca749d1"]
+}], "Item",
+ CellChangeTimes->{{3.9787296041025267`*^9, 3.978729755664007*^9}, {
+   3.978729845967012*^9, 3.97872985114992*^9}, {3.978737698806459*^9, 
+   3.978737700818048*^9}, 
+   3.9788207714139967`*^9},ExpressionUUID->"bdbba8db-a466-4836-939c-\
+b39e0dad228a"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "delta contraction inside metric derivatives: ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubsuperscriptBox["\[Delta]", "\[Nu]", 
+      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], 
+     SubscriptBox["g", 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{
+        RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Lambda]"}], 
+        "\[VeryThinSpace]", ",", "\[VeryThinSpace]", "\[Rho]"}]}]]}], "=", 
+    SubscriptBox["g", 
+     RowBox[{"\[VeryThinSpace]", 
+      RowBox[{
+       RowBox[{"\[Nu]", "\[VeryThinSpace]", "\[Lambda]"}], "\[VeryThinSpace]",
+        ",", "\[VeryThinSpace]", "\[Rho]"}]}]]}], TraditionalForm]],
+  ExpressionUUID->"841697dc-84b0-44da-9072-510edc33650f"],
+ ", ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubsuperscriptBox["\[Delta]", "\[Nu]", 
+      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], 
+     SubscriptBox["g", 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{
+        RowBox[{"\[Lambda]", "\[VeryThinSpace]", "\[Mu]"}], 
+        "\[VeryThinSpace]", ",", "\[VeryThinSpace]", "\[Rho]"}]}]]}], "=", 
+    SubscriptBox["g", 
+     RowBox[{"\[VeryThinSpace]\[VeryThinSpace]", 
+      RowBox[{
+       RowBox[{"\[Lambda]", "\[VeryThinSpace]", "\[Nu]"}], "\[VeryThinSpace]",
+        ",", "\[VeryThinSpace]", "\[Rho]"}]}]]}], TraditionalForm]],
+  ExpressionUUID->"9a0cda09-c666-4c00-ab90-db3714e16247"]
+}], "Item",
+ CellChangeTimes->{{3.978729821611558*^9, 3.97872986129429*^9}, {
+  3.978729914147636*^9, 3.978730067328088*^9}, {3.978995469336186*^9, 
+  3.97899552939629*^9}},ExpressionUUID->"46f98a67-0d9c-4063-8242-\
+1f690d6e61c0"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"metricDifferentiationRules", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Metric", " ", "Symmetry"}], "*)"}], "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalD]", "[", "a_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalD]", "[", "b_", "]"}]}], "]"}], "/;", 
+       RowBox[{"!", 
+        RowBox[{"OrderedQ", "[", 
+         RowBox[{"{", 
+          RowBox[{"a", ",", "b"}], "}"}], "]"}]}]}], ":>", 
+      RowBox[{"g", "[", 
+       RowBox[{
+        RowBox[{"\[ScriptCapitalD]", "[", "b", "]"}], ",", 
+        RowBox[{"\[ScriptCapitalD]", "[", "a", "]"}]}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalU]", "[", "a_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalU]", "[", "b_", "]"}]}], "]"}], "/;", 
+       RowBox[{"!", 
+        RowBox[{"OrderedQ", "[", 
+         RowBox[{"{", 
+          RowBox[{"a", ",", "b"}], "}"}], "]"}]}]}], ":>", 
+      RowBox[{"g", "[", 
+       RowBox[{
+        RowBox[{"\[ScriptCapitalU]", "[", "b", "]"}], ",", 
+        RowBox[{"\[ScriptCapitalU]", "[", "a", "]"}]}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Permissive", " ", "Contraction", " ", 
+       RowBox[{"(", 
+        RowBox[{"All", " ", "4", " ", "Alignments"}], ")"}]}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"First", "-", "First"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalD]", "[", "s_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalD]", "[", "a_", "]"}]}], "]"}], "*", 
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalU]", "[", "s_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalU]", "[", "b_", "]"}]}], "]"}]}], ":>", 
+      RowBox[{"\[Delta]", "[", 
+       RowBox[{
+        RowBox[{"\[ScriptCapitalU]", "[", "b", "]"}], ",", 
+        RowBox[{"\[ScriptCapitalD]", "[", "a", "]"}]}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Second", "-", "Second"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalD]", "[", "a_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalD]", "[", "s_", "]"}]}], "]"}], "*", 
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalU]", "[", "b_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalU]", "[", "s_", "]"}]}], "]"}]}], ":>", 
+      RowBox[{"\[Delta]", "[", 
+       RowBox[{
+        RowBox[{"\[ScriptCapitalU]", "[", "b", "]"}], ",", 
+        RowBox[{"\[ScriptCapitalD]", "[", "a", "]"}]}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"First", "-", 
+       RowBox[{"Second", " ", 
+        RowBox[{"(", 
+         RowBox[{"Redundant", " ", "but", " ", "Safe"}], ")"}]}]}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalD]", "[", "s_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalD]", "[", "a_", "]"}]}], "]"}], "*", 
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalU]", "[", "b_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalU]", "[", "s_", "]"}]}], "]"}]}], ":>", 
+      RowBox[{"\[Delta]", "[", 
+       RowBox[{
+        RowBox[{"\[ScriptCapitalU]", "[", "b", "]"}], ",", 
+        RowBox[{"\[ScriptCapitalD]", "[", "a", "]"}]}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Second", "-", "First"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalD]", "[", "a_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalD]", "[", "s_", "]"}]}], "]"}], "*", 
+       RowBox[{"g", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalU]", "[", "s_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalU]", "[", "b_", "]"}]}], "]"}]}], ":>", 
+      RowBox[{"\[Delta]", "[", 
+       RowBox[{
+        RowBox[{"\[ScriptCapitalU]", "[", "b", "]"}], ",", 
+        RowBox[{"\[ScriptCapitalD]", "[", "a", "]"}]}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Delta", " ", "Contractions"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"\[Delta]", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalU]", "[", "bound_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalD]", "[", "free_", "]"}]}], "]"}], "*", 
+       RowBox[{"Partials", "[", 
+        RowBox[{"expr_", ",", 
+         RowBox[{"x", "[", 
+          RowBox[{"\[ScriptCapitalU]", "[", "bound_", "]"}], "]"}]}], "]"}]}],
+       ":>", 
+      RowBox[{"Partials", "[", 
+       RowBox[{"expr", ",", 
+        RowBox[{"x", "[", 
+         RowBox[{"\[ScriptCapitalU]", "[", "free", "]"}], "]"}]}], "]"}]}], ",",
+      "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"\[Delta]", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalU]", "[", "bound_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalD]", "[", "free_", "]"}]}], "]"}], "*", 
+       RowBox[{"Partials", "[", 
+        RowBox[{
+         RowBox[{"g", "[", 
+          RowBox[{
+           RowBox[{"\[ScriptCapitalD]", "[", "bound_", "]"}], ",", 
+           RowBox[{"\[ScriptCapitalD]", "[", "other_", "]"}]}], "]"}], ",", 
+         "v_"}], "]"}]}], ":>", 
+      RowBox[{"Partials", "[", 
+       RowBox[{
+        RowBox[{"g", "[", 
+         RowBox[{
+          RowBox[{"\[ScriptCapitalD]", "[", "free", "]"}], ",", 
+          RowBox[{"\[ScriptCapitalD]", "[", "other", "]"}]}], "]"}], ",", 
+        "v"}], "]"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"\[Delta]", "[", 
+        RowBox[{
+         RowBox[{"\[ScriptCapitalU]", "[", "bound_", "]"}], ",", 
+         RowBox[{"\[ScriptCapitalD]", "[", "free_", "]"}]}], "]"}], "*", 
+       RowBox[{"Partials", "[", 
+        RowBox[{
+         RowBox[{"g", "[", 
+          RowBox[{
+           RowBox[{"\[ScriptCapitalD]", "[", "other_", "]"}], ",", 
+           RowBox[{"\[ScriptCapitalD]", "[", "bound_", "]"}]}], "]"}], ",", 
+         "v_"}], "]"}]}], ":>", 
+      RowBox[{"Partials", "[", 
+       RowBox[{
+        RowBox[{"g", "[", 
+         RowBox[{
+          RowBox[{"\[ScriptCapitalD]", "[", "other", "]"}], ",", 
+          RowBox[{"\[ScriptCapitalD]", "[", "free", "]"}]}], "]"}], ",", 
+        "v"}], "]"}]}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.978799451983548*^9, 3.978799553296142*^9}, {
+  3.9787996454426327`*^9, 3.978799647843099*^9}},
+ CellLabel->"In[57]:=",ExpressionUUID->"9bab225a-0f16-466f-aa27-4f17e3f2fef5"]
+}, Open  ]],
+
+Cell[TextData[{
+ "The result ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[Del]", "g"}], "=", "0"}], TraditionalForm]],ExpressionUUID->
+  "02be1774-401e-4fe6-8632-d186d3ff142c"],
+ " is immediate upon application of both the old metric rules and the new \
+metric rules:"
+}], "Text",
+ CellChangeTimes->{{3.978737809770187*^9, 3.978737824354122*^9}, {
+   3.978796238625132*^9, 3.978796252198594*^9}, 
+   3.979350070224304*^9},ExpressionUUID->"409f07d1-87f5-48a6-b85a-\
+0f092a8bae4f"],
+
+Cell[BoxData[
+ RowBox[{"0", "===", 
+  RowBox[{"(", 
+   RowBox[{"cdgWithLeviCivitaConnection", "//.", 
+    RowBox[{"(", 
+     RowBox[{"metricRules", "~", "Join", "~", "metricDifferentiationRules"}], 
+     ")"}]}], ")"}]}]], "Input",
+ CellChangeTimes->{{3.978723120871808*^9, 3.97872312087333*^9}, {
+   3.978723165469028*^9, 3.978723207620385*^9}, 3.9787233650029182`*^9, {
+   3.9787235792374363`*^9, 3.978723603081081*^9}, {3.9787239349292383`*^9, 
+   3.978724069870165*^9}, 3.9787242757312603`*^9, {3.9787243954582853`*^9, 
+   3.978724398922227*^9}, {3.978724456929924*^9, 3.978724457518743*^9}, {
+   3.978724523827444*^9, 3.9787245477064877`*^9}, {3.9787246249191*^9, 
+   3.978724655016555*^9}, {3.978724702079871*^9, 3.978724710928838*^9}, {
+   3.9787250508743258`*^9, 3.9787250933284473`*^9}, {3.978725345753819*^9, 
+   3.978725378804405*^9}, {3.978725418080933*^9, 3.9787254203642073`*^9}, {
+   3.978725543918469*^9, 3.978725546453899*^9}, 3.9787377848352137`*^9, {
+   3.97886075445511*^9, 3.9788607572632647`*^9}, {3.978868992990575*^9, 
+   3.9788690103864717`*^9}},
+ CellLabel->"In[58]:=",ExpressionUUID->"52cc64bd-46ca-45e8-a147-1d0e3c83dcb2"],
+
+Cell["QED\[NonBreakingSpace]\[FilledSquare]", "Text",
+ CellChangeTimes->{{3.978823232236299*^9, 3.978823321181185*^9}},
+ FontColor->RGBColor[
+  0.14, 0.8, 0.14],ExpressionUUID->"ef73db29-ac31-4a82-af6e-769a1fe04957"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Riemann Revisited", "Subsection",
+ CellChangeTimes->{{3.9788607638227997`*^9, 
+  3.978860769493289*^9}},ExpressionUUID->"569fa0b6-8e86-40bf-99d0-\
+f0b84d4904b1"],
+
+Cell["\<\
+Here is a concise derivation of the Fundamental Theorem of Riemannian \
+Geometry, shorter than the derivation in our earlier notebooks\
+\>", "Text",
+ CellChangeTimes->{{3.978995565032127*^9, 3.9789956024329977`*^9}, {
+   3.979350086525177*^9, 3.9793500973619347`*^9}, {3.980789061655262*^9, 
+   3.980789064274653*^9}, 
+   3.980789151635949*^9},ExpressionUUID->"96cd61c0-e836-4328-9777-\
+a23c979ddafa"],
+
+Cell[TextData[{
+ StyleBox["Because we are using the symmetric Levi-Civita connection \
+implicitly via ",
+  FontSlant->"Italic"],
+ StyleBox["torsionRules", "Input"],
+ StyleBox[", the commutator reduces to Riemann curvature tensor contracted \
+with ",
+  FontSlant->"Italic"],
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],
+  FormatType->TraditionalForm,
+  FontSlant->"Italic",ExpressionUUID->
+  "ad7d7d08-d0f8-401f-9356-c702f0f954e6"],
+ StyleBox[". If we allowed torsion, as discussed in the Appendix, an extra \
+term proportional to the torsion tensor would appear here.",
+  FontSlant->"Italic"]
+}], "Item",
+ CellChangeTimes->{{3.980789068583433*^9, 3.980789133559881*^9}, {
+  3.980789184406026*^9, 
+  3.980789213732882*^9}},ExpressionUUID->"e7183106-c6c7-4524-8ecb-\
+e725cb60e3e2"],
+
+Cell[TextData[{
+ "Calculate the commutator: ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"[", 
+     RowBox[{
+      SubscriptBox["\[Del]", "\[Rho]"], ",", 
+      SubscriptBox["\[Del]", "\[Nu]"]}], "]"}], 
+    SuperscriptBox["A", 
+     RowBox[{"\[VeryThinSpace]", "\[Mu]"}]]}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "9f6fc495-e7ac-40b6-a9ed-8ac39d074efe"],
+ ":"
+}], "Text",
+ CellChangeTimes->{{3.978860787346716*^9, 3.978860806799048*^9}, {
+  3.978860991222589*^9, 3.978861009149042*^9}, {3.978868299654079*^9, 
+  3.978868375119767*^9}},ExpressionUUID->"f09d091f-5427-4c81-ad26-\
+335b3c997d20"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"term1", " ", "=", " ", 
+   RowBox[{"CD", "[", 
+    RowBox[{
+     RowBox[{"CD", "[", 
+      RowBox[{
+       RowBox[{"A", "[", 
+        RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}], ",", " ", 
+       RowBox[{"x", "[", 
+        RowBox[{"\[ScriptCapitalU]", "[", "\[Nu]", "]"}], "]"}]}], "]"}], ",",
+      " ", 
+     RowBox[{"x", "[", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Rho]", "]"}], "]"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"term2", " ", "=", " ", 
+   RowBox[{"CD", "[", 
+    RowBox[{
+     RowBox[{"CD", "[", 
+      RowBox[{
+       RowBox[{"A", "[", 
+        RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}], ",", " ", 
+       RowBox[{"x", "[", 
+        RowBox[{"\[ScriptCapitalU]", "[", "\[Rho]", "]"}], "]"}]}], "]"}], ",",
+      " ", 
+     RowBox[{"x", "[", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Nu]", "]"}], "]"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"comm", " ", "=", " ", 
+    RowBox[{"term1", " ", "-", " ", "term2"}]}], ")"}], "//", 
+  "TensorForm"}]}], "Input",
+ CellChangeTimes->{{3.978860787346716*^9, 3.978860806799048*^9}, {
+  3.978860991222589*^9, 3.978861009149042*^9}, {3.978868299654079*^9, 
+  3.9788683093192377`*^9}},
+ CellLabel->"In[59]:=",ExpressionUUID->"908465c8-5888-45eb-bdfd-ffd03d6fb1eb"],
+
+Cell["Simplification Pipeline", "Text",
+ CellChangeTimes->{{3.978868389762835*^9, 
+  3.978868394065692*^9}},ExpressionUUID->"91b2488c-8182-42ac-9144-\
+80cc876135ff"],
+
+Cell[BoxData[
+ RowBox[{"calculatedRiemann", "=", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"comm", "//", "\[IndentingNewLine]", "ExpandDerivatives"}], "//",
+          "\[IndentingNewLine]", "Expand"}], "//", "\[IndentingNewLine]", 
+        "CanonicalizeIndices"}], ")"}], "//.", "\[IndentingNewLine]", " ", 
+      "torsionRules"}], " ", ")"}], "//", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"ExtractCoefficient", "[", 
+      RowBox[{"#", ",", "A"}], "]"}], "&"}]}], "//", "\[IndentingNewLine]", 
+   "TensorForm"}]}]], "Input",
+ CellChangeTimes->{{3.978860787346716*^9, 3.978860821005308*^9}, 
+   3.978861033161792*^9, {3.978861355886228*^9, 3.9788613621417303`*^9}, 
+   3.978867075350772*^9, {3.9788671078081007`*^9, 3.978867118241984*^9}, 
+   3.978867803927411*^9, {3.9788681447937527`*^9, 3.9788682766523952`*^9}, {
+   3.9800891333406353`*^9, 3.9800891413257227`*^9}},
+ CellLabel->"In[62]:=",ExpressionUUID->"06c60744-2b2a-4093-a4b8-f47e0910dfb3"],
+
+Cell[TextData[{
+ "Textbook definition: ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     SuperscriptBox["\[CapitalGamma]", 
+      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], 
+     RowBox[{"\[VeryThinSpace]", 
+      RowBox[{
+       RowBox[{"\[Nu]", "\[VeryThinSpace]", "\[FormalS]"}], 
+       "\[VeryThinSpace]", ",", "\[VeryThinSpace]", "\[Rho]"}]}]], "-", 
+    SubscriptBox[
+     SuperscriptBox["\[CapitalGamma]", 
+      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], 
+     RowBox[{"\[VeryThinSpace]", 
+      RowBox[{
+       RowBox[{"\[Rho]", "\[VeryThinSpace]", "\[FormalS]"}], 
+       "\[VeryThinSpace]", ",", "\[VeryThinSpace]", "\[Nu]"}]}]], "+", 
+    RowBox[{
+     SubscriptBox[
+      SuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{"\[Rho]", "\[VeryThinSpace]", "\[Lambda]"}]}]], 
+     SubscriptBox[
+      SuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"\[VeryThinSpace]", "\[Lambda]"}]], 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{"\[Nu]", "\[VeryThinSpace]", "\[FormalS]"}]}]]}], "-", 
+    RowBox[{
+     SubscriptBox[
+      SuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{"\[Nu]", "\[VeryThinSpace]", "\[Lambda]"}]}]], 
+     SubscriptBox[
+      SuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"\[VeryThinSpace]", "\[Lambda]"}]], 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{"\[Rho]", "\[VeryThinSpace]", "\[FormalS]"}]}]]}]}], 
+   TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "4988306f-6da0-44bb-82c2-73824f9dfd7e"]
+}], "Text",
+ CellChangeTimes->{{3.978868422397873*^9, 3.978868518203209*^9}, {
+  3.978868559809383*^9, 3.978868604866873*^9}, {3.978868652598501*^9, 
+  3.9788687316011267`*^9}, {3.978868763582549*^9, 
+  3.9788688167087173`*^9}},ExpressionUUID->"c87610ff-b11b-41ae-a176-\
+a375e0a741b4"],
+
+Cell[BoxData[
+ RowBox[{"rawTextbook", "=", 
+  RowBox[{
+   RowBox[{"Partials", "[", 
+    RowBox[{
+     RowBox[{"\[CapitalGamma]", "[", 
+      RowBox[{
+       RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], ",", " ", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}], ",", " ", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[FormalS]", "]"}]}], "]"}], ",", 
+     " ", 
+     RowBox[{"x", "[", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Rho]", "]"}], "]"}]}], "]"}], " ", 
+   "-", " ", "\[IndentingNewLine]", 
+   RowBox[{"Partials", "[", 
+    RowBox[{
+     RowBox[{"\[CapitalGamma]", "[", 
+      RowBox[{
+       RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], ",", " ", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[Rho]", "]"}], ",", " ", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[FormalS]", "]"}]}], "]"}], ",", 
+     " ", 
+     RowBox[{"x", "[", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Nu]", "]"}], "]"}]}], "]"}], " ", "+",
+    " ", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"\[CapitalGamma]", "[", 
+     RowBox[{
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], ",", " ", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Rho]", "]"}], ",", " ", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Lambda]", "]"}]}], "]"}], " ", "*",
+     " ", 
+    RowBox[{"\[CapitalGamma]", "[", 
+     RowBox[{
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Lambda]", "]"}], ",", " ", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}], ",", " ", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[FormalS]", "]"}]}], "]"}]}], " ", "-",
+    "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"\[CapitalGamma]", "[", 
+     RowBox[{
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], ",", " ", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}], ",", " ", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Lambda]", "]"}]}], "]"}], " ", "*",
+     " ", 
+    RowBox[{"\[CapitalGamma]", "[", 
+     RowBox[{
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Lambda]", "]"}], ",", " ", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[Rho]", "]"}], ",", " ", 
+      RowBox[{"\[ScriptCapitalD]", "[", "\[FormalS]", "]"}]}], 
+     "]"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.978868856506703*^9, 3.978868864008463*^9}},
+ CellLabel->"In[63]:=",ExpressionUUID->"f47c5d79-d8d5-4291-9f31-a9b984e791af"],
+
+Cell[BoxData[
+ RowBox[{"expectedRiemann", "=", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"rawTextbook", "//.", "torsionRules"}], ")"}], "//", 
+   "TensorForm"}]}]], "Input",
+ CellChangeTimes->{{3.9788688690673513`*^9, 3.97886889929362*^9}},
+ CellLabel->"In[64]:=",ExpressionUUID->"6ad26b97-fea5-441c-b606-73c88106c6e0"],
+
+Cell[BoxData[
+ RowBox[{"calculatedRiemann", "===", "expectedRiemann"}]], "Input",
+ CellChangeTimes->{{3.978868915272242*^9, 3.9788689380530243`*^9}},
+ CellLabel->"In[65]:=",ExpressionUUID->"b21fc339-8e28-4278-87d6-84003727a2b6"],
+
+Cell["QED\[NonBreakingSpace]\[FilledSquare]", "Text",
+ CellChangeTimes->{{3.978823232236299*^9, 3.978823321181185*^9}},
+ FontColor->RGBColor[
+  0.14, 0.8, 0.14],ExpressionUUID->"56aa1f15-b9e7-44f4-bb75-fd23a7bb00ff"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Appendix: Spin Connection as Gravitational Gauge", "Section",
+ CellChangeTimes->{{3.9784634251754417`*^9, 3.978463431650586*^9}, {
+  3.978467221274311*^9, 3.978467228737336*^9}, {3.9785311553116007`*^9, 
+  3.9785311740560427`*^9}, {3.978531214043825*^9, 3.978531227439899*^9}, {
+  3.978531309854751*^9, 3.97853131020317*^9}, {3.98078819672471*^9, 
+  3.9807881969255943`*^9}},ExpressionUUID->"8b07ab75-9d83-4f32-9461-\
+b8e99837bcf0"],
+
+Cell[TextData[{
+ "General relativity is often compared to standard gauge theories, but there \
+is a fundamental distinction. In theories like electromagnetism or quantum \
+chromodynamics, forces arise from connections on internal or attached spaces, \
+i.e., fibre bundles, e.g., ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"U", 
+    RowBox[{"(", "1", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "41a1d3a5-723b-4649-8dbf-e6a8acdffcbb"],
+ " or ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"S", "\[VeryThinSpace]", 
+    RowBox[{"U", "(", "3", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "c91148c8-1c78-4296-874f-c05abcb2d9bb"],
+ ", defined over spacetime. In standard general relativity, gravitational \
+forces arise from the Levi-Civita connection, which is inextricably linked to \
+the tangent bundle of the spacetime geometry itself."
+}], "Text",
+ CellChangeTimes->{{3.9808029465579147`*^9, 3.980802991430871*^9}, {
+  3.991311888533691*^9, 
+  3.991311915502317*^9}},ExpressionUUID->"bee71cfa-ab19-4388-8d9c-\
+9cc558065ec8"],
+
+Cell["\<\
+To formulate gravitation as a strict gauge theory functionally equivalent to \
+the Standard Model forces, one must identify the conserved currents \
+corresponding to local gauge symmetries. The definitive literature \
+demonstrates how this is achieved:\
+\>", "Text",
+ CellChangeTimes->{{3.9808029465579147`*^9, 
+  3.9808029813411827`*^9}},ExpressionUUID->"b9a92964-4e0a-4e6c-8064-\
+86ee61fe2045"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Friedrich W. ",
+ StyleBox["Hehl",
+  IgnoreSpellCheck->True],
+ " et al., ",
+ StyleBox["General Relativity with Spin and Torsion: Foundations and \
+Prospects",
+  FontSlant->"Italic"],
+ " (Rev. Mod. Phys. 48, 393, 1976)"
+}], "Item",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466361194891*^9}, {
+   3.9784673056989098`*^9, 
+   3.978467354942222*^9}},ExpressionUUID->"d42a3ca6-0f7d-47c3-9359-\
+6874822f94ed"],
+
+Cell["which shows that:", "ItemParagraph",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466361194891*^9}, {
+   3.9784673056989098`*^9, 3.978467385382815*^9}, {3.978792446339141*^9, 
+   3.978792447172833*^9}, {3.9787926595309887`*^9, 
+   3.978792660218268*^9}},ExpressionUUID->"a73a9876-1fbd-482e-9c22-\
+bc8c848e8035"],
+
+Cell["\<\
+Invariance under general transformations (diffeomorphisms), implies \
+conservation of the energy-momentum tensor.\
+\>", "Subitem",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.9784663902544317`*^9}, {
+   3.978467723999647*^9, 3.978467743088092*^9}, {3.978792495856393*^9, 
+   3.978792500167569*^9}},ExpressionUUID->"e27bbfa1-6988-428c-98d9-\
+bdafe05f0bdb"],
+
+Cell["\<\
+Invariance under local Lorentz transformations implies conservation of the \
+spin angular momentum tensor (the spin current).\
+\>", "Subitem",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.9784664333289547`*^9}, {
+   3.978467424580559*^9, 3.9784674399227*^9}, {3.9784677547756577`*^9, 
+   3.9784677558930273`*^9}},ExpressionUUID->"ffef7d33-5cb1-492d-bbdd-\
+8d514fcd685e"],
+
+Cell["\<\
+Standard Einstein GR with vanishing torsion, which we assumed in this series \
+of notebooks, collapses the two symmetries and hides the independent spin \
+current.\
+\>", "Subitem",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466451046755*^9}, {
+   3.978467764934806*^9, 3.9784678683187*^9}, {3.978896076146283*^9, 
+   3.978896076338889*^9}},ExpressionUUID->"ae825c12-7bee-4d85-8900-\
+83a223968980"]
+}, Open  ]],
+
+Cell["Some other references are", "Text",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.978463822489818*^9}, 
+   3.978463853492107*^9, {3.97879263828334*^9, 
+   3.978792643265484*^9}},ExpressionUUID->"bd8117b2-3d13-414f-b8ce-\
+6391e381f873"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ " Sean Carroll, ",
+ StyleBox["Spacetime and Geometry: An Introduction to General Relativity",
+  FontSlant->"Italic"]
+}], "Item",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 
+   3.978463851463154*^9}},ExpressionUUID->"9c9f3996-4222-4a12-ab63-\
+24c6e6811ef6"],
+
+Cell["\<\
+Appendix J, Page 486\[VeryThinSpace]ff, under local Lorentz invariance, \
+tetrads, and the spin connection:\
+\>", "Subitem",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.97846430622845*^9}, {
+   3.978466130000834*^9, 3.97846617162918*^9}, {3.978467658624906*^9, 
+   3.9784676636610527`*^9}},ExpressionUUID->"47b81c5e-7466-4414-923f-\
+9d96f0db6d9a"],
+
+Cell[TextData[{
+ "Spin connection ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[Omega]", "\[Mu]", 
+    RowBox[{"\[VeryThinSpace]", 
+     RowBox[{"a", "\[VeryThinSpace]", "b"}]}]], TraditionalForm]],
+  ExpressionUUID->"e9336ba3-8ca5-4d1e-90fb-c0c62756493b"],
+ ", arising from non-coordinate basis sets, acts as the gauge field for local \
+Lorentz transformations. Carroll also explains that in standard GR the \
+torsion tensor ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    SuperscriptBox["T", 
+     RowBox[{"\[VeryThinSpace]", "\[Lambda]"}]], 
+    RowBox[{"\[VeryThinSpace]", 
+     RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Nu]"}]}]], TraditionalForm]],
+  ExpressionUUID->"a2057e92-422b-4a77-9933-c88cddc68b1b"],
+ " is zero, locking the Levi-Civita connection (Christoffel symbols) to the \
+metric and forcing the energy-momentum tensor to be symmetric, absorbing spin \
+effects via symmetrization."
+}], "ItemParagraph",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466361194891*^9}, {
+   3.9784673056989098`*^9, 3.9784673452325478`*^9}, {3.978467678759273*^9, 
+   3.978467692377183*^9}, {3.9785316949711523`*^9, 3.978531709031754*^9}, {
+   3.978531983790666*^9, 3.978532035877861*^9}, {3.9785322926375437`*^9, 
+   3.97853232201047*^9}, {3.978532946114335*^9, 3.978532986756562*^9}, {
+   3.97853325255888*^9, 3.978533302893488*^9}, {3.9787926796343193`*^9, 
+   3.9787927361046057`*^9}, {3.978995739017064*^9, 
+   3.978995740911697*^9}},ExpressionUUID->"97d54446-4cbf-430e-a1e8-\
+cb1b09e4fe1f"],
+
+Cell[TextData[{
+ "Also see Hehl above, Equation 3.8 and Sections III.B and III.C. In other \
+references, this may be called ",
+ StyleBox["Belinfante-Rosenfeld symmetrization",
+  FontSlant->"Italic"],
+ "."
+}], "Subitem",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466361194891*^9}, {
+   3.9784673056989098`*^9, 3.9784673452325478`*^9}, {3.978467678759273*^9, 
+   3.978467692377183*^9}, {3.9785316949711523`*^9, 3.978531709031754*^9}, {
+   3.978531983790666*^9, 3.978532035877861*^9}, {3.9785322926375437`*^9, 
+   3.97853232201047*^9}, {3.978532946114335*^9, 3.978532986756562*^9}, {
+   3.97853325255888*^9, 3.978533275318653*^9}, {3.9785333055095987`*^9, 
+   3.978533318221752*^9}, {3.978533571662957*^9, 3.978533581186043*^9}, {
+   3.978792752153208*^9, 3.978792764744529*^9}, {3.979350187889584*^9, 
+   3.979350189595763*^9}},ExpressionUUID->"5448738e-eb7e-4eb5-b32c-\
+7dea5b11e120"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "T. W. B. Kibble, ",
+ StyleBox["Lorentz Invariance and the Gravitational Field",
+  FontSlant->"Italic"],
+ " (J. Math. Phys. 2, 212, 1961)"
+}], "Item",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 
+   3.978466486720623*^9}},ExpressionUUID->"0a9b9626-464b-4f9c-8d94-\
+07d51225c9e0"],
+
+Cell[TextData[StyleBox["Foundational paper deriving gravitation as the gauge \
+theory of the Poincar\[EAcute] group, i.e., translations\[NonBreakingSpace]+\
+\[NonBreakingSpace]Lorentz",
+ FontSlant->"Italic"]], "Subitem",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466510390306*^9}, {
+   3.9784669609195147`*^9, 3.978467137541203*^9}, {3.978467883335359*^9, 
+   3.9784679272681417`*^9}, {3.978468065503084*^9, 3.97846807401269*^9}, {
+   3.978792800047453*^9, 3.97879280618641*^9}, {3.980089506577505*^9, 
+   3.980089532812252*^9}},ExpressionUUID->"32e2ca27-b4f9-4e82-a0b0-\
+78a1f5617ef1"],
+
+Cell[TextData[{
+ "Kibble shows that (1) gauging ",
+ StyleBox["translations",
+  FontSlant->"Italic"],
+ " in Poincar\[EAcute] yields the tetrad field, defining the metric and \
+conserving energy-momentum, and that (2) gauging the Lorentz ",
+ StyleBox["boost+rotation subgroup",
+  FontSlant->"Italic"],
+ " yields the spin connection, permitting transformation of spinors, \
+otherwise impossible."
+}], "ItemParagraph",
+ CellChangeTimes->{
+  3.978463436519712*^9, {3.978463740077929*^9, 3.9784637811043253`*^9}, {
+   3.978463826818162*^9, 3.978463875625635*^9}, {3.978464215143688*^9, 
+   3.978464220280664*^9}, {3.978464287441144*^9, 3.9784645043690243`*^9}, {
+   3.9784645373883333`*^9, 3.978464573176915*^9}, {3.97846618093814*^9, 
+   3.978466218794236*^9}, {3.97846625951333*^9, 3.978466510390306*^9}, {
+   3.9784669609195147`*^9, 3.978467137541203*^9}, {3.978467883335359*^9, 
+   3.9784679272681417`*^9}, {3.978468090057158*^9, 3.978468133493339*^9}, 
+   3.978533444804373*^9, {3.978535397364641*^9, 3.978535417858979*^9}, {
+   3.9785354522594013`*^9, 3.9785354883804207`*^9}, {3.97879282536421*^9, 
+   3.978792895879323*^9}, {3.978995787691255*^9, 
+   3.9789958268258257`*^9}},ExpressionUUID->"a4c8ac93-e4a4-4b96-873c-\
+fa97ec500743"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Conclusion", "Section",
+ CellChangeTimes->{{3.9775359255386477`*^9, 
+  3.977535927492813*^9}},ExpressionUUID->"8fa93b39-5ef8-4df8-b0c2-\
+f43f894f9a34"],
+
+Cell[TextData[{
+ "The Relativity Toolkit (v1.11.0) can process hybrid objects, such as the \
+charged vector field ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["V", 
+    RowBox[{" ", "\[Alpha]"}]], TraditionalForm]],ExpressionUUID->
+  "ecf68386-a186-4640-b6a2-1329e54e7554"],
+ ", with simultaneous geometric and internal phase corrections. While this \
+notebook focuses on the Abelian ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"U", 
+    RowBox[{"(", "1", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "959d95e2-01e1-4a72-ab3d-b221ededf160"],
+ " gauge group, the underlying computational logic is a foundation for future \
+non-Abelian gauge theories. "
+}], "Text",
+ CellChangeTimes->{{3.978896777019384*^9, 3.9788968560050497`*^9}, {
+  3.979352497814191*^9, 3.979352515481464*^9}, {3.980637979932774*^9, 
+  3.980638005592092*^9}, {3.980788162442437*^9, 3.980788175616647*^9}, {
+  3.9808009635492773`*^9, 3.980801017181118*^9}, {3.9808010587483597`*^9, 
+  3.980801126690868*^9}, {3.980803035443789*^9, 
+  3.9808030598734407`*^9}},ExpressionUUID->"30c5ee8b-f390-470c-a89e-\
+e3eb961ebed3"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["References", "Section",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 
+   3.9768092516184673`*^9}},ExpressionUUID->"d347c5b5-401c-4ef2-a2ab-\
+e917feb8284c"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3594810?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3594810?p_p_auth=UT9pBPpe"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". From the steam age to quantum fields: a unified \
+approach via UD tensorial calculus",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3594810?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3594810?p_p_auth=UT9pBPpe"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post. "
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811023241335*^9}, 
+   3.976811164017178*^9},ExpressionUUID->"5a5186f3-3e56-41ad-8380-\
+e5f7fdff11a8"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3601899?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3601899?p_p_auth=UT9pBPpe"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". General relativity in the UD calculus",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3601899?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3601899?p_p_auth=UT9pBPpe"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.9773156105087147`*^9, 
+   3.977315610512374*^9}},ExpressionUUID->"f5024369-fc9a-4681-a718-\
+32f21ce11f7d"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3605564?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3605564?p_p_auth=UT9pBPpe"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". Formal Differential Geometry in the UD Calculus: Part \
+1",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3605564?p_p_auth=\
+UT9pBPpe"], None},
+  ButtonNote->
+   "https://community.wolfram.com/groups/-/m/t/3605564?p_p_auth=UT9pBPpe"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358766466103`*^9, 
+   3.977535876649281*^9}},ExpressionUUID->"4d3374f3-deee-4080-8fbc-\
+63749ec6f55e"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian. ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Covariant Derivatives and Connections in the",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[" \[ScriptCapitalU]\[ScriptCapitalD]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[" Calculus",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post. "
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.977678516222975*^9, 3.977678516224441*^9}, {3.97822628070759*^9, 
+   3.978226316805443*^9}, 
+   3.9806382159847918`*^9},ExpressionUUID->"18f5a39c-8809-44ab-b3d4-\
+3960e547729e"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian. ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3627521"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3627521"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Riemann Curvature in ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3627521"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3627521"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["\[ScriptCapitalU]\[ScriptCapitalD]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3627521"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3627521"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[" + Compiler POC",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3627521"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3627521"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.977678516222975*^9, 3.977678516224441*^9}, {3.9781915128399878`*^9, 
+   3.978191520193355*^9}, {3.978192638843432*^9, 3.978192672174715*^9}, {
+   3.978856659537746*^9, 
+   3.978856683235709*^9}},ExpressionUUID->"ff5708ee-ab41-4baf-bdae-\
+57d698ba06de"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian. ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3632176"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3632176"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Schwarzschild Orbits in the",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3632176"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3632176"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[" \[ScriptCapitalU]\[ScriptCapitalD]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3632176"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3632176"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[" Calculus",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3632176"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3632176"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.977678516222975*^9, 3.977678516224441*^9}, {3.9781915128399878`*^9, 
+   3.978191520193355*^9}, {3.9781926382093287`*^9, 3.978192638213464*^9}, {
+   3.980638155846507*^9, 
+   3.98063817005648*^9}},ExpressionUUID->"3df30547-ae4b-43ca-84c0-\
+87b56f5a4396"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Beckman, Brian. ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3640287"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3640287"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Schwarzschild Metric from Scratch via",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3640287"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3640287"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[" \[ScriptCapitalU]\[ScriptCapitalD] ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3640287"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3640287"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Compilation",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3640287"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3640287"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Wolfram Community post (to appear)."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.977678516222975*^9, 3.977678516224441*^9}, {3.978358055448645*^9, 
+   3.9783580595456676`*^9}, 3.978358187595776*^9, {3.980638196042935*^9, 
+   3.980638196044009*^9}},ExpressionUUID->"ed4efd47-9ea4-4e86-be23-\
+4218728a3adf"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Wolfram Function Repository",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"], None},
+  ButtonNote->
+   "https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". MetricTensor",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"], None},
+  ButtonNote->
+   "https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". For component-based calculations."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.97767851735391*^9, 
+   3.9776785420655413`*^9}},ExpressionUUID->"3c223a9c-2994-47d8-b3bd-\
+4659d07cfb75"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Wolfram Function Repository",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"], None},
+  ButtonNote->
+   "https://resources.wolframcloud.com/FunctionRepository/resources/\
+MetricTensor"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". ChristoffelSymbol",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://resources.wolframcloud.com/FunctionRepository/resources/\
+ChristoffelSymbol/"], None},
+  ButtonNote->
+   "https://resources.wolframcloud.com/FunctionRepository/resources/\
+ChristoffelSymbol/"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". For component-based calculations."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.977226393393062*^9, 3.977226393396841*^9}, {3.977315611370813*^9, 
+   3.9773156454527597`*^9}, {3.9775358776858883`*^9, 3.977535895340605*^9}, {
+   3.97767851735391*^9, 3.9776785420655413`*^9}, {3.977678579758896*^9, 
+   3.977678611159862*^9}},ExpressionUUID->"28adb113-0e29-4705-adc5-\
+10e328a8944e"],
+
+Cell[TextData[{
+ "[MTW] ",
+ StyleBox[ButtonBox["Misner, Charles W.; Thorne, Kip S.; Wheeler, John \
+Archibald",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/8w3cecG"], None},
+  ButtonNote->"https://a.co/d/8w3cecG"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox[". Gravitation",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/8w3cecG"], None},
+  ButtonNote->"https://a.co/d/8w3cecG"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Princeton University Press, 2017."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.9784634778774223`*^9, 
+   3.9784634778792048`*^9}},ExpressionUUID->"f225bdae-b422-4d77-a985-\
+0a64a6ef23b1"],
+
+Cell[TextData[{
+ StyleBox[ButtonBox["Sean Carroll, ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/a8A0P97"], None},
+  ButtonNote->"https://a.co/d/a8A0P97"],
+  FontVariations->{"Underline"->True}],
+ StyleBox[ButtonBox["Spacetime and Geometry: An Introduction to General \
+Relativity",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://a.co/d/a8A0P97"], None},
+  ButtonNote->"https://a.co/d/a8A0P97"],
+  FontSlant->"Italic",
+  FontVariations->{"Underline"->True}],
+ ". Cambridge University Press, 2019."
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463525398262*^9, 3.978463568840535*^9}, {3.978463647808242*^9, 
+   3.978463687986936*^9}},ExpressionUUID->"fcb215d1-bd1a-41de-a921-\
+083fb81e3e4a"],
+
+Cell[TextData[{
+ "Friedrich W. Hehl et al., ",
+ StyleBox["General Relativity with Spin and Torsion: Foundations and \
+Prospects",
+  FontSlant->"Italic"],
+ " (Rev. Mod. Phys. 48, 393, 1976)"
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463525398262*^9, 
+   3.9784635433588142`*^9}},ExpressionUUID->"f3341c48-53c5-49e9-976a-\
+15dcb73e56c4"],
+
+Cell[TextData[{
+ "T. W. B. Kibble, ",
+ StyleBox["Lorentz Invariance and the Gravitational Field",
+  FontSlant->"Italic"],
+ " (J. Math. Phys. 2, 212, 1961)"
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463524614047*^9, 3.9784635246159153`*^9}, {3.978859946113061*^9, 
+   3.978859946116845*^9}},ExpressionUUID->"02594bf2-2c8b-41f0-95ff-\
+50ecf041f554"],
+
+Cell[TextData[{
+ "Sciama, D. W., ",
+ StyleBox["On the analogy between charge and spin in general relativity",
+  FontSlant->"Italic"],
+ ". In: Recent Developments in General Relativity, p. 415. Pergamon, New \
+York, 1962. "
+}], "ItemNumbered",
+ CellChangeTimes->{
+  3.976805343965353*^9, {3.976807171258144*^9, 3.976807218345378*^9}, {
+   3.976807258054213*^9, 3.976807372892746*^9}, {3.9768074213746433`*^9, 
+   3.9768076068674717`*^9}, {3.976807777446004*^9, 3.9768078346242523`*^9}, {
+   3.9768078710978737`*^9, 3.976808012037896*^9}, {3.976808060432528*^9, 
+   3.9768084315181437`*^9}, {3.976808468954934*^9, 3.9768085545196247`*^9}, {
+   3.9768088616495028`*^9, 3.976808946247933*^9}, {3.976808995666172*^9, 
+   3.976809079760498*^9}, {3.976809126437451*^9, 3.976809186460834*^9}, {
+   3.976809239268755*^9, 3.976809269932238*^9}, {3.97680930279626*^9, 
+   3.97680930774656*^9}, 3.976810949120569*^9, {3.976810980198759*^9, 
+   3.976811072384047*^9}, {3.977152130149784*^9, 3.9771521301525087`*^9}, {
+   3.97722639447079*^9, 3.9772263972916*^9}, {3.9773157085011873`*^9, 
+   3.977315824765572*^9}, {3.978463478739304*^9, 3.9784634875650797`*^9}, {
+   3.978463524614047*^9, 3.9784635246159153`*^9}, {3.9788599469857597`*^9, 
+   3.9788600079020452`*^9}, 
+   3.9806332492264357`*^9},ExpressionUUID->"3845a3c7-01fc-4edd-9c37-\
+c0b9372dd49b"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1707, 1381},
+WindowMargins->{{Automatic, 1706}, {Automatic, 0}},
+PrintingCopies->1,
+PrintingPageRange->{1, Automatic},
+SpellingDictionaries->{"CorrectWords"->{
+ "\[Phi]d", "\[Theta]d", "\[Psi]d", "nsoln", "Beckman", "Fehlberg", 
+  "dzhanybekhov", "Dzhanibekov", "versors", "\[Mu]s", "Underactuated", 
+  "Universidad", "Tournier", "Maxime", "Taeyoung", "Leok", "Needham", 
+  "Evandro", "Bernardes", "Stephane", "Viollet", "lon", "cringeworthy", 
+  "visualizable", "lons", "th", "bijections", "Clojure", "secularly", "dsoln",
+   "preimages", "antanaresis", "antanareses", "prioris", "Moylan", 
+  "approximator", "Lagrangians", "Neuenschwander's", "overdotted", 
+  "extremalizes", "extremalizing", "differentiably", 
+  "Golstein\[CloseCurlyQuote]s", "Lovelock", "Neuenschwander", 
+  "Rund\[CloseCurlyQuote]s", "Rund", "Isham\[CloseCurlyQuote]s", "Isham", 
+  "contravariantly", "Clairot\[CloseCurlyQuote]s", "contravariance", 
+  "covariantly", "covector", "Covector", "covectors", "Contravariance", 
+  "sigil", "Rosenfeld", "Belinfante", "reparametrize", "clickables", 
+  "overtick", "Hessians", "Covectors", "kinematically", "Carlip", 
+  "Electrodynamical", "Wiechert", "nonradiative", "electrodynamical", 
+  "fiddliness", "d\[Lambda]ds", "facto", "overblowing", "invariantly", 
+  "tensorially", "unprimed", "tensoriality", "quotienting", "Misner", 
+  "Thorne", "Hanno", "mnemonical", "Schutz", "Koszul", "algebrize", "Trifoil",
+   "ut", "cdg", "rebaggaged"}},
+Magnification:>2. Inherited,
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"d3ae01b4-af40-42fb-9810-29c63491618a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 542, 8, 193, "Title",ExpressionUUID->"c689ba04-2842-43d6-aa5b-126f3039c9d7"],
+Cell[1121, 32, 258, 4, 61, "Author",ExpressionUUID->"47dfe6fc-42fd-425b-b8f1-171f01ffece7"],
+Cell[1382, 38, 347, 6, 61, "Author",ExpressionUUID->"f31d7393-2da6-4b45-8fa3-4c2dd24714cb"],
+Cell[CellGroupData[{
+Cell[1754, 48, 176, 3, 132, "Section",ExpressionUUID->"01d70810-8ee9-4c00-848e-4511290397ab"],
+Cell[1933, 53, 467, 9, 155, "Text",ExpressionUUID->"ffda4afc-61ff-426e-8851-0168342cbfad"],
+Cell[2403, 64, 1133, 23, 61, "Item",ExpressionUUID->"431733cc-bbd6-4843-84b3-1fb291abaa29"],
+Cell[3539, 89, 1092, 22, 61, "Item",ExpressionUUID->"42d44efc-8058-4cde-8725-4b44091f330b"],
+Cell[4634, 113, 1067, 22, 62, "Item",ExpressionUUID->"271d4663-6211-435b-b224-6d5149ea04e7"],
+Cell[5704, 137, 1500, 32, 101, "Item",ExpressionUUID->"d72fdbd1-5a66-461e-af8e-7bcb66e46d09"],
+Cell[7207, 171, 340, 7, 111, "Text",ExpressionUUID->"1e0c508b-f71b-4bb3-a8cd-fded5237b847"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7584, 183, 411, 6, 132, "Section",ExpressionUUID->"e0792760-7d08-469c-bd15-b84ab8afddcb"],
+Cell[CellGroupData[{
+Cell[8020, 193, 377, 6, 106, "Subsection",ExpressionUUID->"3b914edd-1ba5-4605-ab50-f6cfd0be297b"],
+Cell[CellGroupData[{
+Cell[8422, 203, 1559, 33, 180, "Item",ExpressionUUID->"81fdef78-2089-4910-9cec-0edb66284188"],
+Cell[9984, 238, 694, 11, 58, "Input",ExpressionUUID->"29fa4ac9-c1ef-4696-97eb-6fb5b5e77774"],
+Cell[10681, 251, 648, 10, 58, "Input",ExpressionUUID->"386c6876-de7a-46b4-a113-ab1aab14a3ba"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11378, 267, 165, 3, 106, "Subsection",ExpressionUUID->"f24ce5d6-daa5-46f7-bf16-a5e41e79c5ad"],
+Cell[CellGroupData[{
+Cell[11568, 274, 2080, 45, 303, "Input",ExpressionUUID->"4785ae05-6267-48dd-b220-83eabadbfd3b"],
+Cell[CellGroupData[{
+Cell[13673, 323, 226, 6, 47, "Echo",ExpressionUUID->"58806b9a-749d-4d5d-866d-53143f1fd505"],
+Cell[13902, 331, 229, 6, 47, "Echo",ExpressionUUID->"fe0bf659-543b-414a-aba8-508fa928eeec"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14192, 344, 251, 4, 106, "Subsection",ExpressionUUID->"95df7bba-7aca-400b-9cb9-18f49b2b5c61"],
+Cell[14446, 350, 336, 7, 67, "Text",ExpressionUUID->"668360f8-dbd7-4e34-94d7-6dff6ecf8c27"],
+Cell[14785, 359, 345, 7, 58, "Input",ExpressionUUID->"aa9281d4-3dc6-4e9e-9c62-b77ac6d68bff",
+ Evaluatable->False],
+Cell[15133, 368, 376, 9, 58, "Input",ExpressionUUID->"27ef12a3-8124-46eb-a4dd-afaec4467878",
+ Evaluatable->False],
+Cell[15512, 379, 311, 7, 58, "Input",ExpressionUUID->"76eed526-05c7-470a-98b4-78255c236f51",
+ Evaluatable->False],
+Cell[15826, 388, 298, 6, 58, "Input",ExpressionUUID->"d0ed2d29-bbc9-4a1f-9c01-ece9490406d6",
+ Evaluatable->False],
+Cell[16127, 396, 290, 6, 58, "Input",ExpressionUUID->"522b6809-d6fb-4718-82f9-f7947a051ca3",
+ Evaluatable->False],
+Cell[16420, 404, 290, 6, 58, "Input",ExpressionUUID->"9ce3dce3-efb2-4513-ae43-d999922de227",
+ Evaluatable->False],
+Cell[16713, 412, 1563, 38, 385, "Input",ExpressionUUID->"95d55a5b-e17a-4c3a-83ae-25f8581f4e82"],
+Cell[18279, 452, 347, 9, 58, "Input",ExpressionUUID->"aefb230b-2ade-41f4-bbce-c2312fcd65bb"],
+Cell[18629, 463, 1285, 32, 303, "Input",ExpressionUUID->"3f20ae89-9027-4acd-bb91-82460af5cea8"],
+Cell[CellGroupData[{
+Cell[19939, 499, 720, 19, 173, "Input",ExpressionUUID->"889f3e70-77bc-48d2-8f4a-a03d2c37751b"],
+Cell[20662, 520, 1003, 34, 84, "Output",ExpressionUUID->"c40519a4-e729-4c79-968e-3620c9981b68"]
+}, Open  ]],
+Cell[21680, 557, 153, 3, 58, "Input",ExpressionUUID->"c05581a4-4c09-4acb-a649-703c643fe948"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21882, 566, 159, 3, 132, "Section",ExpressionUUID->"cdd3c25d-ecef-442c-b415-03ca567e7026"],
+Cell[22044, 571, 524, 10, 155, "Text",ExpressionUUID->"2c53c7d6-46af-4e52-9122-d6f22d5879ba"],
+Cell[22571, 583, 729, 16, 155, "Text",ExpressionUUID->"9341a0c8-846d-45ce-8bbf-e1bd4ed166e5"],
+Cell[23303, 601, 404, 8, 155, "Text",ExpressionUUID->"48c7fc59-f741-4335-965d-e2791c943683"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23744, 614, 176, 3, 132, "Section",ExpressionUUID->"fe66d1d1-6eb8-4dc1-922f-48137d0acdf0"],
+Cell[23923, 619, 689, 20, 111, "Text",ExpressionUUID->"cf129f43-cbcf-4f9c-90cc-2fb69b048fdc"],
+Cell[24615, 641, 452, 12, 51, "DisplayFormulaNumbered",ExpressionUUID->"9be1b03e-ee32-44a6-82b8-4842395da3e2"],
+Cell[25070, 655, 501, 11, 111, "Text",ExpressionUUID->"400f1eee-fb4f-424f-abfd-06c8f9365a5f"],
+Cell[25574, 668, 757, 21, 51, "DisplayFormulaNumbered",ExpressionUUID->"bfb4ead3-5455-4f28-b015-4d8fe3c67ea4"],
+Cell[26334, 691, 730, 17, 111, "Text",ExpressionUUID->"945797e0-8291-4ea0-839c-9f56b8340c49"],
+Cell[27067, 710, 607, 15, 51, "DisplayFormulaNumbered",ExpressionUUID->"e936c478-d3db-4874-a4aa-647476b176cf"],
+Cell[27677, 727, 185, 3, 67, "Text",ExpressionUUID->"b95de9d6-8dc0-4e05-8cd6-298737151dec"],
+Cell[27865, 732, 455, 13, 51, "DisplayFormulaNumbered",ExpressionUUID->"302016d3-0631-423d-92d9-a316221982e2"],
+Cell[28323, 747, 628, 17, 111, "Text",ExpressionUUID->"8c27c023-005d-404e-95af-93898fd6fbb8"],
+Cell[28954, 766, 2661, 70, 186, "DisplayFormulaNumbered",ExpressionUUID->"0008a959-2338-416a-9bfe-9de2a52f1f47"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[31652, 841, 219, 4, 132, "Section",ExpressionUUID->"0805bc51-0d29-4272-b26d-d3b0e71efd43"],
+Cell[31874, 847, 344, 7, 111, "Text",ExpressionUUID->"31bce255-0ce5-4ca7-81ac-5b502d288423"],
+Cell[32221, 856, 550, 10, 198, "Text",ExpressionUUID->"73da4bf9-b8e2-48a8-9fb8-e480dbf1111b"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[32808, 871, 177, 3, 132, "Section",ExpressionUUID->"7f6b77f4-b0fc-4a67-b903-969955fdadc1"],
+Cell[32988, 876, 984, 21, 111, "Text",ExpressionUUID->"4f010f30-76ff-4c9d-9e45-977a9562d116"],
+Cell[33975, 899, 1001, 23, 99, "Input",ExpressionUUID->"78497388-807e-47b1-a2f3-54ab4ce22561"],
+Cell[34979, 924, 1085, 20, 198, "Text",ExpressionUUID->"37424616-b889-4f35-aa46-5f5a9d34df7f"],
+Cell[36067, 946, 762, 12, 101, "Item",ExpressionUUID->"a0d3e19d-b357-44b9-be80-c725fc844522"],
+Cell[36832, 960, 1036, 23, 155, "Text",ExpressionUUID->"9ad9e61c-cea4-41a0-a521-e599c7429130"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[37905, 988, 153, 3, 132, "Section",ExpressionUUID->"c8c2732a-482b-40dd-ad69-34c9e0e28e1c"],
+Cell[38061, 993, 1221, 26, 111, "Text",ExpressionUUID->"9e34077f-ed2e-4587-87ba-5f5fa8adeb8f"],
+Cell[CellGroupData[{
+Cell[39307, 1023, 174, 3, 106, "Subsection",ExpressionUUID->"94acbd51-3b62-4f9c-a4df-f9e4ff0aa53d"],
+Cell[CellGroupData[{
+Cell[39506, 1030, 159, 3, 87, "Subsubsection",ExpressionUUID->"ef67580c-d7d0-4644-b9c2-f49bb71314c8"],
+Cell[39668, 1035, 243, 6, 61, "ItemNumbered",ExpressionUUID->"85859702-2d3f-440a-9c1c-5c2d0a618c56"],
+Cell[39914, 1043, 382, 9, 61, "ItemNumbered",ExpressionUUID->"0ebc50f6-8428-4da3-99aa-009f03b3365b"],
+Cell[40299, 1054, 267, 6, 61, "ItemNumbered",ExpressionUUID->"77fc3235-4095-4d8d-96a1-e8b030336e52"],
+Cell[CellGroupData[{
+Cell[40591, 1064, 410, 8, 61, "ItemNumbered",ExpressionUUID->"04154e59-9bc7-4076-b83d-31acad96ae89"],
+Cell[41004, 1074, 3303, 78, 590, "Input",ExpressionUUID->"3de2c0a4-4890-4dcd-8310-578ba58e364c"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[44380, 1160, 265, 4, 132, "Section",ExpressionUUID->"2c02b0be-4c78-4b2a-a1b3-4a70d6e26bf1"],
+Cell[CellGroupData[{
+Cell[44670, 1168, 285, 4, 106, "Subsection",ExpressionUUID->"26cab6eb-fabb-4147-9085-2e72df92e4fa"],
+Cell[44958, 1174, 559, 10, 67, "Text",ExpressionUUID->"db673d5e-f1b1-4938-a6c8-a394f4250e7e"],
+Cell[45520, 1186, 579, 12, 58, "Input",ExpressionUUID->"e8d9c61f-9eb0-4945-ad72-568d5242b5c5"],
+Cell[46102, 1200, 308, 5, 67, "Text",ExpressionUUID->"bfcbf30b-9a8f-4a6b-b946-5c4170da5fd0"],
+Cell[46413, 1207, 1083, 26, 51, "DisplayFormula",ExpressionUUID->"bcfea902-d337-4bda-b9ad-532a59a7d4c0"],
+Cell[47499, 1235, 1521, 34, 148, "Input",ExpressionUUID->"727a63da-aa90-45dd-adc5-0ffe24da003b"],
+Cell[49023, 1271, 226, 4, 67, "Text",ExpressionUUID->"50c162a4-95b1-4c2d-9f84-dcfd4b83f679"],
+Cell[49252, 1277, 521, 14, 51, "DisplayFormula",ExpressionUUID->"7eeea367-8db9-4bb8-83e0-0b1addaa1107"],
+Cell[49776, 1293, 274, 4, 67, "Text",ExpressionUUID->"73ecf68b-5a23-4059-bef3-42897e2d257f"],
+Cell[50053, 1299, 768, 19, 51, "DisplayFormula",ExpressionUUID->"19bf54b0-a557-49f3-bd18-9d2c3b9dbd1d"],
+Cell[50824, 1320, 458, 10, 67, "Text",ExpressionUUID->"63449289-cd0b-41a0-9449-cf2944636b07"],
+Cell[51285, 1332, 432, 10, 58, "Input",ExpressionUUID->"3f172635-6ee5-4a70-8a61-eb7d220f695e"],
+Cell[51720, 1344, 779, 16, 99, "Input",ExpressionUUID->"b0ec1902-d500-41fa-8f61-43ad9f584e95"],
+Cell[52502, 1362, 370, 8, 58, "Input",ExpressionUUID->"799324fc-d50c-48e5-bdb5-66f0d5e3b2d1"],
+Cell[52875, 1372, 238, 4, 67, "Text",ExpressionUUID->"ad7c97ba-d85c-4acc-97c1-ef3e695d61dd"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[53150, 1381, 238, 4, 106, "Subsection",ExpressionUUID->"13a5b2c2-e39a-477b-935b-59de3331ef7e"],
+Cell[53391, 1387, 433, 13, 68, "Text",ExpressionUUID->"8f3ecd75-5900-473e-ad73-516a0e7c21fe"],
+Cell[53827, 1402, 862, 22, 58, "Input",ExpressionUUID->"097fd1ac-3cb5-4783-9706-68f9adb7f946"],
+Cell[54692, 1426, 1161, 32, 111, "Text",ExpressionUUID->"686c6855-f4f0-4413-b371-5d14d6d91172"],
+Cell[55856, 1460, 185, 3, 67, "Text",ExpressionUUID->"bf1fd84a-386a-4f24-b9a9-614cbd977b06"],
+Cell[56044, 1465, 211, 5, 58, "Input",ExpressionUUID->"41f7d312-8c5c-4141-b7fe-24720dee4831"],
+Cell[56258, 1472, 293, 8, 67, "Text",ExpressionUUID->"91ab7ee2-27ab-479b-9a7a-fcd44e4d6e2e"],
+Cell[56554, 1482, 439, 9, 58, "Input",ExpressionUUID->"3e9266b1-4af3-4050-81a7-4a26104483a3"],
+Cell[56996, 1493, 216, 3, 67, "Text",ExpressionUUID->"e0e8b96a-c1ba-4281-b112-8fab9afc7dd6"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[57261, 1502, 424, 6, 132, "Section",ExpressionUUID->"8ac3c528-684d-4beb-ab6b-4d1874e0ecab"],
+Cell[57688, 1510, 728, 20, 111, "Text",ExpressionUUID->"9816424a-5ce2-45da-924a-3c236946ff2e"],
+Cell[58419, 1532, 820, 20, 155, "Text",ExpressionUUID->"13081e29-07c9-46d0-bb62-48248dc7ce65"],
+Cell[59242, 1554, 696, 16, 155, "Text",ExpressionUUID->"5f35ccb6-a328-4ea6-b93d-d90cf89a62b1"],
+Cell[59941, 1572, 540, 14, 67, "Text",ExpressionUUID->"16ab20df-a91c-46bb-a31a-cd0762ecedd1"],
+Cell[60484, 1588, 688, 15, 58, "Input",ExpressionUUID->"67be8f28-c827-4885-9074-9540eca97413"],
+Cell[61175, 1605, 191, 3, 67, "Text",ExpressionUUID->"72c8e720-2b5a-4abb-97fb-0938398da6e4"],
+Cell[61369, 1610, 1231, 30, 148, "Input",ExpressionUUID->"87e77b04-886b-4005-9b7f-8bcbdf3df423"],
+Cell[62603, 1642, 798, 18, 140, "Input",ExpressionUUID->"a1d8f2a1-295b-4ac3-9be9-af9abb589110"],
+Cell[63404, 1662, 650, 13, 58, "Input",ExpressionUUID->"60d3c2b9-2556-487c-adfe-c71e59d95199"],
+Cell[64057, 1677, 272, 4, 58, "Input",ExpressionUUID->"4a9c6c49-52c0-4f57-ac31-6831ea351986"],
+Cell[64332, 1683, 216, 3, 67, "Text",ExpressionUUID->"d299654d-7a6d-4c80-884c-bbebb9301178"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[64585, 1691, 268, 4, 132, "Section",ExpressionUUID->"e5710a23-61f4-493f-86ed-e18bd8ca10ce"],
+Cell[CellGroupData[{
+Cell[64878, 1699, 321, 5, 106, "Subsection",ExpressionUUID->"6c60e6b7-8cf1-438e-87ce-3b1bf96b643e"],
+Cell[65202, 1706, 245, 5, 67, "Text",ExpressionUUID->"5b56050f-4b40-470e-8084-e8d3379a6655"],
+Cell[65450, 1713, 319, 7, 58, "Input",ExpressionUUID->"04154f17-bcae-430a-8df6-946f27ca396e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[65806, 1725, 593, 13, 106, "Subsection",ExpressionUUID->"fba5a714-f09d-4338-93fc-ddbbeef6f9dd"],
+Cell[66402, 1740, 263, 6, 67, "Text",ExpressionUUID->"7b532589-5e45-4982-bc2f-7f35b0b08efc"],
+Cell[66668, 1748, 498, 11, 58, "Input",ExpressionUUID->"0d0ef4cc-59dc-47c8-833f-846ca49cf214"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[67203, 1764, 467, 12, 106, "Subsection",ExpressionUUID->"86c5371d-10c4-4420-89e3-f1271f038bfd"],
+Cell[67673, 1778, 192, 3, 67, "Text",ExpressionUUID->"58d0eca9-7435-4673-af4f-840a6933385b"],
+Cell[67868, 1783, 502, 12, 58, "Input",ExpressionUUID->"0f14565c-7c38-416a-b963-cef34cc175a5"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[68407, 1800, 469, 12, 106, "Subsection",ExpressionUUID->"a2ea2732-42a8-4fd1-84c7-94c0217819ec"],
+Cell[68879, 1814, 167, 3, 67, "Text",ExpressionUUID->"0bfa2ffc-548e-4e48-9a8c-83f9bd2e8669"],
+Cell[69049, 1819, 551, 13, 58, "Input",ExpressionUUID->"e0ff2384-1986-4fe0-b697-b0892cbf2351"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[69637, 1837, 303, 4, 106, "Subsection",ExpressionUUID->"daa888d7-1f81-4b3d-bcbd-1f836fc32d72"],
+Cell[69943, 1843, 192, 3, 67, "Text",ExpressionUUID->"2330fefb-0445-4965-9dc5-9798d5e0d280"],
+Cell[70138, 1848, 668, 16, 58, "Input",ExpressionUUID->"afc099c9-f5c1-42c7-b6c7-26df7bc60634"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[70843, 1869, 720, 16, 106, "Subsection",ExpressionUUID->"36906ab5-5174-4fb2-9cd8-7beb95aae06e"],
+Cell[71566, 1887, 1163, 22, 155, "Text",ExpressionUUID->"105c2b56-4f50-4673-b271-481010de5f68"],
+Cell[72732, 1911, 1551, 33, 130, "Item",ExpressionUUID->"7f41e3cb-db30-41e5-8596-fcad1fe1e3e1"],
+Cell[74286, 1946, 833, 18, 101, "Item",ExpressionUUID->"7d7c228b-22ed-4a27-aaec-7b9c5c83d43d"],
+Cell[75122, 1966, 858, 20, 101, "Item",ExpressionUUID->"7c5421be-db30-4601-a65b-ef399811fb4b"],
+Cell[75983, 1988, 782, 23, 78, "DisplayFormulaNumbered",ExpressionUUID->"147f6684-e8f8-4693-bff8-f251da64a915"],
+Cell[76768, 2013, 295, 5, 47, "ItemParagraph",ExpressionUUID->"f41b70a3-f7a4-4363-9c7e-2bc0073510e7"],
+Cell[77066, 2020, 201, 3, 67, "Text",ExpressionUUID->"f635d244-440e-4e40-a62c-3292fd375cf3"],
+Cell[77270, 2025, 926, 15, 58, "Input",ExpressionUUID->"6783fea4-0f1f-46d1-9eb3-d2cce16cb322"],
+Cell[78199, 2042, 798, 14, 67, "Text",ExpressionUUID->"a921b960-7e41-44d3-8bfc-9af78e43d85b"],
+Cell[79000, 2058, 1091, 18, 67, "Text",ExpressionUUID->"36ccf3bb-d1d5-4244-bd4d-d4d89e71386c"],
+Cell[80094, 2078, 1455, 34, 76, "DisplayFormulaNumbered",ExpressionUUID->"0943092d-7233-41c9-bc8f-d42d615c619a"],
+Cell[81552, 2114, 2867, 62, 322, "Input",ExpressionUUID->"36779bb3-2b03-4dd8-958c-cd56c771e644"],
+Cell[84422, 2178, 1054, 19, 67, "Text",ExpressionUUID->"faf273fe-15ca-4136-b35a-92bc78a2c86c"],
+Cell[85479, 2199, 247, 6, 58, "Input",ExpressionUUID->"8654605e-3048-4c1b-b3d2-7c381289a803"],
+Cell[85729, 2207, 476, 11, 111, "Text",ExpressionUUID->"5ee95425-83d8-4898-8ace-3da463912aca"],
+Cell[86208, 2220, 1155, 20, 58, "Input",ExpressionUUID->"acb72e02-8c20-4128-a0c6-2237819d9c8c"],
+Cell[87366, 2242, 928, 16, 67, "Text",ExpressionUUID->"93bf4fa2-f4b4-4f0a-ab4d-717ffc4f10c4"],
+Cell[88297, 2260, 154, 3, 67, "Text",ExpressionUUID->"40dbd394-2584-40db-bbf7-581c6f61fb47"],
+Cell[88454, 2265, 641, 17, 62, "Item",ExpressionUUID->"88693217-3b4c-45da-b013-583c59e317d0"],
+Cell[89098, 2284, 795, 21, 61, "Item",ExpressionUUID->"bd14ede0-061e-4c02-a68f-d891fb0004d6"],
+Cell[89896, 2307, 734, 18, 62, "Item",ExpressionUUID->"bdbba8db-a466-4836-939c-b39e0dad228a"],
+Cell[CellGroupData[{
+Cell[90655, 2329, 1586, 41, 62, "Item",ExpressionUUID->"46f98a67-0d9c-4063-8242-1f690d6e61c0"],
+Cell[92244, 2372, 6809, 174, 794, "Input",ExpressionUUID->"9bab225a-0f16-466f-aa27-4f17e3f2fef5"]
+}, Open  ]],
+Cell[99068, 2549, 490, 13, 67, "Text",ExpressionUUID->"409f07d1-87f5-48a6-b85a-0f092a8bae4f"],
+Cell[99561, 2564, 1150, 19, 58, "Input",ExpressionUUID->"52cc64bd-46ca-45e8-a147-1d0e3c83dcb2"],
+Cell[100714, 2585, 216, 3, 67, "Text",ExpressionUUID->"ef73db29-ac31-4a82-af6e-769a1fe04957"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[100967, 2593, 167, 3, 106, "Subsection",ExpressionUUID->"569fa0b6-8e86-40bf-99d0-f0b84d4904b1"],
+Cell[101137, 2598, 411, 8, 111, "Text",ExpressionUUID->"96cd61c0-e836-4328-9777-a23c979ddafa"],
+Cell[101551, 2608, 783, 20, 141, "Item",ExpressionUUID->"e7183106-c6c7-4524-8ecb-e725cb60e3e2"],
+Cell[102337, 2630, 630, 18, 68, "Text",ExpressionUUID->"f09d091f-5427-4c81-ad26-335b3c997d20"],
+Cell[102970, 2650, 1358, 37, 140, "Input",ExpressionUUID->"908465c8-5888-45eb-bdfd-ffd03d6fb1eb"],
+Cell[104331, 2689, 165, 3, 67, "Text",ExpressionUUID->"91b2488c-8182-42ac-9144-80cc876135ff"],
+Cell[104499, 2694, 1065, 22, 344, "Input",ExpressionUUID->"06c60744-2b2a-4093-a4b8-f47e0910dfb3"],
+Cell[105567, 2718, 1925, 49, 69, "Text",ExpressionUUID->"c87610ff-b11b-41ae-a176-a375e0a741b4"],
+Cell[107495, 2769, 2273, 52, 198, "Input",ExpressionUUID->"f47c5d79-d8d5-4291-9f31-a9b984e791af"],
+Cell[109771, 2823, 318, 7, 58, "Input",ExpressionUUID->"6ad26b97-fea5-441c-b606-73c88106c6e0"],
+Cell[110092, 2832, 228, 3, 58, "Input",ExpressionUUID->"b21fc339-8e28-4278-87d6-84003727a2b6"],
+Cell[110323, 2837, 216, 3, 67, "Text",ExpressionUUID->"56aa1f15-b9e7-44f4-bb75-fd23a7bb00ff"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[110588, 2846, 438, 6, 132, "Section",ExpressionUUID->"8b07ab75-9d83-4f32-9461-b8e99837bcf0"],
+Cell[111029, 2854, 1018, 23, 198, "Text",ExpressionUUID->"bee71cfa-ab19-4388-8d9c-9cc558065ec8"],
+Cell[112050, 2879, 406, 8, 155, "Text",ExpressionUUID->"b9a92964-4e0a-4e6c-8064-86ee61fe2045"],
+Cell[CellGroupData[{
+Cell[112481, 2891, 747, 18, 101, "Item",ExpressionUUID->"d42a3ca6-0f7d-47c3-9359-6874822f94ed"],
+Cell[113231, 2911, 640, 10, 47, "ItemParagraph",ExpressionUUID->"a73a9876-1fbd-482e-9c22-bc8c848e8035"],
+Cell[113874, 2923, 686, 12, 51, "Subitem",ExpressionUUID->"e27bbfa1-6988-428c-98d9-bdafe05f0bdb"],
+Cell[114563, 2937, 700, 12, 88, "Subitem",ExpressionUUID->"ffef7d33-5cb1-492d-bbdd-8d514fcd685e"],
+Cell[115266, 2951, 732, 13, 88, "Subitem",ExpressionUUID->"ae825c12-7bee-4d85-8900-83a223968980"]
+}, Open  ]],
+Cell[116013, 2967, 264, 5, 67, "Text",ExpressionUUID->"bd8117b2-3d13-414f-b8ce-6391e381f873"],
+Cell[CellGroupData[{
+Cell[116302, 2976, 349, 9, 61, "Item",ExpressionUUID->"9c9f3996-4222-4a12-ab63-24c6e6811ef6"],
+Cell[116654, 2987, 530, 10, 51, "Subitem",ExpressionUUID->"47b81c5e-7466-4414-923f-9d96f0db6d9a"],
+Cell[117187, 2999, 1824, 36, 170, "ItemParagraph",ExpressionUUID->"97d54446-4cbf-430e-a1e8-cb1b09e4fe1f"],
+Cell[119014, 3037, 1209, 21, 88, "Subitem",ExpressionUUID->"5448738e-eb7e-4eb5-b32c-7dea5b11e120"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[120260, 3063, 615, 13, 61, "Item",ExpressionUUID->"0a9b9626-464b-4f9c-8d94-07d51225c9e0"],
+Cell[120878, 3078, 912, 14, 51, "Subitem",ExpressionUUID->"32e2ca27-b4f9-4e82-a0b0-78a1f5617ef1"],
+Cell[121793, 3094, 1235, 23, 127, "ItemParagraph",ExpressionUUID->"a4c8ac93-e4a4-4b96-873c-fa97ec500743"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[123077, 3123, 157, 3, 132, "Section",ExpressionUUID->"8fa93b39-5ef8-4df8-b0c2-f43f894f9a34"],
+Cell[123237, 3128, 1084, 24, 155, "Text",ExpressionUUID->"30c5ee8b-f390-470c-a89e-e3eb961ebed3"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[124358, 3157, 685, 11, 132, "Section",ExpressionUUID->"d347c5b5-401c-4ef2-a2ab-e917feb8284c"],
+Cell[125046, 3170, 1558, 33, 101, "ItemNumbered",ExpressionUUID->"5a5186f3-3e56-41ad-8380-e5f7fdff11a8"],
+Cell[126607, 3205, 1634, 33, 61, "ItemNumbered",ExpressionUUID->"f5024369-fc9a-4681-a718-32f21ce11f7d"],
+Cell[128244, 3240, 1706, 35, 61, "ItemNumbered",ExpressionUUID->"4d3374f3-deee-4080-8fbc-63749ec6f55e"],
+Cell[129953, 3277, 2290, 45, 61, "ItemNumbered",ExpressionUUID->"18f5a39c-8809-44ab-b3d4-3960e547729e"],
+Cell[132246, 3324, 2346, 46, 61, "ItemNumbered",ExpressionUUID->"ff5708ee-ab41-4baf-bdae-57d698ba06de"],
+Cell[134595, 3372, 2348, 46, 61, "ItemNumbered",ExpressionUUID->"3df30547-ae4b-43ca-84c0-87b56f5a4396"],
+Cell[136946, 3420, 2344, 45, 61, "ItemNumbered",ExpressionUUID->"ed4efd47-9ea4-4e86-be23-4218728a3adf"],
+Cell[139293, 3467, 1771, 37, 61, "ItemNumbered",ExpressionUUID->"3c223a9c-2994-47d8-b3bd-4659d07cfb75"],
+Cell[141067, 3506, 1834, 37, 61, "ItemNumbered",ExpressionUUID->"28adb113-0e29-4705-adc5-10e328a8944e"],
+Cell[142904, 3545, 1531, 32, 61, "ItemNumbered",ExpressionUUID->"f225bdae-b422-4d77-a985-0a64a6ef23b1"],
+Cell[144438, 3579, 1617, 32, 61, "ItemNumbered",ExpressionUUID->"fcb215d1-bd1a-41de-a921-083fb81e3e4a"],
+Cell[146058, 3613, 1230, 22, 101, "ItemNumbered",ExpressionUUID->"f3341c48-53c5-49e9-976a-15dcb73e56c4"],
+Cell[147291, 3637, 1242, 21, 61, "ItemNumbered",ExpressionUUID->"02594bf2-2c8b-41f0-95ff-50ecf041f554"],
+Cell[148536, 3660, 1341, 23, 101, "ItemNumbered",ExpressionUUID->"3845a3c7-01fc-4edd-9c37-c0b9372dd49b"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

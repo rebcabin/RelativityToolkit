@@ -1,0 +1,1606 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     60295,       1598]
+NotebookOptionsPosition[     53170,       1484]
+NotebookOutlinePosition[     53594,       1501]
+CellTagsIndexPosition[     53551,       1498]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[TextData[{
+ "From Classical to Quantum ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"S", "\[InvisibleSpace]", 
+    RowBox[{"U", "(", "2", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "6235b345-c3a5-4d1e-94a4-818aa9533214"],
+ " Gauge Invariance: the Weak Nuclear Force"
+}], "Title",ExpressionUUID->"1b914a76-973c-458c-9100-6a088b4958e6"],
+
+Cell["Here, we propose a new slogan:", "Text",
+ CellChangeTimes->{{3.9913425013231916`*^9, 
+  3.991342515620737*^9}},ExpressionUUID->"3e260f86-9482-48fd-958b-\
+7d99eeb90c39"],
+
+Cell[TextData[{
+ StyleBox["All you need is D",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ StyleBox[" (the Covariant Derivative)",
+  FontSlant->"Italic"]
+}], "Item",
+ CellChangeTimes->{{3.991342521524234*^9, 3.991342543599188*^9}, {
+  3.9913898511864634`*^9, 
+  3.991389854310062*^9}},ExpressionUUID->"f8fb9a6a-49b7-43b4-9276-\
+bc7838d82581"],
+
+Cell[TextData[{
+ "This slogan reduces the topic of ",
+ StyleBox["local gauge invariance",
+  FontWeight->"Bold"],
+ " to a single concept. Forces arise from connections in the covariant \
+derivative, which account for curvatures in gauge manifolds, and trajectories \
+arise from geodesics. "
+}], "Text",
+ CellChangeTimes->{{3.9913426017491703`*^9, 3.9913426396495113`*^9}, {
+  3.991342673792016*^9, 3.99134293966853*^9}, {3.991344879823845*^9, 
+  3.991344880291708*^9}, {3.9913898764969177`*^9, 
+  3.9913900064955997`*^9}},ExpressionUUID->"890e4535-49dd-424e-8f51-\
+34da951b4405"],
+
+Cell["In my recent notebooks, we have seen that ", "Text",
+ CellChangeTimes->{{3.9913426017491703`*^9, 3.9913426396495113`*^9}, {
+  3.991342673792016*^9, 3.99134293966853*^9}, {3.991344879823845*^9, 
+  3.991344880291708*^9}, {3.9913898764969177`*^9, 
+  3.991390004088233*^9}},ExpressionUUID->"8ea8620b-ea5a-44c9-8c5b-\
+42d2736d745e"],
+
+Cell["\<\
+[Refs. 10, 11] Classical (non-quantum) trajectories are geodesics in gauge \
+manifolds.\
+\>", "Item",
+ CellChangeTimes->{{3.9913426017491703`*^9, 3.9913426396495113`*^9}, {
+   3.991342673792016*^9, 3.991342916287093*^9}, 3.9913429581394663`*^9, {
+   3.9913431224252567`*^9, 3.991343127293108*^9}, {3.991345676211466*^9, 
+   3.9913456832837887`*^9}, {3.991345737230921*^9, 3.991345737424993*^9}, {
+   3.991390012573845*^9, 3.99139003621891*^9}, {3.991390186216076*^9, 
+   3.9913902085098267`*^9}, {3.9913903714209423`*^9, 
+   3.9913903746601048`*^9}},ExpressionUUID->"fa7af26f-d55e-40ec-9b3d-\
+93732aff0549"],
+
+Cell[TextData[{
+ "[Ref. 8] Invariance of trajectories and coordinate transforms introduces \
+the spacetime connection ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    SuperscriptBox["\[CapitalGamma]", 
+     RowBox[{"\[VeryThinSpace]", "\[Alpha]"}]], 
+    RowBox[{"\[VeryThinSpace]", 
+     RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Nu]"}]}]], TraditionalForm]],
+  ExpressionUUID->"db09d192-1cba-4f43-ba11-1f203e5d50fd"],
+ ", necessary and sufficient for gravitation via general relativity. "
+}], "Item",
+ CellChangeTimes->{{3.9913426017491703`*^9, 3.9913426396495113`*^9}, {
+   3.991342673792016*^9, 3.991342916287093*^9}, 3.9913429581394663`*^9, {
+   3.9913431224252567`*^9, 3.991343127293108*^9}, {3.991345676211466*^9, 
+   3.9913456832837887`*^9}, {3.991345737230921*^9, 3.991345737424993*^9}, {
+   3.991390382266479*^9, 
+   3.9913903828463163`*^9}},ExpressionUUID->"f919d9a9-a591-4108-aa1e-\
+65c43275658b"],
+
+Cell[TextData[{
+ "[Ref. 9] Local Abelian ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"U", "(", "1", ")"}], TraditionalForm]],ExpressionUUID->
+  "4ff130a0-0f93-4d18-8778-2300212f791f"],
+ " phase invariance of a complex scalar field \[Psi] introduces the gauge \
+field ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["A", 
+    RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], TraditionalForm]],ExpressionUUID->
+  "d778895b-98a0-440c-8739-788eb2224bad"],
+ " (vector potential) and the connection ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"-", "\[ImaginaryI]"}], "\[InvisibleSpace]", "q", "\[InvisibleSpace]", 
+    SubscriptBox["A", 
+     RowBox[{"\[VeryThinSpace]", "\[Mu]"}]]}], TraditionalForm]],
+  ExpressionUUID->"8079e73e-dbab-4bef-8ef4-8647c0f89e05"],
+ ", which generates the electromagnetic forces."
+}], "Item",
+ CellChangeTimes->{{3.991342964805608*^9, 3.9913431451457777`*^9}, {
+   3.991343820278603*^9, 3.991343825180532*^9}, {3.9913457193659897`*^9, 
+   3.9913457434226923`*^9}, {3.991346269841557*^9, 3.991346271324285*^9}, 
+   3.9913900544567738`*^9, {3.991390418295802*^9, 
+   3.991390438348069*^9}},ExpressionUUID->"2d497469-38e1-4062-b711-\
+c3b8eaed5bbf"],
+
+Cell[TextData[{
+ "[Ref. 9] The same local Abelian ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"U", "(", "1", ")"}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "d7b88f7b-f902-45fe-adbf-1b61cf0d5246"],
+ " phase invariance generates the connection ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", "\[ImaginaryI]"}], "\[InvisibleSpace]", "q", "\[InvisibleSpace]", 
+     SubscriptBox["A", 
+      RowBox[{"\[VeryThinSpace]", "\[Mu]"}]], 
+     SuperscriptBox["V", "\[Alpha]"]}], "+", 
+    RowBox[{
+     SuperscriptBox["V", "\[Lambda]"], 
+     SubscriptBox[
+      SuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"\[VeryThinSpace]", "\[Alpha]"}]], 
+      RowBox[{"\[VeryThinSpace]", 
+       RowBox[{
+       "\[Mu]", "\[VeryThinSpace]\[VeryThinSpace]", "\[Lambda]"}]}]]}]}], 
+   TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "21362586-99b2-4c51-b635-99098830ea0c"],
+ ", here concretely multiplied by and contracted with a conceptual \
+(non-physical) charged vector field ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["V", 
+    RowBox[{"\[VeryThinSpace]", "\[Alpha]"}]], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "115fb7ff-3df6-4415-9f13-1f63e55d150d"],
+ "."
+}], "Item",
+ CellChangeTimes->{{3.991342964805608*^9, 3.9913431451457777`*^9}, {
+  3.991343820278603*^9, 3.991343825180532*^9}, {3.9913457193659897`*^9, 
+  3.991345754812295*^9}, {3.991345822438031*^9, 3.9913458710327263`*^9}, {
+  3.991345901320549*^9, 3.9913459078950987`*^9}, {3.991345975428424*^9, 
+  3.9913462458865557`*^9}, {3.9913462767450857`*^9, 3.991346294167018*^9}, {
+  3.991390238365026*^9, 
+  3.991390248426566*^9}},ExpressionUUID->"825c3174-61c2-4e40-9f56-\
+b90bf33e0938"],
+
+Cell[TextData[{
+ "In this notebook, we construct the theory of the weak nuclear force with \
+vector bosons a-la Weinberg-Salam as a theory of local ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"S", "\[InvisibleSpace]", 
+    RowBox[{"U", "(", "2", ")"}]}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "fe9f5753-0a6c-4726-a88d-d6e5d206fb7d"],
+ " gauge invariance via covariant derivatives, bridging from the non-quantum \
+usage in earlier notebooks. "
+}], "Text",
+ CellChangeTimes->{{3.991390262402223*^9, 3.9913902700941153`*^9}, {
+  3.9913903400983686`*^9, 3.991390357495646*^9}, {3.991390481252893*^9, 
+  3.9913904911766663`*^9}},ExpressionUUID->"2313369c-d6ca-4595-aeaf-\
+b43aa2516760"],
+
+Cell[CellGroupData[{
+
+Cell["1. Preliminaries", "Section",
+ CellChangeTimes->{{3.991390805954318*^9, 
+  3.991390809633066*^9}},ExpressionUUID->"702d7349-ef9c-4283-bece-\
+759b2c65b4c3"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Get", "[", 
+   RowBox[{
+    RowBox[{"NotebookDirectory", "[", "]"}], " ", "<>", 
+    " ", "\"\<../RelativityToolkit.wl\>\""}], "]"}], ";"}]], "Input",
+ CellLabel->"In[1]:=",ExpressionUUID->"18b5185f-d4ce-4563-9d5d-4f3ea2da3641"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"Relativity Toolkit version :\"\>",
+   "EchoLabel"], "  ", "\<\"1.13.1\"\>"}]], "Echo",
+ CellChangeTimes->{
+  3.991342141610093*^9},ExpressionUUID->"37f63da7-8608-4e2e-b677-\
+890a1a2a3991"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"Relativity Connection Symbol :\"\>",
+   "EchoLabel"], "  ", "\[CapitalGamma]"}]], "Echo",
+ CellChangeTimes->{
+  3.991342141611965*^9},ExpressionUUID->"f00585a4-d56e-4d65-b8fd-\
+c31bd4ecdce2"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "proof", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"proof", "[", "v_", "]"}], "/;", 
+    RowBox[{"BooleanQ", "[", "v", "]"}]}], ":=", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"If", "[", 
+      RowBox[{"v", ",", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Style", "[", 
+         RowBox[{"\"\<QED\[VeryThinSpace]\[VeryThinSpace]\[VeryThinSpace]\
+\[FilledSquare]\>\"", ",", "StandardGreen", ",", "Bold", ",", "18"}], "]"}], 
+        "]"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Style", "[", 
+         RowBox[{"\"\<FAILED PROOF\[VeryThinSpace]\[VeryThinSpace]\
+\[VeryThinSpace]\[FilledSquare]\>\"", ",", "StandardRed", ",", "Bold", ",", 
+          "18"}], "]"}], "]"}]}], "]"}], ";", "v"}], ")"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"proof", "[", "___", "]"}], ":=", 
+   RowBox[{"Print", "[", 
+    RowBox[{"Style", "[", 
+     RowBox[{"\"\<INVALID INPUT TO PROOF\[VeryThinSpace]\[VeryThinSpace]\
+\[VeryThinSpace]\[FilledSquare]\>\"", ",", "StandardYellow", ",", "Bold", ",",
+       "18"}], "]"}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.981101493976972*^9, 3.981101532526101*^9}, {
+   3.981106452389163*^9, 3.981106463759047*^9}, {3.9815620903868732`*^9, 
+   3.9815621486446466`*^9}, {3.981562189710235*^9, 3.9815622872980413`*^9}, 
+   3.981622272096715*^9},
+ CellLabel->"In[19]:=",ExpressionUUID->"53c72205-3b19-4bb5-a9cb-13372cb0de8a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", 
+   RowBox[{
+    StyleBox["comm",
+     FontColor->RGBColor[0.14, 0.8, 0.14]], ",", "commTest", ",", "triples"}],
+    "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     StyleBox["comm",
+      FontColor->RGBColor[0.14, 0.8, 0.14]], "[", "M_", "]"}], "[", 
+    RowBox[{"i_", ",", "j_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"M", "[", 
+      RowBox[{"[", "i", "]"}], "]"}], ".", 
+     RowBox[{"M", "[", 
+      RowBox[{"[", "j", "]"}], "]"}]}], "-", 
+    RowBox[{
+     RowBox[{"M", "[", 
+      RowBox[{"[", "j", "]"}], "]"}], ".", 
+     RowBox[{"M", "[", 
+      RowBox[{"[", "i", "]"}], "]"}]}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"commTest", "[", "M_", "]"}], "[", 
+    RowBox[{"i_", ",", "j_", ",", "k_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      StyleBox["comm",
+       FontColor->RGBColor[0.14, 0.8, 0.14]], "[", "M", "]"}], "[", 
+     RowBox[{"i", ",", "j"}], "]"}], "==", 
+    RowBox[{"M", "[", 
+     RowBox[{"[", "k", "]"}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   StyleBox["triples",
+    FontColor->RGBColor[0.14, 0.8, 0.14]], "=", 
+   RowBox[{"Echo", "[", 
+    RowBox[{
+     RowBox[{"NestList", "[", 
+      RowBox[{"RotateLeft", ",", 
+       RowBox[{"Range", "[", "3", "]"}], ",", "2"}], "]"}], 
+     ",", "\"\<index triples :\>\""}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.9826946625695868`*^9, 3.982694720889209*^9}, {
+   3.9826954462346487`*^9, 3.982695480166057*^9}, 3.982695535014187*^9, {
+   3.982763970533771*^9, 3.982763995302038*^9}, {3.982825912935767*^9, 
+   3.9828259153334303`*^9}, {3.9828263462512417`*^9, 
+   3.9828263702116528`*^9}, {3.982826404837511*^9, 3.982826417582851*^9}, {
+   3.982826464555006*^9, 3.982826513798891*^9}, {3.9828273142851143`*^9, 
+   3.982827321743162*^9}, {3.982827366385456*^9, 3.982827431267562*^9}, {
+   3.982827518658476*^9, 3.982827625122444*^9}, {3.9828276640973043`*^9, 
+   3.982827705374062*^9}, {3.982827751582794*^9, 3.9828280805948544`*^9}, {
+   3.9828281167848454`*^9, 3.982828308522223*^9}, {3.98282836658741*^9, 
+   3.982828477097332*^9}, {3.9828289842492228`*^9, 3.9828290139071198`*^9}, 
+   3.982829046681785*^9, 3.982920237439271*^9, 3.982920276448295*^9, {
+   3.9829204305602694`*^9, 3.982920461337277*^9}, {3.982921157884255*^9, 
+   3.9829211684600973`*^9}, {3.983002677729649*^9, 3.983002707474464*^9}, {
+   3.9913908926207438`*^9, 3.991390894679901*^9}},
+ CellLabel->"In[22]:=",ExpressionUUID->"26685603-fca2-47c7-9ca0-7411c0f756d6"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox["\<\"index triples :\"\>",
+   "EchoLabel"], "  ", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2", ",", "3"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", "3", ",", "1"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"3", ",", "1", ",", "2"}], "}"}]}], "}"}]}]], "Echo",
+ CellChangeTimes->{
+  3.991390901384445*^9},ExpressionUUID->"e9c81c99-ef2c-4fb8-b3d3-\
+da5239f82e42"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["2. Pauli Matrices and SU(2) Generators", "Section",ExpressionUUID->"dfaa6ef1-2c78-49df-a983-298a146ebb82"],
+
+Cell[TextData[{
+ "The Weinberg-Salam model represents the weak interaction using local ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"S", "\[InvisibleSpace]", 
+    RowBox[{"U", "(", "2", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "423bfd05-cc1a-422b-a569-1a1377f52fdb"],
+ " gauge symmetry. Consistent with CheckingTheBases.nb [1], the complex, \
+anti-Hermitian (quaternion) generators of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"S", "\[InvisibleSpace]", 
+    RowBox[{"U", "(", "2", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "2b7e77a7-7d11-4ca3-a582-5ac4d1c81252"],
+ " are defined with a factor of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"-", "\[ImaginaryI]"}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "86813d1c-5aaf-400c-bb8b-397578c0d3bf"],
+ ":"
+}], "Text",
+ CellChangeTimes->{{3.991342210193783*^9, 3.991342277776436*^9}, {
+   3.9913905277550907`*^9, 3.991390566839973*^9}, {3.991390663058504*^9, 
+   3.991390668258257*^9}, 
+   3.991390722102447*^9},ExpressionUUID->"34fa6c96-25ef-43fe-a037-\
+38ce8a2e4dfb"],
+
+Cell["", "Text",ExpressionUUID->"25554aa7-2fdb-4f05-a6d6-f1c78fe961d9"],
+
+Cell["\<\
+    T^a = -i/2 * \[Sigma]^a  (for a = 1, 2, 3)
+
+We use Mathematica's built-in PauliMatrix function to define these generators.\
+\>", "Text",
+ CellChangeTimes->{{3.991342210193783*^9, 3.991342277776436*^9}, {
+  3.9913905277550907`*^9, 3.991390566839973*^9}, {3.991390663058504*^9, 
+  3.991390668258257*^9}},ExpressionUUID->"a325ab56-bb8e-4aff-8e19-\
+811faf40ff07"],
+
+Cell[BoxData[{
+ RowBox[{"ClearAll", "[", "T", "]"}], "\n", 
+ RowBox[{
+  RowBox[{"Echo", "[", 
+   RowBox[{
+    RowBox[{"MatrixForm", "/@", "\[IndentingNewLine]", 
+     RowBox[{"(", 
+      RowBox[{"T", "=", 
+       RowBox[{
+        FractionBox[
+         RowBox[{"-", "\[ImaginaryI]"}], "2"], 
+        RowBox[{"PauliMatrix", "/@", 
+         RowBox[{"{", 
+          RowBox[{"1", ",", "2", ",", "3"}], "}"}]}]}]}], ")"}]}], ",", 
+    "\[IndentingNewLine]", "\"\<\[GothicS]\[GothicU](2) T basis :\>\""}], 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"proof", "[", 
+   RowBox[{"And", "@@", 
+    RowBox[{
+     StyleBox[
+      RowBox[{"commTest", "[", "T", "]"}],
+      FontColor->RGBColor[0.14, 0.8, 0.14]], "@@@", "triples"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ClearAll", "[", "\[CurlyEpsilon]", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[CurlyEpsilon]", "=", 
+   RowBox[{"LeviCivitaTensor", "[", "3", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ClearAll", "[", "cyclicity", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"cyclicity", "[", "M_", "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"And", "@@", 
+    RowBox[{"Flatten", "@", 
+     RowBox[{"Table", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        StyleBox[
+         RowBox[{
+          RowBox[{"comm", "[", "M", "]"}], "[", 
+          RowBox[{"i", ",", "j"}], "]"}],
+         FontColor->RGBColor[0.14, 0.8, 0.14]], 
+        StyleBox["==",
+         FontColor->RGBColor[0.14, 0.8, 0.14]], 
+        StyleBox["\[IndentingNewLine]",
+         FontColor->RGBColor[0.14, 0.8, 0.14]], 
+        RowBox[{"Sum", 
+         StyleBox["[",
+          FontColor->RGBColor[0.14, 0.8, 0.14]], 
+         RowBox[{
+          StyleBox[
+           RowBox[{
+            RowBox[{"M", "[", 
+             RowBox[{"[", "k", "]"}], "]"}], "*", 
+            RowBox[{"\[CurlyEpsilon]", "[", 
+             RowBox[{"[", 
+              RowBox[{"i", ",", "j", ",", "k"}], "]"}], "]"}]}],
+           FontColor->RGBColor[0.14, 0.8, 0.14]], ",", 
+          RowBox[{"{", 
+           RowBox[{"k", ",", "3"}], "}"}]}], "]"}]}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "3"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"j", ",", "3"}], "}"}]}], "]"}]}]}]}], ";", 
+  RowBox[{"proof", "@", 
+   StyleBox[
+    RowBox[{"cyclicity", "[", "T", "]"}],
+    FontColor->RGBColor[0.14, 0.8, 0.14]]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.9913909328801193`*^9, 3.991390951844474*^9}, {
+  3.991390998942685*^9, 3.991391012246128*^9}},
+ CellLabel->"In[31]:=",ExpressionUUID->"603dce9e-4f0a-49c4-89f5-516b9dd1dc7f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "roundTripLieGroupAndAlgebra", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"roundTripLieGroupAndAlgebra", "[", "M_", "]"}], ":=", 
+   "\[IndentingNewLine]", 
+   RowBox[{"And", "@@", 
+    RowBox[{"Flatten", "@", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"FullSimplify", "[", "\[IndentingNewLine]", 
+          RowBox[{
+           StyleBox[
+            RowBox[{"MatrixLog", "[", 
+             RowBox[{"MatrixExp", "[", 
+              RowBox[{"\[Theta]", " ", 
+               RowBox[{"M", "[", 
+                RowBox[{"[", "#", "]"}], "]"}]}], "]"}], "]"}],
+            FontColor->RGBColor[0.14, 0.8, 0.14]], ",", "\[IndentingNewLine]", 
+           RowBox[{"Assumptions", "->", 
+            RowBox[{
+             RowBox[{"-", "\[Pi]"}], "<", "\[Theta]", "<", "\[Pi]"}]}]}], 
+          "]"}], "==", 
+         RowBox[{"\[Theta]", " ", 
+          RowBox[{"M", "[", 
+           RowBox[{"[", "#", "]"}], "]"}]}]}], "&"}], "/@", 
+       RowBox[{"Range", "[", "3", "]"}]}], ")"}]}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"proof", "@", 
+   RowBox[{"roundTripLieGroupAndAlgebra", "[", "T", "]"}]}], ";"}]}], "Input",\
+
+ CellChangeTimes->{{3.99139107542869*^9, 3.9913910848839073`*^9}},
+ CellLabel->"In[52]:=",ExpressionUUID->"98487d60-e060-4936-aab0-a025640123c0"],
+
+Cell[BoxData[
+ StyleBox["\<\"QED\[VeryThinSpace]\[VeryThinSpace]\[VeryThinSpace]\
+\[FilledSquare]\"\>",
+  StripOnInput->False,
+  LineColor->RGBColor[0.14, 0.8, 0.14],
+  FrontFaceColor->RGBColor[0.14, 0.8, 0.14],
+  BackFaceColor->RGBColor[0.14, 0.8, 0.14],
+  GraphicsColor->RGBColor[0.14, 0.8, 0.14],
+  FontSize->18,
+  FontWeight->Bold,
+  FontColor->RGBColor[0.14, 0.8, 0.14]]], "Print",
+ CellChangeTimes->{
+  3.991390937079533*^9, 3.991391013830637*^9, {3.991391076379012*^9, 
+   3.991391085515114*^9}},
+ CellLabel->
+  "During evaluation of \
+In[52]:=",ExpressionUUID->"ba66e727-408c-41eb-a1c2-7d1cde7ac0d7"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["3. Fields and the Covariant Derivative", "Section",ExpressionUUID->"761c3014-8c99-422a-b955-6325ae3182bf"],
+
+Cell[TextData[{
+ "We define the doublet field \[Psi] (e.g., representing the lepton doublet \
+or Higgs doublet):\n    \[Psi] = {\[Psi]1, \[Psi]2}\n\nThe three ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"S", "\[InvisibleSpace]", 
+    RowBox[{"U", "(", "2", ")"}]}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "a02f1434-d94b-4c19-ae83-8b26835c384a"],
+ " vector boson gauge fields are W_\[Mu]^1, W_\[Mu]^2, and W_\[Mu]^3. We \
+collect them into a matrix-valued connection:\n    W_\[Mu] = W_\[Mu]^a * T^a\n\
+\nThen the gauge-covariant derivative of the doublet is:\n    D_\[Mu] \[Psi] \
+= CD[\[Psi], x_\[Mu]] + g * W_\[Mu] . \[Psi]"
+}], "Text",
+ CellChangeTimes->{{3.991476997060299*^9, 
+  3.991477004349895*^9}},ExpressionUUID->"4f569498-4398-4090-8b53-\
+97089cd80b57"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"doublet", " ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{"\[Psi]1", ",", " ", "\[Psi]2"}], "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"WMatrix", "[", "\[Nu]_", "]"}], " ", ":=", " ", 
+   RowBox[{"Sum", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"W", "[", "a", "]"}], "[", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}], "]"}], " ", "*", " ", 
+      RowBox[{"T", "[", "a", "]"}]}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"a", ",", " ", "3"}], "}"}]}], "]"}]}], ";"}]}], "Input",
+ CellLabel->"In[3]:=",ExpressionUUID->"6e68514c-0710-4055-ac49-58d74e5692ba"],
+
+Cell["\<\
+Now compute the covariant derivative using the component-wise list CD:\
+\>", "Text",ExpressionUUID->"63a45850-8ba5-411b-be88-486cc74b124d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"cde", " ", "=", " ", 
+  RowBox[{
+   RowBox[{"CD", "[", 
+    RowBox[{"doublet", ",", " ", 
+     RowBox[{"x", "[", 
+      RowBox[{"\[ScriptCapitalU]", "[", "\[Mu]", "]"}], "]"}]}], "]"}], " ", "+",
+    " ", 
+   RowBox[{"g", " ", "*", " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"WMatrix", "[", "\[Mu]", "]"}], " ", ".", " ", "doublet"}], 
+     ")"}]}]}]}]], "Input",
+ CellLabel->"In[5]:=",ExpressionUUID->"4802198f-3bab-46d0-aa46-d5bf0a0c9928"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    SubscriptBox["\[Psi]1", 
+     RowBox[{",", "\[Mu]"}]], "+", 
+    RowBox[{"g", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"\[Psi]2", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["1", "2"]}], " ", "\[ImaginaryI]", " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"W", "[", "1", "]"}], 
+             SubscriptBox["", "\[Mu]"]}], ")"}]}], "-", 
+          RowBox[{
+           FractionBox["1", "2"], " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"W", "[", "2", "]"}], 
+             SubscriptBox["", "\[Mu]"]}], ")"}]}]}], ")"}]}], "-", 
+       RowBox[{
+        FractionBox["1", "2"], " ", "\[ImaginaryI]", " ", "\[Psi]1", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"W", "[", "3", "]"}], 
+          SubscriptBox["", "\[Mu]"]}], ")"}]}]}], ")"}]}]}], ",", 
+   RowBox[{
+    SubscriptBox["\[Psi]2", 
+     RowBox[{",", "\[Mu]"}]], "+", 
+    RowBox[{"g", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"\[Psi]1", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["1", "2"]}], " ", "\[ImaginaryI]", " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"W", "[", "1", "]"}], 
+             SubscriptBox["", "\[Mu]"]}], ")"}]}], "+", 
+          RowBox[{
+           FractionBox["1", "2"], " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"W", "[", "2", "]"}], 
+             SubscriptBox["", "\[Mu]"]}], ")"}]}]}], ")"}]}], "+", 
+       RowBox[{
+        FractionBox["1", "2"], " ", "\[ImaginaryI]", " ", "\[Psi]2", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"W", "[", "3", "]"}], 
+          SubscriptBox["", "\[Mu]"]}], ")"}]}]}], ")"}]}]}]}], 
+  "}"}]], "Output",
+ CellChangeTimes->{3.9913421416786957`*^9},
+ CellLabel->"Out[5]=",ExpressionUUID->"d75747c6-657a-47d4-9afb-e3ebb6eed6b7"]
+}, Open  ]],
+
+Cell["Display the covariant derivative in TensorForm:", "Text",ExpressionUUID->"463ef747-8649-45ac-a680-ea8a6ca72a46"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"cde", " ", "//", " ", "TensorForm"}]], "Input",
+ CellLabel->"In[6]:=",ExpressionUUID->"ff2e3d11-cd2c-4a81-bf52-2751cf0f5494"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{
+     SubscriptBox["\[Psi]1", 
+      RowBox[{",", "\[Mu]"}]], "+", 
+     RowBox[{"g", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"\[Psi]2", " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox["1", "2"]}], " ", "\[ImaginaryI]", " ", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"W", "[", "1", "]"}], 
+              SubscriptBox["", "\[Mu]"]}], ")"}]}], "-", 
+           RowBox[{
+            FractionBox["1", "2"], " ", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"W", "[", "2", "]"}], 
+              SubscriptBox["", "\[Mu]"]}], ")"}]}]}], ")"}]}], "-", 
+        RowBox[{
+         FractionBox["1", "2"], " ", "\[ImaginaryI]", " ", "\[Psi]1", " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"W", "[", "3", "]"}], 
+           SubscriptBox["", "\[Mu]"]}], ")"}]}]}], ")"}]}]}], ",", 
+    RowBox[{
+     SubscriptBox["\[Psi]2", 
+      RowBox[{",", "\[Mu]"}]], "+", 
+     RowBox[{"g", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"\[Psi]1", " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox["1", "2"]}], " ", "\[ImaginaryI]", " ", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"W", "[", "1", "]"}], 
+              SubscriptBox["", "\[Mu]"]}], ")"}]}], "+", 
+           RowBox[{
+            FractionBox["1", "2"], " ", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"W", "[", "2", "]"}], 
+              SubscriptBox["", "\[Mu]"]}], ")"}]}]}], ")"}]}], "+", 
+        RowBox[{
+         FractionBox["1", "2"], " ", "\[ImaginaryI]", " ", "\[Psi]2", " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"W", "[", "3", "]"}], 
+           SubscriptBox["", "\[Mu]"]}], ")"}]}]}], ")"}]}]}]}], "}"}],
+  HoldForm]], "Output",
+ CellChangeTimes->{3.991342141683468*^9},
+ CellLabel->"Out[6]=",ExpressionUUID->"35da8b33-d36e-43e8-a3f0-5cef6cf936d0"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["4. Local SU(2) Gauge Symmetries and Transformation Rules", "Section",ExpressionUUID->"c1ca71e1-76dc-4109-a47e-1daefee713c1"],
+
+Cell["\<\
+Under a local SU(2) transformation parameterized by \[Epsilon]^a(x), the \
+doublet field transforms as:
+    \[Psi] -> U . \[Psi]   where U = Exp[\[Epsilon]^a * T^a]
+
+For an infinitesimal gauge transformation, U \[Congruent] I_2 + \[Epsilon]^a \
+* T^a. The components of the gauge field W_\[Mu]^a transform as:
+    W_\[Mu]^a -> W_\[Mu]^a - 1/g * \[PartialD]_\[Mu] \[Epsilon]^a + \
+\[Epsilon]^abc * \[Epsilon]^b * W_\[Mu]^c
+
+Let's define these transformation rules in components:\
+\>", "Text",ExpressionUUID->"73cc654a-ead6-4171-ae47-f688a4170045"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"\[Epsilon]Matrix", " ", "=", " ", 
+   RowBox[{"Sum", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"\[Epsilon]", "[", "a", "]"}], " ", "*", " ", 
+      RowBox[{"T", "[", "a", "]"}]}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"a", ",", " ", "3"}], "}"}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"gaugeTransforms", " ", "=", " ", 
+   RowBox[{"{", "\n", "  ", 
+    RowBox[{
+     RowBox[{"\[Psi]1", " ", "->", " ", 
+      RowBox[{"\[Psi]1", " ", "+", " ", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"\[Epsilon]Matrix", " ", ".", " ", "doublet"}], ")"}], "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}]}], ",", "\n", "  ", 
+     RowBox[{"\[Psi]2", " ", "->", " ", 
+      RowBox[{"\[Psi]2", " ", "+", " ", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"\[Epsilon]Matrix", " ", ".", " ", "doublet"}], ")"}], "[", 
+        RowBox[{"[", "2", "]"}], "]"}]}]}], ",", "\n", "  ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"W", "[", "a_", "]"}], "[", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]_", "]"}], "]"}], " ", ":>", 
+      " ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"W", "[", "a", "]"}], "[", 
+        RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}], "]"}], " ", "-", 
+       " ", "\n", "    ", 
+       RowBox[{
+        RowBox[{"Partials", "[", 
+         RowBox[{
+          RowBox[{"\[Epsilon]", "[", "a", "]"}], ",", " ", 
+          RowBox[{"x", "[", 
+           RowBox[{"\[ScriptCapitalU]", "[", "\[Nu]", "]"}], "]"}]}], "]"}], 
+        " ", "/", " ", "g"}], " ", "+", " ", "\n", "    ", 
+       RowBox[{"Sum", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Signature", "[", 
+           RowBox[{"{", 
+            RowBox[{"a", ",", " ", "b", ",", " ", "c"}], "}"}], "]"}], " ", "*",
+           " ", 
+          RowBox[{"\[Epsilon]", "[", "b", "]"}], " ", "*", " ", 
+          RowBox[{
+           RowBox[{"W", "[", "c", "]"}], "[", 
+           RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}], "]"}]}], ",", 
+         " ", 
+         RowBox[{"{", 
+          RowBox[{"b", ",", " ", "3"}], "}"}], ",", " ", 
+         RowBox[{"{", 
+          RowBox[{"c", ",", " ", "3"}], "}"}]}], "]"}]}]}]}], "\n", "}"}]}], 
+  ";"}]}], "Input",
+ CellLabel->"In[7]:=",ExpressionUUID->"de251bf9-d640-4da1-8839-e6dda8eadb25"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["5. Verification of Gauge Covariance", "Section",ExpressionUUID->"90350d02-4dec-45a5-85db-723ee72daca0"],
+
+Cell["\<\
+We verify that the covariant derivative transforms covariantly under local \
+SU(2) gauge transformations:
+    D'_\[Mu] \[Psi]' = U . (D_\[Mu] \[Psi])
+
+To first order in \[Epsilon], we compute the difference between the \
+gauge-transformed covariant derivative and the expected transformation:\
+\>", "Text",ExpressionUUID->"1945f7ed-823f-48ee-a743-07d1a108073c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"constantRules", " ", "=", " ", 
+   RowBox[{"{", " ", 
+    RowBox[{
+     RowBox[{"Partials", "[", 
+      RowBox[{"g", ",", " ", "_"}], "]"}], " ", ":>", " ", "0"}], " ", 
+    "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"transformedCde", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"cde", " ", "/.", " ", "gaugeTransforms"}], " ", "//", " ", 
+    "ExpandDerivatives"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"transformedCde", " ", "=", " ", 
+    RowBox[{
+     RowBox[{"transformedCde", " ", "/.", " ", "constantRules"}], " ", "//", 
+     " ", "Expand"}]}], ";"}], "\n", "\n", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"Filter", " ", "out", " ", "second"}], "-", 
+    RowBox[{"order", " ", "terms", " ", "in", " ", "\[Epsilon]"}]}], " ", 
+   "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"transformedCdeFirstOrder", " ", "=", " ", 
+    RowBox[{"transformedCde", " ", "/.", " ", 
+     RowBox[{"{", "\n", "  ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"\[Epsilon]", "[", "a_", "]"}], " ", "*", " ", 
+         RowBox[{"\[Epsilon]", "[", "b_", "]"}]}], " ", ":>", " ", "0"}], ",",
+        " ", "\n", "  ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"\[Epsilon]", "[", "a_", "]"}], "^", "2"}], " ", ":>", " ", 
+        "0"}], ",", "\n", "  ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"\[Epsilon]", "[", "a_", "]"}], " ", "*", " ", 
+         RowBox[{"Partials", "[", 
+          RowBox[{
+           RowBox[{"\[Epsilon]", "[", "b_", "]"}], ",", " ", "_"}], "]"}]}], 
+        " ", ":>", " ", "0"}]}], "\n", "}"}]}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"expectedCde", " ", "=", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"IdentityMatrix", "[", "2", "]"}], " ", "+", " ", 
+       "\[Epsilon]Matrix"}], ")"}], " ", ".", " ", "cde"}], " ", "//", " ", 
+    "Expand"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"expectedCdeFirstOrder", " ", "=", " ", 
+    RowBox[{"expectedCde", " ", "/.", " ", 
+     RowBox[{"{", "\n", "  ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"\[Epsilon]", "[", "a_", "]"}], " ", "*", " ", 
+         RowBox[{"\[Epsilon]", "[", "b_", "]"}]}], " ", ":>", " ", "0"}], ",",
+        "\n", "  ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"\[Epsilon]", "[", "a_", "]"}], "^", "2"}], " ", ":>", " ", 
+        "0"}]}], "\n", "}"}]}]}], ";"}], "\n"}], "\n", 
+ RowBox[{"diff", " ", "=", " ", 
+  RowBox[{"Simplify", "[", 
+   RowBox[{
+   "transformedCdeFirstOrder", " ", "-", " ", "expectedCdeFirstOrder"}], 
+   "]"}]}]}], "Input",
+ CellLabel->"In[9]:=",ExpressionUUID->"b7bbeae1-b1c0-4fab-bccd-e0724bbb6ab7"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0"}], "}"}]], "Output",
+ CellChangeTimes->{3.99134214169692*^9},
+ CellLabel->"Out[15]=",ExpressionUUID->"95b97ce3-aa4b-4b51-bc45-602bf9ac4270"]
+}, Open  ]],
+
+Cell["\<\
+The difference is {0, 0}, showing that the covariant derivative is \
+local-gauge-covariant. QED!\
+\>", "Text",ExpressionUUID->"6f6f867d-8db1-4ef5-9aec-521aee99c1fd"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["6. Field Strength Tensor (Yang-Mills) and its Covariance", "Section",ExpressionUUID->"5571a5ec-5b9a-456e-9447-d4f0040cb738"],
+
+Cell["\<\
+The Yang-Mills gauge field strength tensor for SU(2) is defined in components \
+as:
+    G_\[Mu]\[Nu]^a = \[PartialD]_\[Mu] W_\[Nu]^a - \[PartialD]_\[Nu] \
+W_\[Mu]^a + g * \[Epsilon]^abc * W_\[Mu]^b * W_\[Nu]^c
+
+Under local gauge transformations, it transforms adjointly:
+    G'_\[Mu]\[Nu]^a = G_\[Mu]\[Nu]^a + \[Epsilon]^abc * \[Epsilon]^b * \
+G_\[Mu]\[Nu]^c
+
+Let's define G_\[Mu]\[Nu]^a and verify its transformation behavior:\
+\>", "Text",ExpressionUUID->"68008d14-48ff-4d4a-be21-62437a69275b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"G", "[", 
+    RowBox[{"a_", ",", " ", "\[Eta]_", ",", " ", "\[Nu]_"}], "]"}], " ", ":=",
+    " ", 
+   RowBox[{
+    RowBox[{"Partials", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"W", "[", "a", "]"}], "[", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}], "]"}], ",", " ", 
+      RowBox[{"x", "[", 
+       RowBox[{"\[ScriptCapitalU]", "[", "\[Eta]", "]"}], "]"}]}], "]"}], " ",
+     "-", " ", "\n", "  ", 
+    RowBox[{"Partials", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"W", "[", "a", "]"}], "[", 
+       RowBox[{"\[ScriptCapitalD]", "[", "\[Eta]", "]"}], "]"}], ",", " ", 
+      RowBox[{"x", "[", 
+       RowBox[{"\[ScriptCapitalU]", "[", "\[Nu]", "]"}], "]"}]}], "]"}], " ", 
+    "+", " ", "\n", "  ", 
+    RowBox[{"g", " ", "*", " ", 
+     RowBox[{"Sum", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Signature", "[", 
+         RowBox[{"{", 
+          RowBox[{"a", ",", " ", "b", ",", " ", "c"}], "}"}], "]"}], " ", "*",
+         " ", 
+        RowBox[{
+         RowBox[{"W", "[", "b", "]"}], "[", 
+         RowBox[{"\[ScriptCapitalD]", "[", "\[Eta]", "]"}], "]"}], " ", "*", 
+        " ", 
+        RowBox[{
+         RowBox[{"W", "[", "c", "]"}], "[", 
+         RowBox[{"\[ScriptCapitalD]", "[", "\[Nu]", "]"}], "]"}]}], ",", " ", 
+       
+       RowBox[{"{", 
+        RowBox[{"b", ",", " ", "3"}], "}"}], ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"c", ",", " ", "3"}], "}"}]}], "]"}]}]}]}], ";"}]], "Input",
+ CellLabel->"In[16]:=",ExpressionUUID->"46d681d4-c71e-40c6-a301-a23f533c371c"],
+
+Cell["\<\
+Compute the transformation of G^a and subtract the expected transformation:\
+\>", "Text",ExpressionUUID->"091709fe-2042-428e-b1f2-1a4746a96c56"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"expectedGTransformed", "[", "a_", "]"}], " ", ":=", " ", 
+    RowBox[{
+     RowBox[{"G", "[", 
+      RowBox[{"a", ",", " ", "\[Eta]", ",", " ", "\[Nu]"}], "]"}], " ", "+", 
+     " ", 
+     RowBox[{"Sum", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Signature", "[", 
+         RowBox[{"{", 
+          RowBox[{"a", ",", " ", "b", ",", " ", "c"}], "}"}], "]"}], " ", "*",
+         " ", 
+        RowBox[{"\[Epsilon]", "[", "b", "]"}], " ", "*", " ", 
+        RowBox[{"G", "[", 
+         RowBox[{"c", ",", " ", "\[Eta]", ",", " ", "\[Nu]"}], "]"}]}], ",", 
+       " ", 
+       RowBox[{"{", 
+        RowBox[{"b", ",", " ", "3"}], "}"}], ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"c", ",", " ", "3"}], "}"}]}], "]"}]}]}], ";"}], "\n"}], "\n", 
+ RowBox[{"Table", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"transformedG", " ", "=", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"G", "[", 
+        RowBox[{"a", ",", " ", "\[Eta]", ",", " ", "\[Nu]"}], "]"}], " ", "/.",
+        " ", "gaugeTransforms"}], " ", "//", " ", "ExpandDerivatives"}]}], ";",
+     "\n", "  ", 
+    RowBox[{"transformedG", " ", "=", " ", 
+     RowBox[{
+      RowBox[{"transformedG", " ", "/.", " ", "constantRules"}], " ", "//", 
+      " ", "Expand"}]}], ";", "\n", "  ", 
+    RowBox[{"transformedGFirstOrder", " ", "=", " ", 
+     RowBox[{"transformedG", " ", "/.", " ", 
+      RowBox[{"{", "\n", "    ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"\[Epsilon]", "[", "x_", "]"}], " ", "*", " ", 
+          RowBox[{"\[Epsilon]", "[", "y_", "]"}]}], " ", ":>", " ", "0"}], ",",
+         "\n", "    ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"\[Epsilon]", "[", "x_", "]"}], "^", "2"}], " ", ":>", " ", 
+         "0"}], ",", "\n", "    ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"\[Epsilon]", "[", "x_", "]"}], " ", "*", " ", 
+          RowBox[{"Partials", "[", 
+           RowBox[{
+            RowBox[{"\[Epsilon]", "[", "y_", "]"}], ",", " ", "_"}], "]"}]}], 
+         " ", ":>", " ", "0"}], ",", "\n", "    ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Partials", "[", 
+           RowBox[{
+            RowBox[{"\[Epsilon]", "[", "x_", "]"}], ",", " ", "_"}], "]"}], 
+          " ", "*", " ", 
+          RowBox[{"\[Epsilon]", "[", "y_", "]"}]}], " ", ":>", " ", "0"}], ",",
+         "\n", "    ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Partials", "[", 
+           RowBox[{
+            RowBox[{"\[Epsilon]", "[", "x_", "]"}], ",", " ", "_"}], "]"}], 
+          " ", "*", " ", 
+          RowBox[{"Partials", "[", 
+           RowBox[{
+            RowBox[{"\[Epsilon]", "[", "y_", "]"}], ",", " ", "_"}], "]"}]}], 
+         " ", ":>", " ", "0"}]}], "\n", "  ", "}"}]}]}], ";", "\n", "  ", 
+    RowBox[{"expectedG", " ", "=", " ", 
+     RowBox[{
+      RowBox[{"expectedGTransformed", "[", "a", "]"}], " ", "//", " ", 
+      "Expand"}]}], ";", "\n", "  ", 
+    RowBox[{"Simplify", "[", 
+     RowBox[{"transformedGFirstOrder", " ", "-", " ", "expectedG"}], "]"}]}], 
+   ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"a", ",", " ", "3"}], "}"}]}], "\n", "]"}]}], "Input",
+ CellLabel->"In[17]:=",ExpressionUUID->"c51a3f72-bd11-45fe-b7c0-f867f12cf8d4"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellChangeTimes->{3.991342141705147*^9},
+ CellLabel->"Out[18]=",ExpressionUUID->"c8ce33a3-e146-4538-aa8d-f68d2dff7ea9"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["7. Conclusion", "Section",ExpressionUUID->"c781bd77-1659-4f93-97f8-18998f568f3b"],
+
+Cell["\<\
+We have successfully constructed the local SU(2) gauge theory for the weak \
+vector bosons using the Relativity Toolkit. 
+By defining the generators of SU(2) with a factor of -i (anti-Hermitian \
+generators) to remain consistent with CheckingTheBases.nb, we ensure the \
+entire derivation is self-consistent and mathematically rigorous. The \
+covariant derivative maps and local gauge transformations adapt naturally to \
+this Lie algebra basis, yielding perfect cancellation in the covariance tests.\
+\>", "Text",ExpressionUUID->"9c3f1ab0-4ee7-4582-8e0a-2c4ad4a2f0a5"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["8. References", "Section",ExpressionUUID->"f76a1a28-123d-460a-8cf5-1c2287064e28"],
+
+Cell["\<\
+Here is a bidirectional mapping correlating the NOTEBOOKS folder of the \
+public GitHub repository Relativity Toolkit to their corresponding published \
+instantiations / renamings as Staff Picks at the Wolfram Community site:\
+\>", "Text",
+ CellChangeTimes->{{3.9913449885372467`*^9, 3.991344994119512*^9}, {
+  3.991345050364766*^9, 
+  3.991345051032343*^9}},ExpressionUUID->"062a80f5-143f-49a4-95b8-\
+c2f2c3af1044"],
+
+Cell[TextData[{
+ "1. ",
+ StyleBox["Lie Theory, Featuring 3D Rotations",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["CheckingTheBases.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+CheckingTheBases.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+CheckingTheBases.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["Lie Theory, Featuring 3D Rotations on Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3671922"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3671922"]
+}], "Item",
+ CellChangeTimes->{
+  3.991345075158835*^9},ExpressionUUID->"74a4f570-410c-42d3-9eea-\
+6c19b39d5330"],
+
+Cell[TextData[{
+ "2. ",
+ StyleBox["Gravitational-Electrostatic Equilibrium",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["BalancedSpheres.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+BalancedSpheres.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+BalancedSpheres.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["Gravitational-Electrostatic Equilibrium on Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3735671"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3735671"]
+}], "Item",
+ CellChangeTimes->{
+  3.9913450801046753`*^9},ExpressionUUID->"6218cd36-00c9-4bce-aca7-\
+c5cad18385d8"],
+
+Cell[TextData[{
+ "3. ",
+ StyleBox["Covariant Derivatives and Connections in the UD Calculus",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["CovariantDervativeAndConnectionsInTheUDCalculus004.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+CovariantDervativeAndConnectionsInTheUDCalculus004.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+CovariantDervativeAndConnectionsInTheUDCalculus004.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["Covariant Derivatives and Connections in the UD Calculus on \
+Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3609079"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3609079"]
+}], "Item",
+ CellChangeTimes->{
+  3.991345101477469*^9},ExpressionUUID->"20beb654-5974-40db-aed1-\
+c22373db2b86"],
+
+Cell[TextData[{
+ "4. ",
+ StyleBox["Formal Differential Geometry in the UD Calculus: Part 1",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["DifferentialGeometryInTheUDCalculus007.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+DifferentialGeometryInTheUDCalculus007.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+DifferentialGeometryInTheUDCalculus007.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["Formal Differential Geometry in the UD Calculus: Part 1 on \
+Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3605564"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3605564"]
+}], "Item",
+ CellChangeTimes->{
+  3.9913451058409147`*^9},ExpressionUUID->"58f15329-df5f-464e-93b2-\
+53c36a6ef7ac"],
+
+Cell[TextData[{
+ "5. ",
+ StyleBox["Formal Symbols in UD",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["FormalSymbolManagementInUD.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+FormalSymbolManagementInUD.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+FormalSymbolManagementInUD.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["Formal Symbols in UD on Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3686348"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3686348"]
+}], "Item",
+ CellChangeTimes->{
+  3.991345109025725*^9},ExpressionUUID->"aa7d2223-3071-401a-8174-\
+6f2ac0587d66"],
+
+Cell[TextData[{
+ "6. ",
+ StyleBox["General Relativity in the UD Calculus",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["GRinTheUDCalculus004.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+GRinTheUDCalculus004.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+GRinTheUDCalculus004.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["General Relativity in the UD Calculus on Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3601899"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3601899"]
+}], "Item",
+ CellChangeTimes->{
+  3.9913451141432753`*^9},ExpressionUUID->"df121af9-feb7-4f9f-a458-\
+f5c564e698c3"],
+
+Cell[TextData[{
+ "7. ",
+ StyleBox["A Wizard's Quest: Spinning Black Holes in UD",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["KerrOrbitsInUD_007.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+KerrOrbitsInUD_007.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+KerrOrbitsInUD_007.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["A Wizard's Quest: Spinning Black Holes in UD on Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3636508"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3636508"]
+}], "Item",
+ CellChangeTimes->{
+  3.991345118063484*^9},ExpressionUUID->"e0e82f23-916d-4431-9898-\
+bcea7fe87d8c"],
+
+Cell[TextData[{
+ "8. ",
+ StyleBox["From the Steam Age to Quantum Fields (Backwards Derivation \
+Lagrangian Density)",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["LagrangianInvariance004.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+LagrangianInvariance004.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+LagrangianInvariance004.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["From the Steam Age to Quantum Fields (Backwards Derivation \
+Lagrangian Density) on Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3584475"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3584475"]
+}], "Item",
+ CellChangeTimes->{
+  3.991345125508429*^9},ExpressionUUID->"a680b855-cb54-434d-8ef4-\
+7f13eface574"],
+
+Cell[TextData[{
+ "9. ",
+ StyleBox["Gauge Theory in UD",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["NonQuantumGaugeTheory.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+NonQuantumGaugeTheory.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+NonQuantumGaugeTheory.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["Gauge Theory in UD on Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3643786"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3643786"]
+}], "Item",
+ CellChangeTimes->{
+  3.9913451290394793`*^9},ExpressionUUID->"227e440d-0a80-4435-9a2b-\
+3e9aade4334b"],
+
+Cell[TextData[{
+ "10. ",
+ StyleBox["SO(3) Gauge Theory for Classical Mechanics in UD",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["NonQuantumSO3.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+NonQuantumSO3.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+NonQuantumSO3.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["SO(3) Gauge Theory for Classical Mechanics in UD on Wolfram \
+Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3647724"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3647724"]
+}], "Item",
+ CellChangeTimes->{
+  3.991345132716537*^9},ExpressionUUID->"9fd9a62b-658e-460c-b48a-\
+965bc6c21c8c"],
+
+Cell[TextData[{
+ "11. ",
+ StyleBox["SU(2) Gauge Theory in Classical Mechanics in UD",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["NonQuantumSU2.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+NonQuantumSU2.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+NonQuantumSU2.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["SU(2) Gauge Theory in Classical Mechanics in UD on Wolfram \
+Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3656731"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3656731"]
+}], "Item",
+ CellChangeTimes->{
+  3.991345136604183*^9},ExpressionUUID->"c85d25bb-05ba-4979-a536-\
+38e9fd9d0e4e"],
+
+Cell[TextData[{
+ "12. ",
+ StyleBox["Riemann Curvature in UD and Compiler Proof of Concept",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["RiemannInUDRefactored.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+RiemannInUDRefactored.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+RiemannInUDRefactored.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["Riemann Curvature in UD and Compiler Proof of Concept on Wolfram \
+Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3627521"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3627521"]
+}], "Item",
+ CellChangeTimes->{
+  3.9913451435544786`*^9},ExpressionUUID->"373a4c02-e234-407c-89a0-\
+ba152fb9c305"],
+
+Cell[TextData[{
+ "13. ",
+ StyleBox["Schwarzschild Metric from Scratch via UD Compilation",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["SchwarzschildFromScratch002.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+SchwarzschildFromScratch002.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+SchwarzschildFromScratch002.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["Schwarzschild Metric from Scratch via UD Compilation on Wolfram \
+Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3640287"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3640287"]
+}], "Item",
+ CellChangeTimes->{
+  3.991345146715336*^9},ExpressionUUID->"87c803bb-b721-44ea-8d6c-\
+4b31c2c18491"],
+
+Cell[TextData[{
+ "14. ",
+ StyleBox["Interactive Black Hole Dynamics: Schwarzschild Orbits via UD \
+Calculus",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["SchwarzschildOrbitInUD_002.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+SchwarzschildOrbitInUD_002.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+SchwarzschildOrbitInUD_002.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["Interactive Black Hole Dynamics: Schwarzschild Orbits via UD \
+Calculus on Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3632176"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3632176"]
+}], "Item",
+ CellChangeTimes->{
+  3.9913451508064413`*^9},ExpressionUUID->"c47a9d6f-4558-4701-8627-\
+67cc70008df2"],
+
+Cell[TextData[{
+ "15. ",
+ StyleBox["From the Steam Age to Quantum Fields: A Unified Approach via UD \
+Tensorial Calculus",
+  FontWeight->"Bold"],
+ "\n\[Bullet] GitHub: ",
+ ButtonBox["SteamAgeAndUDCalculus665300891.nb on GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+SteamAgeAndUDCalculus665300891.nb"], None},
+  ButtonNote->
+   "https://github.com/rebcabin/RelativityToolkit/blob/main/NOTEBOOKS/\
+SteamAgeAndUDCalculus665300891.nb"],
+ "\n\[Bullet] Wolfram Community: ",
+ ButtonBox["From the Steam Age to Quantum Fields: A Unified Approach via UD \
+Tensorial Calculus on Wolfram Community",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://community.wolfram.com/groups/-/m/t/3594810"], None},
+  ButtonNote->"https://community.wolfram.com/groups/-/m/t/3594810"]
+}], "Item",
+ CellChangeTimes->{
+  3.991345155948841*^9},ExpressionUUID->"c297a4b2-8a83-4b9e-9133-\
+091e97b691eb"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1707, 1381},
+WindowMargins->{{Automatic, 1706}, {Automatic, 0}},
+Magnification:>2. Inherited,
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"f7a9ffb1-d46b-49c3-86aa-0aa36da61c49"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 337, 8, 314, "Title",ExpressionUUID->"1b914a76-973c-458c-9100-6a088b4958e6"],
+Cell[916, 32, 174, 3, 67, "Text",ExpressionUUID->"3e260f86-9482-48fd-958b-7d99eeb90c39"],
+Cell[1093, 37, 345, 10, 61, "Item",ExpressionUUID->"f8fb9a6a-49b7-43b4-9276-bc7838d82581"],
+Cell[1441, 49, 578, 12, 111, "Text",ExpressionUUID->"890e4535-49dd-424e-8f51-34da951b4405"],
+Cell[2022, 63, 333, 5, 67, "Text",ExpressionUUID->"8ea8620b-ea5a-44c9-8c5b-42d2736d745e"],
+Cell[2358, 70, 617, 11, 61, "Item",ExpressionUUID->"fa7af26f-d55e-40ec-9b3d-93732aff0549"],
+Cell[2978, 83, 908, 19, 101, "Item",ExpressionUUID->"f919d9a9-a591-4108-aa1e-65c43275658b"],
+Cell[3889, 104, 1163, 28, 102, "Item",ExpressionUUID->"2d497469-38e1-4062-b711-c3b8eaed5bbf"],
+Cell[5055, 134, 1729, 44, 101, "Item",ExpressionUUID->"825c3174-61c2-4e40-9f56-b90bf33e0938"],
+Cell[6787, 180, 707, 15, 111, "Text",ExpressionUUID->"2313369c-d6ca-4595-aeaf-b43aa2516760"],
+Cell[CellGroupData[{
+Cell[7519, 199, 161, 3, 132, "Section",ExpressionUUID->"702d7349-ef9c-4283-bece-759b2c65b4c3"],
+Cell[CellGroupData[{
+Cell[7705, 206, 263, 6, 58, "Input",ExpressionUUID->"18b5185f-d4ce-4563-9d5d-4f3ea2da3641"],
+Cell[CellGroupData[{
+Cell[7993, 216, 226, 6, 47, "Echo",ExpressionUUID->"37f63da7-8608-4e2e-b677-890a1a2a3991"],
+Cell[8222, 224, 229, 6, 47, "Echo",ExpressionUUID->"f00585a4-d56e-4d65-b8fd-c31bd4ecdce2"]
+}, Open  ]]
+}, Open  ]],
+Cell[8478, 234, 1532, 34, 222, "Input",ExpressionUUID->"53c72205-3b19-4bb5-a9cb-13372cb0de8a"],
+Cell[CellGroupData[{
+Cell[10035, 272, 2605, 63, 181, "Input",ExpressionUUID->"26685603-fca2-47c7-9ca0-7411c0f756d6"],
+Cell[12643, 337, 440, 14, 47, "Echo",ExpressionUUID->"e9c81c99-ef2c-4fb8-b3d3-da5239f82e42"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13132, 357, 112, 0, 132, "Section",ExpressionUUID->"dfaa6ef1-2c78-49df-a983-298a146ebb82"],
+Cell[13247, 359, 1038, 26, 111, "Text",ExpressionUUID->"34fa6c96-25ef-43fe-a037-38ce8a2e4dfb"],
+Cell[14288, 387, 71, 0, 67, "Text",ExpressionUUID->"25554aa7-2fdb-4f05-a6d6-f1c78fe961d9"],
+Cell[14362, 389, 373, 8, 155, "Text",ExpressionUUID->"a325ab56-bb8e-4aff-8e19-811faf40ff07"],
+Cell[14738, 399, 2669, 73, 651, "Input",ExpressionUUID->"603dce9e-4f0a-49c4-89f5-516b9dd1dc7f"],
+Cell[CellGroupData[{
+Cell[17432, 476, 1390, 35, 262, "Input",ExpressionUUID->"98487d60-e060-4936-aab0-a025640123c0"],
+Cell[18825, 513, 608, 16, 61, "Print",ExpressionUUID->"ba66e727-408c-41eb-a1c2-7d1cde7ac0d7"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19482, 535, 112, 0, 132, "Section",ExpressionUUID->"761c3014-8c99-422a-b955-6325ae3182bf"],
+Cell[19597, 537, 788, 16, 417, "Text",ExpressionUUID->"4f569498-4398-4090-8b53-97089cd80b57"],
+Cell[20388, 555, 636, 17, 99, "Input",ExpressionUUID->"6e68514c-0710-4055-ac49-58d74e5692ba"],
+Cell[21027, 574, 149, 2, 67, "Text",ExpressionUUID->"63a45850-8ba5-411b-be88-486cc74b124d"],
+Cell[CellGroupData[{
+Cell[21201, 580, 474, 13, 58, "Input",ExpressionUUID->"4802198f-3bab-46d0-aa46-d5bf0a0c9928"],
+Cell[21678, 595, 2014, 61, 146, "Output",ExpressionUUID->"d75747c6-657a-47d4-9afb-e3ebb6eed6b7"]
+}, Open  ]],
+Cell[23707, 659, 118, 0, 67, "Text",ExpressionUUID->"463ef747-8649-45ac-a680-ea8a6ca72a46"],
+Cell[CellGroupData[{
+Cell[23850, 663, 149, 2, 58, "Input",ExpressionUUID->"ff2e3d11-cd2c-4a81-bf52-2751cf0f5494"],
+Cell[24002, 667, 2089, 62, 146, "Output",ExpressionUUID->"35da8b33-d36e-43e8-a3f0-5cef6cf936d0"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26140, 735, 130, 0, 132, "Section",ExpressionUUID->"c1ca71e1-76dc-4109-a47e-1daefee713c1"],
+Cell[26273, 737, 556, 11, 329, "Text",ExpressionUUID->"73cc654a-ead6-4171-ae47-f688a4170045"],
+Cell[26832, 750, 2295, 60, 344, "Input",ExpressionUUID->"de251bf9-d640-4da1-8839-e6dda8eadb25"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[29164, 815, 109, 0, 132, "Section",ExpressionUUID->"90350d02-4dec-45a5-85db-723ee72daca0"],
+Cell[29276, 817, 371, 7, 198, "Text",ExpressionUUID->"1945f7ed-823f-48ee-a743-07d1a108073c"],
+Cell[CellGroupData[{
+Cell[29672, 828, 2680, 75, 753, "Input",ExpressionUUID->"b7bbeae1-b1c0-4fab-bccd-e0724bbb6ab7"],
+Cell[32355, 905, 193, 4, 66, "Output",ExpressionUUID->"95b97ce3-aa4b-4b51-bc45-602bf9ac4270"]
+}, Open  ]],
+Cell[32563, 912, 175, 3, 67, "Text",ExpressionUUID->"6f6f867d-8db1-4ef5-9aec-521aee99c1fd"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[32775, 920, 130, 0, 132, "Section",ExpressionUUID->"5571a5ec-5b9a-456e-9447-d4f0040cb738"],
+Cell[32908, 922, 506, 11, 329, "Text",ExpressionUUID->"68008d14-48ff-4d4a-be21-62437a69275b"],
+Cell[33417, 935, 1574, 43, 140, "Input",ExpressionUUID->"46d681d4-c71e-40c6-a301-a23f533c371c"],
+Cell[34994, 980, 154, 2, 67, "Text",ExpressionUUID->"091709fe-2042-428e-b1f2-1a4746a96c56"],
+Cell[CellGroupData[{
+Cell[35173, 986, 3279, 85, 671, "Input",ExpressionUUID->"c51a3f72-bd11-45fe-b7c0-f867f12cf8d4"],
+Cell[38455, 1073, 204, 4, 66, "Output",ExpressionUUID->"c8ce33a3-e146-4538-aa8d-f68d2dff7ea9"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[38708, 1083, 87, 0, 132, "Section",ExpressionUUID->"c781bd77-1659-4f93-97f8-18998f568f3b"],
+Cell[38798, 1085, 579, 8, 155, "Text",ExpressionUUID->"9c3f1ab0-4ee7-4582-8e0a-2c4ad4a2f0a5"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[39414, 1098, 87, 0, 132, "Section",ExpressionUUID->"f76a1a28-123d-460a-8cf5-1c2287064e28"],
+Cell[39504, 1100, 426, 8, 111, "Text",ExpressionUUID->"062a80f5-143f-49a4-95b8-c2f2c3af1044"],
+Cell[39933, 1110, 822, 22, 141, "Item",ExpressionUUID->"74a4f570-410c-42d3-9eea-6c19b39d5330"],
+Cell[40758, 1134, 831, 22, 141, "Item",ExpressionUUID->"6218cd36-00c9-4bce-aca7-c5cad18385d8"],
+Cell[41592, 1158, 970, 23, 141, "Item",ExpressionUUID->"20beb654-5974-40db-aed1-c22373db2b86"],
+Cell[42565, 1183, 934, 23, 141, "Item",ExpressionUUID->"58f15329-df5f-464e-93b2-53c36a6ef7ac"],
+Cell[43502, 1208, 824, 22, 141, "Item",ExpressionUUID->"aa7d2223-3071-401a-8174-6f2ac0587d66"],
+Cell[44329, 1232, 842, 22, 141, "Item",ExpressionUUID->"df121af9-feb7-4f9f-a458-f5c564e698c3"],
+Cell[45174, 1256, 848, 22, 141, "Item",ExpressionUUID->"e0e82f23-916d-4431-9898-bcea7fe87d8c"],
+Cell[46025, 1280, 935, 24, 141, "Item",ExpressionUUID->"a680b855-cb54-434d-8ef4-7f13eface574"],
+Cell[46963, 1306, 807, 22, 141, "Item",ExpressionUUID->"227e440d-0a80-4435-9a2b-3e9aade4334b"],
+Cell[47773, 1330, 844, 23, 141, "Item",ExpressionUUID->"9fd9a62b-658e-460c-b48a-965bc6c21c8c"],
+Cell[48620, 1355, 842, 23, 141, "Item",ExpressionUUID->"c85d25bb-05ba-4979-a536-38e9fd9d0e4e"],
+Cell[49465, 1380, 880, 23, 141, "Item",ExpressionUUID->"373a4c02-e234-407c-89a0-ba152fb9c305"],
+Cell[50348, 1405, 894, 23, 141, "Item",ExpressionUUID->"87c803bb-b721-44ea-8d6c-4b31c2c18491"],
+Cell[51245, 1430, 929, 24, 141, "Item",ExpressionUUID->"c47a9d6f-4558-4701-8627-67cc70008df2"],
+Cell[52177, 1456, 965, 24, 141, "Item",ExpressionUUID->"c297a4b2-8a83-4b9e-9133-091e97b691eb"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

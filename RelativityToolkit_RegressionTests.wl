@@ -1150,6 +1150,85 @@ Module[{
 ];
 
 
+(* ========================================================================= *)
+Print["\n--- SECTION 17: NON-ABELIAN GAUGE THEORY & SU(2) ---"];
+(* ========================================================================= *)
+
+Module[{
+    doublet, WMatrix, cde, \[Epsilon]Matrix, gaugeTransforms, constantRules,
+    transformedCde, transformedCdeFirstOrder, expectedCde, expectedCdeFirstOrder, diff,
+    G, expectedGTransformed, transformedG, transformedGFirstOrder, expectedG, diffG
+  },
+
+  doublet = {\[Psi]1, \[Psi]2};
+  
+  (* Component-wise Spacetime CD test *)
+  AssertEqual[
+    CD[doublet, x[\[ScriptCapitalU][\[Mu]]]],
+    {CD[\[Psi]1, x[\[ScriptCapitalU][\[Mu]]]], CD[\[Psi]2, x[\[ScriptCapitalU][\[Mu]]]]},
+    "CD Component-wise Distribution on Lists"
+  ];
+
+  (* Infinitesimal SU(2) Gauge Covariance test *)
+  TGen[a_] := -I/2 * PauliMatrix[a];
+  WMatrix[\[Nu]_] := Sum[W[a][\[ScriptCapitalD][\[Nu]]] * TGen[a], {a, 3}];
+  cde = CD[doublet, x[\[ScriptCapitalU][\[Mu]]]] + g * (WMatrix[\[Mu]] . doublet);
+
+  \[Epsilon]Matrix = Sum[\[Epsilon][a] * TGen[a], {a, 3}];
+  gaugeTransforms = {
+    \[Psi]1 -> \[Psi]1 + (\[Epsilon]Matrix . doublet)[[1]],
+    \[Psi]2 -> \[Psi]2 + (\[Epsilon]Matrix . doublet)[[2]],
+    W[a_][\[ScriptCapitalD][\[Nu]_]] :> W[a][\[ScriptCapitalD][\[Nu]]] - 
+      Partials[\[Epsilon][a], x[\[ScriptCapitalU][\[Nu]]]] / g + 
+      Sum[Signature[{a, b, c}] * \[Epsilon][b] * W[c][\[ScriptCapitalD][\[Nu]]], {b, 3}, {c, 3}]
+  };
+
+  constantRules = {
+    Partials[g, _] :> 0
+  };
+
+  transformedCde = cde /. gaugeTransforms // ExpandDerivatives;
+  transformedCde = transformedCde /. constantRules // Expand;
+  transformedCdeFirstOrder = transformedCde /. {
+    \[Epsilon][a_] * \[Epsilon][b_] :> 0, 
+    \[Epsilon][a_]^2 :> 0,
+    \[Epsilon][a_] * Partials[\[Epsilon][b_], _] :> 0
+  };
+
+  expectedCde = (IdentityMatrix[2] + \[Epsilon]Matrix) . cde // Expand;
+  expectedCdeFirstOrder = expectedCde /. {
+    \[Epsilon][a_] * \[Epsilon][b_] :> 0,
+    \[Epsilon][a_]^2 :> 0
+  };
+
+  diff = Simplify[transformedCdeFirstOrder - expectedCdeFirstOrder];
+  AssertEqual[diff, {0, 0}, "SU(2) Covariant Derivative Local Gauge Covariance"];
+
+  (* Gauge Field Strength transformation test *)
+  G[a_, \[Eta]_, \[Nu]_] := Partials[W[a][\[ScriptCapitalD][\[Nu]]], x[\[ScriptCapitalU][\[Eta]]]] - 
+    Partials[W[a][\[ScriptCapitalD][\[Eta]]], x[\[ScriptCapitalU][\[Nu]]]] + 
+    g * Sum[Signature[{a, b, c}] * W[b][\[ScriptCapitalD][\[Eta]]] * W[c][\[ScriptCapitalD][\[Nu]]], {b, 3}, {c, 3}];
+
+  expectedGTransformed[a_] := G[a, \[Eta], \[Nu]] + Sum[Signature[{a, b, c}] * \[Epsilon][b] * G[c, \[Eta], \[Nu]], {b, 3}, {c, 3}];
+
+  Do[
+    transformedG = G[a, \[Eta], \[Nu]] /. gaugeTransforms // ExpandDerivatives;
+    transformedG = transformedG /. constantRules // Expand;
+    transformedGFirstOrder = transformedG /. {
+      \[Epsilon][x_] * \[Epsilon][y_] :> 0,
+      \[Epsilon][x_]^2 :> 0,
+      \[Epsilon][x_] * Partials[\[Epsilon][y_], _] :> 0,
+      Partials[\[Epsilon][x_], _] * \[Epsilon][y_] :> 0,
+      Partials[\[Epsilon][x_], _] * Partials[\[Epsilon][y_], _] :> 0
+    };
+    expectedG = expectedGTransformed[a] // Expand;
+    diffG = Simplify[transformedGFirstOrder - expectedG];
+    AssertEqual[diffG, 0, "SU(2) Field Strength G[" <> ToString[a] <> "] Local Gauge Covariance"],
+    {a, 3}
+  ];
+];
+
+
 (* ::Chapter::Closed:: *)
 (*Summary*)
 

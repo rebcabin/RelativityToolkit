@@ -568,6 +568,7 @@ metricDifferentiationRules={
 (* ========================================================================= *)
 
 differentiationRules = {
+  Partials[list_List, var_] :> (Partials[#, var] & /@ list),
   Partials[a_ * b_, var_] :> Partials[a, var]*b + a*Partials[b, var], 
   Partials[a_ + b_, var_] :> Partials[a, var] + Partials[b, var], 
   Partials[Exp[arg_], var_] :> Exp[arg] * Partials[arg, var],
@@ -608,6 +609,9 @@ SetConnection[sym_Symbol] := (
    RelativityConnection = sym;
    Print["Relativity Engine: Connection set to ", sym]
 );
+
+(* Component-wise Spacetime CD on lists *)
+CD[list_List, var_] := CD[#, var] & /@ list;
 
 (* Rule 0: Connection-Binding ("Gamma Glue") *)
 (* DYNAMIC: Check if prod contains the CURRENT RelativityConnection symbol *)
@@ -656,6 +660,10 @@ CD[expr_, x[\[ScriptCapitalU][nu_]]] :=
     ], {idx, down}];
     
   partialTerm + upCorrections - downCorrections ];
+
+(* Non-Abelian Gauge-Covariant Derivative *)
+CD[field_List, var_, coupling_, gaugeMatrix_] :=
+  CD[field, var] - I * coupling * (gaugeMatrix . field);
 
 (* Mixed Geometric & Gauge Derivative *)
 (* Usage: CD[field, coord, coupling, gaugeField] *)
